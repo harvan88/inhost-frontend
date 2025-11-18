@@ -2,6 +2,7 @@ import { X, MessageSquare, MoreVertical, Copy, Maximize2, Plus } from 'lucide-re
 import { useWorkspaceStore, useContainer } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import ChatArea from '@components/chat/ChatArea';
+import ThemeEditorArea from '@components/tools/ThemeEditorArea';
 import { useState } from 'react';
 
 interface DynamicContainerProps {
@@ -444,6 +445,9 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
           <>
             {activeTab.type === 'conversation' && (
               <ChatArea conversationId={activeTab.entityId} />
+            )}
+            {activeTab.type === 'theme_editor' && (
+              <ThemeEditorArea themeId={activeTab.entityId} />
             )}
             {activeTab.type === 'analytics' && (
               <div
