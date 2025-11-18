@@ -1,4 +1,4 @@
-import { X, MessageSquare, MoreVertical, Copy, Maximize2, Plus } from 'lucide-react';
+import { X, MessageSquare, MoreVertical, Copy } from 'lucide-react';
 import { useWorkspaceStore, useContainer } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import { lazy, Suspense, useState } from 'react';
@@ -142,8 +142,6 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
     setActiveContainer,
     closeContainer,
     duplicateContainer,
-    expandContainer,
-    splitCanvas,
   } = useWorkspaceStore();
   const { theme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -188,15 +186,6 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
   const handleDuplicateContainer = () => {
     duplicateContainer(containerId);
     setMenuOpen(false);
-  };
-
-  const handleExpandContainer = () => {
-    expandContainer(containerId);
-    setMenuOpen(false);
-  };
-
-  const handleAddAdjacentSpace = () => {
-    splitCanvas('horizontal');
   };
 
   return (
@@ -298,27 +287,6 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             borderLeft: `1px solid ${theme.colors.neutral[200]}`,
           }}
         >
-          {/* + Button - Abrir espacio adyacente */}
-          <button
-            onClick={handleAddAdjacentSpace}
-            className="transition"
-            style={{
-              padding: theme.spacing[1.5],
-              borderRadius: theme.radius.sm,
-              transitionDuration: theme.transitions.base,
-              color: theme.colors.neutral[700],
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[200];
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-            title="Abrir espacio adyacente"
-          >
-            <Plus size={theme.iconSizes.base} />
-          </button>
-
           {/* Container Menu */}
           <div className="relative">
             <button
@@ -387,30 +355,6 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                   >
                     <Copy size={theme.iconSizes.sm} />
                     Duplicar contenedor
-                  </button>
-                  <button
-                    onClick={handleExpandContainer}
-                    className="w-full text-left flex items-center transition"
-                    style={{
-                      paddingLeft: theme.spacing[4],
-                      paddingRight: theme.spacing[4],
-                      paddingTop: theme.spacing[2],
-                      paddingBottom: theme.spacing[2],
-                      gap: theme.spacing[2],
-                      fontSize: theme.typography.sizes.sm,
-                      color: theme.colors.neutral[900],
-                      borderBottom: `1px solid ${theme.colors.neutral[100]}`,
-                      transitionDuration: theme.transitions.base,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
-                  >
-                    <Maximize2 size={theme.iconSizes.sm} />
-                    Expandir al 100%
                   </button>
                   <button
                     onClick={handleCloseContainer}
