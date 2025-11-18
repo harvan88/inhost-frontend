@@ -48,10 +48,8 @@ export function Tag({
   const { theme } = useTheme();
 
   // Validación de contrato en desarrollo
-  if (process.env.NODE_ENV === 'development') {
-    if (!children) {
-      console.error('[Tag] CONTRATO ROTO: Tag debe tener contenido (children)');
-    }
+  if (!children) {
+    console.error('[Tag] CONTRATO ROTO: Tag debe tener contenido (children)');
   }
 
   const sizeStyles = size === 'small'
