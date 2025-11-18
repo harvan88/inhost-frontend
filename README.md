@@ -2,6 +2,8 @@
 
 Modern React + TypeScript frontend for the INHOST multi-channel messaging platform.
 
+> **📊 [Ver STATUS.md](./STATUS.md)** - Estado actual del proyecto, roadmap y próximos pasos
+
 ## Tech Stack
 
 - ⚡ **Vite** - Ultra-fast build tool optimized for Bun
