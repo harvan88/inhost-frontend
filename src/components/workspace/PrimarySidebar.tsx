@@ -193,7 +193,7 @@ function ContactsView() {
 
 function ToolsView() {
   const { theme } = useTheme();
-  const { openTab, activeContainerId } = useWorkspaceStore();
+  const { openTab, activeContainerId, containers } = useWorkspaceStore();
 
   const tools = [
     {
@@ -257,12 +257,18 @@ function ToolsView() {
 
       {/* Tools List */}
       <div className="flex-1 overflow-y-auto">
-        {tools.map((tool) => (
-          <ListCard
-            key={tool.id}
-            onClick={() => handleOpenTool(tool.id, tool.name)}
-            showActiveIndicator={false}
-          >
+        {tools.map((tool) => {
+          // Verificar si la herramienta está activa (similar a ConversationListItem)
+          const activeContainer = containers.find((c) => c.id === activeContainerId);
+          const toolTabId = `${tool.id}-tab`;
+          const isActive = activeContainer?.activeTabId?.includes(tool.id) ?? false;
+
+          return (
+            <ListCard
+              key={tool.id}
+              isActive={isActive}
+              onClick={() => handleOpenTool(tool.id, tool.name)}
+            >
             <div
               className="w-full"
               style={{
@@ -313,7 +319,8 @@ function ToolsView() {
             </div>
             </div>
           </ListCard>
-        ))}
+          );
+        })}
       </div>
 
       {/* Footer */}

@@ -1,4 +1,4 @@
-import { Columns2, Rows2, Moon, Sun } from 'lucide-react';
+import { Plus, Moon, Sun } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import { Text } from '@/components/ui';
@@ -102,9 +102,11 @@ import DynamicContainer from './DynamicContainer';
  * - Paneles dinámicos de Figma/Adobe XD
  */
 export default function Canvas() {
-  const { containers, layout, splitCanvas, expandedContainerId, collapseContainer } =
-    useWorkspaceStore();
+  const { containers, createContainer } = useWorkspaceStore();
   const { theme, toggleTheme, isDark } = useTheme();
+
+  // Máximo 3 contenedores
+  const canAddContainer = containers.length < 3;
 
   return (
     <div
@@ -132,52 +134,33 @@ export default function Canvas() {
         </Text>
         <div className="flex gap-2">
           <button
-            onClick={() => splitCanvas('horizontal')}
+            onClick={createContainer}
             className="flex items-center gap-1.5 transition"
             style={{
               padding: theme.componentSpacing.button.sm,
               fontSize: theme.typography.sizes.xs,
-              backgroundColor: theme.colors.neutral[0],
-              border: `1px solid ${theme.colors.neutral[300]}`,
+              backgroundColor: canAddContainer ? theme.colors.primary[500] : theme.colors.neutral[300],
+              border: 'none',
               borderRadius: theme.radius.md,
-              color: theme.colors.neutral[700],
+              color: theme.colors.neutral[0],
               transitionDuration: theme.transitions.base,
+              cursor: canAddContainer ? 'pointer' : 'not-allowed',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+              if (canAddContainer) {
+                e.currentTarget.style.backgroundColor = theme.colors.primary[600];
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
+              if (canAddContainer) {
+                e.currentTarget.style.backgroundColor = theme.colors.primary[500];
+              }
             }}
-            title="Dividir horizontalmente (50% / 50%)"
-            disabled={containers.length === 0}
+            title={canAddContainer ? 'Nuevo contenedor (máx. 3)' : 'Máximo 3 contenedores alcanzado'}
+            disabled={!canAddContainer}
           >
-            <Columns2 size={theme.iconSizes.sm} />
-            Split Horizontal
-          </button>
-          <button
-            onClick={() => splitCanvas('vertical')}
-            className="flex items-center gap-1.5 transition"
-            style={{
-              padding: theme.componentSpacing.button.sm,
-              fontSize: theme.typography.sizes.xs,
-              backgroundColor: theme.colors.neutral[0],
-              border: `1px solid ${theme.colors.neutral[300]}`,
-              borderRadius: theme.radius.md,
-              color: theme.colors.neutral[700],
-              transitionDuration: theme.transitions.base,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
-            }}
-            title="Dividir verticalmente (50% / 50%)"
-            disabled={containers.length === 0}
-          >
-            <Rows2 size={theme.iconSizes.sm} />
-            Split Vertical
+            <Plus size={theme.iconSizes.sm} />
+            Nuevo Contenedor
           </button>
           <button
             onClick={toggleTheme}
@@ -207,45 +190,6 @@ export default function Canvas() {
 
       {/* Canvas Area - Contenedores Dinámicos */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        {/* Expanded Mode Banner */}
-        {expandedContainerId && (
-          <div
-            className="flex items-center justify-between px-4"
-            style={{
-              height: theme.componentSizes.controlBar,
-              backgroundColor: theme.colors.primary[50],
-              borderBottom: `1px solid ${theme.colors.primary[200]}`,
-            }}
-          >
-            <Text
-              className="font-medium"
-              variant="metadata"
-              style={{
-                color: theme.colors.primary[700],
-              }}
-            >
-              Modo expandido (100%)
-            </Text>
-            <button
-              onClick={collapseContainer}
-              className="underline transition"
-              style={{
-                fontSize: theme.typography.sizes.xs,
-                color: theme.colors.primary[600],
-                transitionDuration: theme.transitions.base,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = theme.colors.primary[800];
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = theme.colors.primary[600];
-              }}
-            >
-              Volver a vista normal
-            </button>
-          </div>
-        )}
-
         {/* Containers */}
         <div className="flex-1 overflow-hidden">
           {containers.length === 0 ? (
@@ -275,19 +219,9 @@ export default function Canvas() {
                 </Text>
               </div>
             </div>
-          ) : expandedContainerId ? (
-            // Modo expandido: solo mostrar el contenedor expandido
-            <div className="h-full">
-              <DynamicContainer containerId={expandedContainerId} />
-            </div>
           ) : (
-            // Modo normal: mostrar todos los contenedores
-            <div
-              className="h-full flex"
-              style={{
-                flexDirection: layout === 'vertical-split' ? 'column' : 'row',
-              }}
-            >
+            // Mostrar todos los contenedores
+            <div className="h-full flex">
               {containers.map((container) => (
                 <DynamicContainer key={container.id} containerId={container.id} />
               ))}

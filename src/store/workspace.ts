@@ -54,18 +54,14 @@ interface WorkspaceState {
   setSidebarWidth: (width: number) => void;
 
   // ━━━ NIVEL 3: LIENZO (CANVAS) ━━━
-  layout: 'single' | 'horizontal-split' | 'vertical-split';
   containers: DynamicContainer[];
   activeContainerId: string | null;
-  expandedContainerId: string | null; // Container en modo expansión total
 
-  // Canvas Actions
-  splitCanvas: (direction: 'horizontal' | 'vertical') => void;
+  // Canvas Actions (máximo 3 contenedores)
+  createContainer: () => void;
   closeContainer: (containerId: string) => void;
   setActiveContainer: (containerId: string) => void;
   duplicateContainer: (containerId: string) => void;
-  expandContainer: (containerId: string) => void;
-  collapseContainer: () => void;
 
   // Container Actions (operate on active container)
   openTab: (tab: WorkspaceTab, containerId?: string) => void;
@@ -83,7 +79,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       activeActivity: 'messages',
       sidebarVisible: true,
       sidebarWidth: 320,
-      layout: 'single',
       containers: [
         {
           id: 'container-1',
@@ -92,7 +87,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
       ],
       activeContainerId: 'container-1',
-      expandedContainerId: null,
 
       // ━━━ ACTIONS ━━━
 
@@ -120,33 +114,22 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       setSidebarWidth: (width) => set({ sidebarWidth: width }),
 
       // Nivel 3: Lienzo (Canvas) - Container Management
-      splitCanvas: (direction) =>
+      // Crear nuevo contenedor (máximo 3)
+      createContainer: () =>
         set((state) => {
-          // Solo permitir máximo 2 contenedores
-          if (state.containers.length >= 2) {
-            // Si ya hay 2 contenedores, solo cambiar la dirección del layout
-            return {
-              layout: direction === 'horizontal' ? 'horizontal-split' : 'vertical-split',
-            };
+          // Solo permitir máximo 3 contenedores
+          if (state.containers.length >= 3) {
+            return state;
           }
 
-          // Crear nuevo contenedor solo si hay menos de 2
           const newContainer: DynamicContainer = {
             id: `container-${Date.now()}`,
             tabs: [],
             activeTabId: null,
-            width: '50%',
           };
 
-          // Update existing containers to 50% width
-          const updatedContainers = state.containers.map((c) => ({
-            ...c,
-            width: '50%',
-          }));
-
           return {
-            layout: direction === 'horizontal' ? 'horizontal-split' : 'vertical-split',
-            containers: [...updatedContainers, newContainer],
+            containers: [...state.containers, newContainer],
             activeContainerId: newContainer.id,
           };
         }),
@@ -158,14 +141,10 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           // If no containers left, create a default one
           if (newContainers.length === 0) {
             return {
-              layout: 'single',
               containers: [{ id: 'container-1', tabs: [], activeTabId: null }],
               activeContainerId: 'container-1',
             };
           }
-
-          // Reset to single layout if only one container remains
-          const newLayout = newContainers.length === 1 ? 'single' : state.layout;
 
           // If we closed the active container, activate another one
           let newActiveContainer = state.activeContainerId;
@@ -174,7 +153,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           }
 
           return {
-            layout: newLayout,
             containers: newContainers,
             activeContainerId: newActiveContainer,
           };
@@ -183,9 +161,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       setActiveContainer: (containerId) =>
         set({ activeContainerId: containerId }),
 
-      // Duplicar contenedor (Sección 6.2)
+      // Duplicar contenedor (Sección 6.2) - máximo 3 contenedores
       duplicateContainer: (containerId) =>
         set((state) => {
+          // Solo permitir máximo 3 contenedores
+          if (state.containers.length >= 3) {
+            return state;
+          }
+
           const sourceContainer = state.containers.find((c) => c.id === containerId);
           if (!sourceContainer) return state;
 
@@ -194,33 +177,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             id: `container-${Date.now()}`,
             tabs: [...sourceContainer.tabs], // Copy tabs
             activeTabId: sourceContainer.activeTabId,
-            width: '50%',
           };
-
-          // Update existing containers to share space
-          const updatedContainers = state.containers.map((c) => ({
-            ...c,
-            width: '50%',
-          }));
 
           return {
-            layout: 'horizontal-split',
-            containers: [...updatedContainers, newContainer],
+            containers: [...state.containers, newContainer],
             activeContainerId: newContainer.id,
           };
-        }),
-
-      // Expandir contenedor (ocupar 100% ocultando otros) (Sección 6.2)
-      expandContainer: (containerId) =>
-        set({
-          expandedContainerId: containerId,
-          activeContainerId: containerId,
-        }),
-
-      // Colapsar contenedor (volver a mostrar todos)
-      collapseContainer: () =>
-        set({
-          expandedContainerId: null,
         }),
 
       // Container Actions - operate on specific or active container
@@ -334,12 +296,11 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     }),
     {
       name: 'inhost-workspace',
-      // Solo persistir layout preferences, NO las tabs (se recargan del server)
+      // Solo persistir preferences básicas, NO las tabs (se recargan del server)
       partialize: (state) => ({
         activeActivity: state.activeActivity,
         sidebarVisible: state.sidebarVisible,
         sidebarWidth: state.sidebarWidth,
-        layout: state.layout,
       }),
     }
   )
