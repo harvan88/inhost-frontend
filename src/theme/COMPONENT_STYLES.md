@@ -454,6 +454,117 @@ const { theme } = useTheme();
 
 ---
 
+## Sidebar List Item (Sin Rectángulos)
+
+El componente de lista en la Barra Lateral Contextual tiene un estilo **unificado y sin rectángulos**. Todas las listas deben seguir este patrón para mantener consistencia.
+
+### Estilo Base
+
+```tsx
+const { theme } = useTheme();
+
+<div style={{
+  padding: theme.componentStyles.sidebarListItem.padding,           // 12px 16px
+  borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
+  backgroundColor: 'transparent',
+  transitionDuration: theme.transitions.fast
+}}>
+  Contenido
+</div>
+```
+
+### Item Activo
+
+Cuando un item está activo, muestra un indicador visual en el borde izquierdo:
+
+```tsx
+<div style={{
+  padding: theme.componentStyles.sidebarListItem.padding,
+  borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
+  borderLeft: isActive
+    ? `${theme.componentStyles.sidebarListItem.activeIndicatorWidth} solid ${theme.colors.primary[500]}`
+    : 'none',
+  backgroundColor: isActive ? theme.colors.primary[50] : 'transparent'
+}}>
+  Contenido
+</div>
+```
+
+### Hover State
+
+```tsx
+<div
+  style={{ ... }}
+  onMouseEnter={(e) => {
+    if (!isActive) {
+      e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
+    }
+  }}
+  onMouseLeave={(e) => {
+    if (!isActive) {
+      e.currentTarget.style.backgroundColor = 'transparent';
+    }
+  }}
+>
+  Contenido
+</div>
+```
+
+### Reglas del Sidebar List Item
+
+**✅ HACER:**
+- Usar `theme.componentStyles.sidebarListItem.padding` para el espaciado
+- Solo `borderBottom` para separar items
+- `borderLeft` solo cuando el item está activo (4px solid primary[500])
+- Fondo transparente en estado normal
+- Fondo `neutral[100]` en hover (si no está activo)
+- Fondo `primary[50]` cuando está activo
+
+**❌ NO HACER:**
+- ❌ Usar rectángulos con `border` completo
+- ❌ Usar `borderRadius` en los items
+- ❌ Usar `margin` entre items
+- ❌ Usar fondo `neutral[0]` o colores sólidos
+- ❌ Crear estilos de lista diferentes para cada sección
+
+### Ejemplo Completo: Conversaciones vs Herramientas
+
+Ambas listas usan **exactamente el mismo estilo**:
+
+```tsx
+// ConversationListItem.tsx
+<div
+  onClick={handleClick}
+  style={{
+    padding: theme.componentStyles.sidebarListItem.padding,
+    borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
+    borderLeft: isActive
+      ? `${theme.componentStyles.sidebarListItem.activeIndicatorWidth} solid ${theme.colors.primary[500]}`
+      : 'none',
+    backgroundColor: isActive ? theme.colors.primary[50] : 'transparent',
+  }}
+>
+  {/* Avatar, nombre, último mensaje, etc. */}
+</div>
+
+// ToolsView.tsx
+<button
+  onClick={handleOpenTool}
+  style={{
+    padding: theme.componentStyles.sidebarListItem.padding,
+    borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
+    backgroundColor: 'transparent',
+    border: 'none',
+  }}
+>
+  {/* Icono, nombre de herramienta, descripción, etc. */}
+</button>
+```
+
+**Resultado**: Listas visualmente consistentes sin tener que "luchar" con estilos diferentes cada vez.
+
+---
+
 **Última actualización**: 2025-11-18
-**Versión**: 1.0.0
+**Versión**: 1.1.0
 **Basado en**: Guía de Estándares de Estilo y Comportamiento de Componentes en FluxCore

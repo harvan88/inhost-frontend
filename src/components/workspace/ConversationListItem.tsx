@@ -60,9 +60,11 @@ export default function ConversationListItem({ conversation }: ConversationListI
       onClick={handleClick}
       className="cursor-pointer transition-colors"
       style={{
-        padding: `${theme.spacing[3]} ${theme.spacing[4]}`,
-        borderBottom: `1px solid ${theme.colors.neutral[200]}`,
-        borderLeft: isActiveTab ? `4px solid ${theme.colors.primary[500]}` : 'none',
+        padding: theme.componentStyles.sidebarListItem.padding,
+        borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
+        borderLeft: isActiveTab
+          ? `${theme.componentStyles.sidebarListItem.activeIndicatorWidth} solid ${theme.colors.primary[500]}`
+          : 'none',
         backgroundColor: isActiveTab ? theme.colors.primary[50] : 'transparent',
         transitionDuration: theme.transitions.fast,
       }}

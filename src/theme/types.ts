@@ -311,6 +311,13 @@ export interface ComponentStyles {
       contentPadding: string;
     };
   };
+
+  // Item de lista en sidebar (sin rectángulos)
+  sidebarListItem: {
+    padding: string;          // 12px 16px
+    borderBottomWidth: string; // 1px
+    activeIndicatorWidth: string; // 4px (borde izquierdo cuando activo)
+  };
 }
 
 /**
