@@ -1,5 +1,4 @@
 import { useRef, useEffect } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages } from '@/store';
 import { useTheme } from '@/theme';
 import type { Message } from '@/types';
@@ -9,14 +8,14 @@ interface MessageListProps {
 }
 
 /**
- * MessageList - Displays messages for a conversation with virtual scrolling
+ * MessageList - Displays messages for a conversation
  *
  * Architecture: Receives conversationId, reads messages from store
  *
  * Responsibilities:
  * - Display messages for ONE conversation
- * - Virtual scrolling for performance
  * - Auto-scroll to bottom on new messages
+ * - Each message occupies its own vertical space (no overlap)
  *
  * Does NOT:
  * - Send messages (that's MessageInput)
@@ -27,29 +26,12 @@ export default function MessageList({ conversationId }: MessageListProps) {
   const messages = useMessages(conversationId);
   const { theme } = useTheme();
   const parentRef = useRef<HTMLDivElement>(null);
-
-  // Virtual scrolling for performance with large message lists
-  const virtualizer = useVirtualizer({
-    count: messages.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 100, // Estimated message height
-    overscan: 5, // Render 5 items above/below viewport
-  });
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (parentRef.current && messages.length > 0) {
-      const scrollElement = parentRef.current;
-      const isNearBottom =
-        scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight < 200;
-
-      // Only auto-scroll if user is near the bottom (not reading old messages)
-      if (isNearBottom) {
-        scrollElement.scrollTo({
-          top: scrollElement.scrollHeight,
-          behavior: 'smooth',
-        });
-      }
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages.length]);
 
@@ -93,34 +75,14 @@ export default function MessageList({ conversationId }: MessageListProps) {
       className="h-full overflow-y-auto px-6 py-4"
       style={{
         backgroundColor: theme.colors.neutral[50],
-        overflowAnchor: 'none',
       }}
     >
-      <div
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          width: '100%',
-          position: 'relative',
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
-          const message = messages[virtualItem.index];
-          return (
-            <div
-              key={message.id}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              <MessageBubble message={message} theme={theme} />
-            </div>
-          );
-        })}
-      </div>
+      {/* Render messages in normal flow - cada mensaje ocupa su propio espacio */}
+      {messages.map((message) => (
+        <MessageBubble key={message.id} message={message} theme={theme} />
+      ))}
+      {/* Invisible div at bottom for auto-scroll */}
+      <div ref={bottomRef} />
     </div>
   );
 }
@@ -217,10 +179,11 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
 
   return (
     <div
-      className="mb-4 max-w-2xl"
       style={{
-        marginLeft: isIncoming ? undefined : isSystem ? 'auto' : 'auto',
-        marginRight: isIncoming ? 'auto' : isSystem ? 'auto' : undefined,
+        marginBottom: theme.spacing[4], // Espacio entre mensajes
+        width: '100%',
+        display: 'flex',
+        justifyContent: isIncoming ? 'flex-start' : isSystem ? 'center' : 'flex-end',
       }}
     >
       <div
@@ -231,6 +194,8 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
           borderWidth: '1px',
           borderStyle: 'solid',
           boxShadow: theme.elevation.sm,
+          maxWidth: '640px', // max-w-2xl
+          width: isSystem ? 'auto' : '100%',
         }}
       >
         {/* Header: Channel and Type badges */}
