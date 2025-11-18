@@ -66,24 +66,37 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
 
   return (
     <div
-      className="flex flex-col h-full"
+      className="h-full"
       style={{
         backgroundColor: theme.colors.neutral[0],
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* Header: Shows who we're talking to */}
       <ChatHeader conversationId={conversationId} />
 
-      {/* Messages: Shows conversation history */}
-      <div className="flex-1 overflow-hidden">
+      {/* Messages: Shows conversation history - with padding for fixed input */}
+      <div
+        className="flex-1 overflow-hidden"
+        style={{
+          paddingBottom: '120px', // Space for fixed input
+        }}
+      >
         <MessageList conversationId={conversationId} />
       </div>
 
-      {/* Input: Where user types messages */}
+      {/* Input: Where user types messages - FIXED at bottom */}
       <div
         style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
           borderTop: `1px solid ${theme.colors.neutral[200]}`,
           padding: theme.spacing[4],
+          backgroundColor: theme.colors.neutral[0],
         }}
       >
         <MessageInput conversationId={conversationId} />

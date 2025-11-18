@@ -136,6 +136,7 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
               borderRadius: theme.radius.lg,
               transitionDuration: theme.transitions.base,
               backgroundColor: isSending ? theme.colors.neutral[100] : theme.colors.neutral[0],
+              color: theme.colors.neutral[900],
               cursor: isSending ? 'not-allowed' : 'text',
             }}
             onFocus={(e) => {

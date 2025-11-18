@@ -201,6 +201,9 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
       onClick={() => setActiveContainer(containerId)}
       style={{
         width: container.width,
+        height: '100%',
+        maxHeight: '100%',
+        overflow: 'hidden',
         backgroundColor: theme.colors.neutral[0],
         border: `${isActive ? '2px' : '1px'} solid ${
           isActive ? theme.colors.primary[500] : theme.colors.neutral[200]
