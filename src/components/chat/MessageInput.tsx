@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { useStore, useConversation } from '@/store';
+import { useTheme } from '@/theme';
 import type { Message } from '@/types';
 
 interface MessageInputProps {
@@ -30,6 +31,7 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
   const [text, setText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { theme } = useTheme();
 
   const conversation = useConversation(conversationId);
   const addMessage = useStore((state) => state.actions.addMessage);
@@ -107,30 +109,89 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
   const isOverLimit = charCount > MAX_MESSAGE_LENGTH;
   const isNearLimit = charCount > MAX_MESSAGE_LENGTH * 0.9;
 
+  // Get character counter color
+  const getCharCountColor = () => {
+    if (isOverLimit) return theme.colors.semantic.danger;
+    if (isNearLimit) return theme.colors.semantic.warning;
+    return theme.colors.neutral[500];
+  };
+
   return (
-    <div className="space-y-2">
-      <form onSubmit={handleSubmit} className="flex gap-3">
-        <div className="flex-1">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2] }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: 'flex', gap: theme.spacing[3] }}
+      >
+        <div style={{ flex: 1 }}>
           <input
             type="text"
             value={text}
             onChange={handleTextChange}
             placeholder="Type your message..."
             disabled={isSending}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition ${
-              error ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className="w-full transition"
+            style={{
+              padding: `${theme.spacing[3]} ${theme.spacing[4]}`,
+              border: `1px solid ${error ? theme.colors.semantic.danger : theme.colors.neutral[300]}`,
+              borderRadius: theme.radius.lg,
+              transitionDuration: theme.transitions.base,
+              backgroundColor: isSending ? theme.colors.neutral[100] : theme.colors.neutral[0],
+              cursor: isSending ? 'not-allowed' : 'text',
+            }}
+            onFocus={(e) => {
+              if (!isSending) {
+                e.currentTarget.style.outline = 'none';
+                e.currentTarget.style.boxShadow = `0 0 0 2px ${theme.colors.primary[500]}`;
+                e.currentTarget.style.borderColor = 'transparent';
+              }
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = error
+                ? theme.colors.semantic.danger
+                : theme.colors.neutral[300];
+            }}
             autoFocus
           />
         </div>
         <button
           type="submit"
           disabled={!text.trim() || isSending || isOverLimit}
-          className="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+          className="flex items-center transition"
+          style={{
+            padding: `${theme.spacing[3]} ${theme.spacing[6]}`,
+            backgroundColor:
+              !text.trim() || isSending || isOverLimit
+                ? theme.colors.neutral[300]
+                : theme.colors.primary[500],
+            color: theme.colors.neutral[0],
+            borderRadius: theme.radius.lg,
+            fontWeight: theme.typography.weights.semibold,
+            cursor: !text.trim() || isSending || isOverLimit ? 'not-allowed' : 'pointer',
+            border: 'none',
+            gap: theme.spacing[2],
+            transitionDuration: theme.transitions.base,
+          }}
+          onMouseEnter={(e) => {
+            if (!(!text.trim() || isSending || isOverLimit)) {
+              e.currentTarget.style.backgroundColor = theme.colors.primary[600];
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!(!text.trim() || isSending || isOverLimit)) {
+              e.currentTarget.style.backgroundColor = theme.colors.primary[500];
+            }
+          }}
         >
           {isSending ? (
             <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div
+                className="w-4 h-4 rounded-full animate-spin"
+                style={{
+                  border: `2px solid ${theme.colors.neutral[0]}`,
+                  borderTopColor: 'transparent',
+                }}
+              />
               Sending...
             </>
           ) : (
@@ -143,16 +204,28 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
       </form>
 
       {/* Character counter and error message */}
-      <div className="flex items-center justify-between text-sm px-1">
-        <div>{error && <span className="text-red-600">{error}</span>}</div>
+      <div
+        className="flex items-center justify-between px-1"
+        style={{
+          fontSize: theme.typography.sizes.sm,
+        }}
+      >
+        <div>
+          {error && (
+            <span
+              style={{
+                color: theme.colors.semantic.danger,
+              }}
+            >
+              {error}
+            </span>
+          )}
+        </div>
         <div
-          className={`${
-            isOverLimit
-              ? 'text-red-600 font-semibold'
-              : isNearLimit
-              ? 'text-yellow-600'
-              : 'text-gray-500'
-          }`}
+          style={{
+            color: getCharCountColor(),
+            fontWeight: isOverLimit ? theme.typography.weights.semibold : theme.typography.weights.normal,
+          }}
         >
           {charCount} / {MAX_MESSAGE_LENGTH}
         </div>

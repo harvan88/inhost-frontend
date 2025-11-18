@@ -257,9 +257,12 @@ export default function Canvas() {
           ) : (
             // Modo normal: mostrar todos los contenedores
             <div
-              className={`h-full flex ${
-                layout === 'vertical-split' ? 'flex-col' : 'flex-row'
-              }`}
+              className="h-full flex"
+              style={{
+                flexDirection: layout === 'vertical-split' ? 'column' : 'row',
+                gap: containers.length > 1 ? theme.spacing[2] : '0',
+                padding: containers.length > 1 ? theme.spacing[2] : '0',
+              }}
             >
               {containers.map((container) => (
                 <DynamicContainer key={container.id} containerId={container.id} />
