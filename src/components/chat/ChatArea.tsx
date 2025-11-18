@@ -92,6 +92,7 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden', // CONTRATO: Evitar desbordamiento
       }}
     >
       {/* Header: Shows who we're talking to */}
