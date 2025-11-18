@@ -38,7 +38,7 @@ export default function StatusCard({ title, value, color }: StatusCardProps) {
   return (
     <div
       style={{
-        padding: '1.5rem',
+        padding: theme.spacing[6],
         borderRadius: theme.radius.lg,
         border: `2px solid ${colors.border}`,
         backgroundColor: colors.bg,

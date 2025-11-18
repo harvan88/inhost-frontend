@@ -114,8 +114,9 @@ export default function Canvas() {
     >
       {/* Canvas Toolbar - Controles para dividir el lienzo */}
       <div
-        className="h-10 flex items-center justify-between px-4"
+        className="flex items-center justify-between px-4"
         style={{
+          height: theme.componentSizes.toolbar,
           backgroundColor: theme.colors.neutral[100],
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
@@ -133,8 +134,9 @@ export default function Canvas() {
         <div className="flex gap-2">
           <button
             onClick={() => splitCanvas('horizontal')}
-            className="px-3 py-1.5 flex items-center gap-1.5 transition"
+            className="flex items-center gap-1.5 transition"
             style={{
+              padding: theme.componentSpacing.button.sm,
               fontSize: theme.typography.sizes.xs,
               backgroundColor: theme.colors.neutral[0],
               border: `1px solid ${theme.colors.neutral[300]}`,
@@ -156,8 +158,9 @@ export default function Canvas() {
           </button>
           <button
             onClick={() => splitCanvas('vertical')}
-            className="px-3 py-1.5 flex items-center gap-1.5 transition"
+            className="flex items-center gap-1.5 transition"
             style={{
+              padding: theme.componentSpacing.button.sm,
               fontSize: theme.typography.sizes.xs,
               backgroundColor: theme.colors.neutral[0],
               border: `1px solid ${theme.colors.neutral[300]}`,
@@ -179,8 +182,9 @@ export default function Canvas() {
           </button>
           <button
             onClick={toggleTheme}
-            className="px-3 py-1.5 flex items-center gap-1.5 transition"
+            className="flex items-center gap-1.5 transition"
             style={{
+              padding: theme.componentSpacing.button.sm,
               fontSize: theme.typography.sizes.xs,
               backgroundColor: theme.colors.neutral[0],
               border: `1px solid ${theme.colors.neutral[300]}`,
@@ -207,8 +211,9 @@ export default function Canvas() {
         {/* Expanded Mode Banner */}
         {expandedContainerId && (
           <div
-            className="h-8 flex items-center justify-between px-4"
+            className="flex items-center justify-between px-4"
             style={{
+              height: theme.componentSizes.controlBar,
               backgroundColor: theme.colors.primary[50],
               borderBottom: `1px solid ${theme.colors.primary[200]}`,
             }}

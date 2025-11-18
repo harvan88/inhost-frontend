@@ -3,6 +3,7 @@ import { ChevronDown, User, Package, Zap, Phone, Mail, Tag } from 'lucide-react'
 import { useWorkspaceStore, useActiveTab } from '@/store/workspace';
 import { useConversation, useContact } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
+import { Avatar, StatusIndicator, Badge } from '@/components/common';
 
 /**
  * ToolPanels - Paneles de herramientas contextuales (derecha)
@@ -85,51 +86,23 @@ function CustomerInfoPanel({ contact, theme }: { contact: NonNullable<ReturnType
       <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[3] }}>
         {/* Avatar & Name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[3] }}>
-          {contact.avatar ? (
-            <img
-              src={contact.avatar}
-              alt={contact.name}
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: theme.radius.full,
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: theme.radius.full,
-                backgroundColor: theme.colors.neutral[300],
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <User size={theme.iconSizes.xl} style={{ color: theme.colors.neutral[600] }} />
-            </div>
-          )}
+          <Avatar
+            src={contact.avatar}
+            alt={contact.name}
+            size="lg"
+            fallbackText={contact.name}
+          />
           <div>
             <h3 style={{ fontWeight: 500, color: theme.colors.neutral[900] }}>{contact.name}</h3>
-            <span
-              style={{
-                display: 'inline-block',
-                width: '8px',
-                height: '8px',
-                borderRadius: theme.radius.full,
-                marginRight: '4px',
-                backgroundColor:
-                  contact.status === 'online'
-                    ? '#10b981'
-                    : contact.status === 'away'
-                    ? '#eab308'
-                    : theme.colors.neutral[400],
-              }}
-            />
-            <span style={{ fontSize: '0.75rem', color: theme.colors.neutral[500], textTransform: 'capitalize' }}>
-              {contact.status}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[1] }}>
+              <StatusIndicator
+                status={contact.status as 'online' | 'offline' | 'away'}
+                position="inline"
+              />
+              <span style={{ fontSize: '0.75rem', color: theme.colors.neutral[500], textTransform: 'capitalize' }}>
+                {contact.status}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -151,22 +124,9 @@ function CustomerInfoPanel({ contact, theme }: { contact: NonNullable<ReturnType
         {/* Channel Badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2] }}>
           <Tag size={theme.iconSizes.sm} style={{ color: theme.colors.neutral[400] }} />
-          <span
-            style={{
-              fontSize: '0.75rem',
-              paddingLeft: theme.spacing[2],
-              paddingRight: theme.spacing[2],
-              paddingTop: '4px',
-              paddingBottom: '4px',
-              borderRadius: theme.radius.full,
-              backgroundColor: theme.colors.primary[100],
-              color: theme.colors.primary[700],
-              textTransform: 'uppercase',
-              fontWeight: 500,
-            }}
-          >
-            {contact.channel}
-          </span>
+          <Badge variant="default" color="primary">
+            {contact.channel.toUpperCase()}
+          </Badge>
         </div>
       </div>
     </ToolPanel>
@@ -220,30 +180,18 @@ function RecentOrdersPanel({ theme }: { theme: any }) {
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2] }}>
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    paddingLeft: theme.spacing[2],
-                    paddingRight: theme.spacing[2],
-                    paddingTop: '2px',
-                    paddingBottom: '2px',
-                    borderRadius: theme.radius.full,
-                    backgroundColor:
-                      order.status === 'completed'
-                        ? '#dcfce7'
-                        : order.status === 'pending'
-                        ? '#fef3c7'
-                        : theme.colors.primary[100],
-                    color:
-                      order.status === 'completed'
-                        ? '#166534'
-                        : order.status === 'pending'
-                        ? '#b45309'
-                        : theme.colors.primary[700],
-                  }}
+                <Badge
+                  variant="compact"
+                  color={
+                    order.status === 'completed'
+                      ? 'success'
+                      : order.status === 'pending'
+                      ? 'warning'
+                      : 'primary'
+                  }
                 >
                   {order.status}
-                </span>
+                </Badge>
               </div>
             </div>
           );

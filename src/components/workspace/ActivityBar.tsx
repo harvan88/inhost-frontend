@@ -87,8 +87,9 @@ export default function ActivityBar() {
 
   return (
     <div
-      className="w-16 flex flex-col py-4 gap-2"
+      className="flex flex-col py-4 gap-2"
       style={{
+        width: theme.componentSizes.sidebar.activityBar,
         backgroundColor: theme.colors.neutral[900],
       }}
     >

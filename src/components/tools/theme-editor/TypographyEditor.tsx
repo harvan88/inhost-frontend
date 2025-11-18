@@ -1,5 +1,8 @@
 /**
- * TypographyEditor - Editor de Tipografía
+ * TypographyEditor - Editor de Tipografía (Compacto)
+ *
+ * Solo muestra tamaños críticos realmente usados: xs, sm, base, lg, xl
+ * Con sliders + input numérico auxiliar
  */
 
 import React from 'react';
@@ -10,6 +13,9 @@ interface TypographyEditorProps {
   typography: Typography;
   onChange: (typography: Typography) => void;
 }
+
+// Solo mostramos los tamaños críticos realmente usados
+const FONT_SIZES: (keyof Typography['sizes'])[] = ['xs', 'sm', 'base', 'lg', 'xl'];
 
 export default function TypographyEditor({ typography, onChange }: TypographyEditorProps) {
   const { theme } = useTheme();
@@ -24,50 +30,48 @@ export default function TypographyEditor({ typography, onChange }: TypographyEdi
     });
   };
 
-  const sizes: (keyof Typography['sizes'])[] = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl'];
-
   return (
     <div style={{ maxWidth: '800px' }}>
       <h3
         style={{
-          fontSize: theme.typography.sizes['2xl'],
-          fontWeight: theme.typography.weights.bold,
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
           color: theme.colors.neutral[900],
-          marginBottom: theme.spacing[2],
+          marginBottom: theme.spacing[1],
         }}
       >
         📝 Editor de Tipografía
       </h3>
       <p
         style={{
-          fontSize: theme.typography.sizes.base,
+          fontSize: theme.typography.sizes.sm,
           color: theme.colors.neutral[600],
-          marginBottom: theme.spacing[6],
-          lineHeight: theme.typography.lineHeights.relaxed,
+          marginBottom: theme.spacing[3],
+          lineHeight: theme.typography.lineHeights.normal,
         }}
       >
-        Ajusta los tamaños de fuente. Se aplican en todos los textos de la aplicación.
+        Solo tamaños críticos: xs, sm, base, lg, xl
       </p>
 
-      <div style={{ display: 'grid', gap: theme.spacing[4] }}>
-        {sizes.map((key) => {
+      <div style={{ display: 'grid', gap: theme.spacing[2] }}>
+        {FONT_SIZES.map((key) => {
           const currentValue = parseInt(typography.sizes[key]);
 
           return (
             <div
               key={key}
               style={{
-                padding: theme.spacing[4],
+                padding: theme.componentSpacing.card.sm,
                 backgroundColor: theme.colors.neutral[50],
-                borderRadius: theme.radius.lg,
+                borderRadius: theme.radius.md,
                 border: `1px solid ${theme.colors.neutral[200]}`,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: theme.spacing[3] }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing[2] }}>
                 <div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.base,
+                      fontSize: theme.typography.sizes.sm,
                       fontWeight: theme.typography.weights.semibold,
                       color: theme.colors.neutral[900],
                     }}
@@ -76,7 +80,7 @@ export default function TypographyEditor({ typography, onChange }: TypographyEdi
                   </div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.sm,
+                      fontSize: theme.typography.sizes.xs,
                       color: theme.colors.neutral[600],
                       fontFamily: theme.typography.fontFamily.mono,
                     }}
@@ -97,23 +101,40 @@ export default function TypographyEditor({ typography, onChange }: TypographyEdi
                 </div>
               </div>
 
-              {/* Slider */}
-              <input
-                type="range"
-                min="8"
-                max="64"
-                step="1"
-                value={currentValue}
-                onChange={(e) => handleSizeChange(key, parseInt(e.target.value))}
-                style={{
-                  width: '100%',
-                  height: '8px',
-                  borderRadius: theme.radius.full,
-                  background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${((currentValue - 8) / 56) * 100}%, ${theme.colors.neutral[200]} ${((currentValue - 8) / 56) * 100}%, ${theme.colors.neutral[200]} 100%)`,
-                  outline: 'none',
-                  cursor: 'pointer',
-                }}
-              />
+              {/* Slider + Input numérico */}
+              <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
+                <input
+                  type="range"
+                  min="8"
+                  max="64"
+                  step="1"
+                  value={currentValue}
+                  onChange={(e) => handleSizeChange(key, parseInt(e.target.value))}
+                  style={{
+                    flex: 1,
+                    height: '6px',
+                    borderRadius: theme.radius.full,
+                    background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${((currentValue - 8) / 56) * 100}%, ${theme.colors.neutral[200]} ${((currentValue - 8) / 56) * 100}%, ${theme.colors.neutral[200]} 100%)`,
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                />
+                <input
+                  type="number"
+                  value={currentValue}
+                  onChange={(e) => handleSizeChange(key, parseInt(e.target.value) || 8)}
+                  style={{
+                    width: '60px',
+                    padding: theme.spacing[1],
+                    border: `1px solid ${theme.colors.neutral[300]}`,
+                    borderRadius: theme.radius.sm,
+                    fontSize: theme.typography.sizes.sm,
+                    textAlign: 'center',
+                    color: theme.colors.neutral[900],
+                    backgroundColor: theme.colors.neutral[0],
+                  }}
+                />
+              </div>
             </div>
           );
         })}

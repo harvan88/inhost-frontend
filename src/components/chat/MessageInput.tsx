@@ -187,8 +187,10 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
           {isSending ? (
             <>
               <div
-                className="w-4 h-4 rounded-full animate-spin"
+                className="rounded-full animate-spin"
                 style={{
+                  width: theme.componentSizes.spinner.sm,
+                  height: theme.componentSizes.spinner.sm,
                   border: `2px solid ${theme.colors.neutral[0]}`,
                   borderTopColor: 'transparent',
                 }}
@@ -197,7 +199,7 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
             </>
           ) : (
             <>
-              <Send className="w-4 h-4" />
+              <Send size={theme.iconSizes.sm} />
               Send
             </>
           )}

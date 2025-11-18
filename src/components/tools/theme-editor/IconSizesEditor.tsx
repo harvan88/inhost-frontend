@@ -1,5 +1,8 @@
 /**
- * IconSizesEditor - Editor de Tamaños de Iconos
+ * IconSizesEditor - Editor de Tamaños de Iconos (Compacto)
+ *
+ * Solo muestra tamaños críticos realmente usados: sm, base, lg
+ * Con sliders + input numérico auxiliar
  */
 
 import React from 'react';
@@ -12,6 +15,9 @@ interface IconSizesEditorProps {
   onChange: (iconSizes: IconSizes) => void;
 }
 
+// Solo mostramos los tamaños críticos realmente usados
+const ICON_SIZES: (keyof IconSizes)[] = ['sm', 'base', 'lg'];
+
 export default function IconSizesEditor({ iconSizes, onChange }: IconSizesEditorProps) {
   const { theme } = useTheme();
 
@@ -22,50 +28,48 @@ export default function IconSizesEditor({ iconSizes, onChange }: IconSizesEditor
     });
   };
 
-  const sizes: (keyof IconSizes)[] = ['xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl'];
-
   return (
     <div style={{ maxWidth: '800px' }}>
       <h3
         style={{
-          fontSize: theme.typography.sizes['2xl'],
-          fontWeight: theme.typography.weights.bold,
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
           color: theme.colors.neutral[900],
-          marginBottom: theme.spacing[2],
+          marginBottom: theme.spacing[1],
         }}
       >
         🔷 Editor de Tamaños de Iconos
       </h3>
       <p
         style={{
-          fontSize: theme.typography.sizes.base,
+          fontSize: theme.typography.sizes.sm,
           color: theme.colors.neutral[600],
-          marginBottom: theme.spacing[6],
-          lineHeight: theme.typography.lineHeights.relaxed,
+          marginBottom: theme.spacing[3],
+          lineHeight: theme.typography.lineHeights.normal,
         }}
       >
-        Define los tamaños estándar para iconos en toda la aplicación.
+        Solo tamaños críticos: sm, base, lg
       </p>
 
-      <div style={{ display: 'grid', gap: theme.spacing[4] }}>
-        {sizes.map((key) => {
+      <div style={{ display: 'grid', gap: theme.spacing[2] }}>
+        {ICON_SIZES.map((key) => {
           const currentValue = iconSizes[key];
 
           return (
             <div
               key={key}
               style={{
-                padding: theme.spacing[4],
+                padding: theme.componentSpacing.card.sm,
                 backgroundColor: theme.colors.neutral[50],
-                borderRadius: theme.radius.lg,
+                borderRadius: theme.radius.md,
                 border: `1px solid ${theme.colors.neutral[200]}`,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: theme.spacing[3] }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing[2] }}>
                 <div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.base,
+                      fontSize: theme.typography.sizes.sm,
                       fontWeight: theme.typography.weights.semibold,
                       color: theme.colors.neutral[900],
                     }}
@@ -74,7 +78,7 @@ export default function IconSizesEditor({ iconSizes, onChange }: IconSizesEditor
                   </div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.sm,
+                      fontSize: theme.typography.sizes.xs,
                       color: theme.colors.neutral[600],
                       fontFamily: theme.typography.fontFamily.mono,
                     }}
@@ -87,23 +91,40 @@ export default function IconSizesEditor({ iconSizes, onChange }: IconSizesEditor
                 <Star size={currentValue} color={theme.colors.primary[500]} fill={theme.colors.primary[200]} />
               </div>
 
-              {/* Slider */}
-              <input
-                type="range"
-                min="8"
-                max="48"
-                step="2"
-                value={currentValue}
-                onChange={(e) => handleChange(key, parseInt(e.target.value))}
-                style={{
-                  width: '100%',
-                  height: '8px',
-                  borderRadius: theme.radius.full,
-                  background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${((currentValue - 8) / 40) * 100}%, ${theme.colors.neutral[200]} ${((currentValue - 8) / 40) * 100}%, ${theme.colors.neutral[200]} 100%)`,
-                  outline: 'none',
-                  cursor: 'pointer',
-                }}
-              />
+              {/* Slider + Input numérico */}
+              <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
+                <input
+                  type="range"
+                  min="8"
+                  max="48"
+                  step="2"
+                  value={currentValue}
+                  onChange={(e) => handleChange(key, parseInt(e.target.value))}
+                  style={{
+                    flex: 1,
+                    height: '6px',
+                    borderRadius: theme.radius.full,
+                    background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${((currentValue - 8) / 40) * 100}%, ${theme.colors.neutral[200]} ${((currentValue - 8) / 40) * 100}%, ${theme.colors.neutral[200]} 100%)`,
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                />
+                <input
+                  type="number"
+                  value={currentValue}
+                  onChange={(e) => handleChange(key, parseInt(e.target.value) || 8)}
+                  style={{
+                    width: '60px',
+                    padding: theme.spacing[1],
+                    border: `1px solid ${theme.colors.neutral[300]}`,
+                    borderRadius: theme.radius.sm,
+                    fontSize: theme.typography.sizes.sm,
+                    textAlign: 'center',
+                    color: theme.colors.neutral[900],
+                    backgroundColor: theme.colors.neutral[0],
+                  }}
+                />
+              </div>
             </div>
           );
         })}

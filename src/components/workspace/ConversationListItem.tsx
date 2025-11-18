@@ -3,6 +3,7 @@ import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
 import type { Conversation } from '@/types';
+import { Avatar, Badge, StatusIndicator } from '@/components/common';
 
 interface ConversationListItemProps {
   conversation: Conversation;
@@ -47,50 +48,11 @@ export default function ConversationListItem({ conversation }: ConversationListI
     return date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
   };
 
-  // Channel badge style
-  const getChannelBadgeStyle = () => {
-    switch (conversation.channel) {
-      case 'whatsapp':
-        return {
-          backgroundColor: theme.colors.channels.whatsapp[100],
-          color: theme.colors.channels.whatsapp[800],
-        };
-      case 'telegram':
-        return {
-          backgroundColor: theme.colors.channels.telegram[100],
-          color: theme.colors.channels.telegram[800],
-        };
-      case 'web':
-        return {
-          backgroundColor: theme.colors.channels.web[100],
-          color: theme.colors.channels.web[800],
-        };
-      case 'sms':
-        return {
-          backgroundColor: theme.colors.channels.sms[100],
-          color: theme.colors.channels.sms[800],
-        };
-      default:
-        return {
-          backgroundColor: theme.colors.neutral[100],
-          color: theme.colors.neutral[800],
-        };
-    }
-  };
-
-  const channelBadgeStyle = getChannelBadgeStyle();
-
-  // Status indicator color
-  const getStatusColor = () => {
-    if (!contact?.status) return theme.colors.neutral[400];
-    switch (contact.status) {
-      case 'online':
-        return theme.colors.semantic.success;
-      case 'away':
-        return theme.colors.semantic.warning;
-      default:
-        return theme.colors.neutral[400];
-    }
+  // Map contact status to StatusIndicator format
+  const mapStatus = (status?: string): 'online' | 'offline' | 'away' => {
+    if (status === 'online') return 'online';
+    if (status === 'away') return 'away';
+    return 'offline';
   };
 
   return (
@@ -116,33 +78,15 @@ export default function ConversationListItem({ conversation }: ConversationListI
       }}
     >
       <div className="flex items-start" style={{ gap: theme.spacing[3] }}>
-        {/* Avatar */}
+        {/* Avatar with status */}
         <div className="flex-shrink-0">
-          {contact?.avatar ? (
-            <img
-              src={contact.avatar}
-              alt={contact.name}
-              className="w-10 h-10"
-              style={{
-                borderRadius: theme.radius.full,
-              }}
-            />
-          ) : (
-            <div
-              className="w-10 h-10 flex items-center justify-center"
-              style={{
-                borderRadius: theme.radius.full,
-                backgroundColor: theme.colors.neutral[300],
-              }}
-            >
-              <MessageSquare
-                size={theme.iconSizes.lg}
-                style={{
-                  color: theme.colors.neutral[600],
-                }}
-              />
-            </div>
-          )}
+          <Avatar
+            src={contact?.avatar}
+            alt={contact?.name || conversation.entityId}
+            size="md"
+            fallbackText={contact?.name || conversation.entityId}
+            statusIndicator={contact?.status ? mapStatus(contact.status) : null}
+          />
         </div>
 
         {/* Content */}
@@ -204,41 +148,17 @@ export default function ConversationListItem({ conversation }: ConversationListI
               gap: theme.spacing[2],
             }}
           >
-            <span
-              className="uppercase"
-              style={{
-                ...channelBadgeStyle,
-                fontSize: theme.typography.sizes.xs,
-                padding: `${theme.spacing[0]} ${theme.spacing[2]}`,
-                borderRadius: theme.radius.full,
-                fontWeight: theme.typography.weights.medium,
-              }}
+            <Badge
+              variant="compact"
+              color="channel"
+              channel={conversation.channel}
             >
-              {conversation.channel}
-            </span>
+              {conversation.channel.toUpperCase()}
+            </Badge>
             {conversation.unreadCount > 0 && (
-              <span
-                style={{
-                  fontSize: theme.typography.sizes.xs,
-                  padding: `${theme.spacing[0]} ${theme.spacing[2]}`,
-                  borderRadius: theme.radius.full,
-                  backgroundColor: theme.colors.primary[500],
-                  color: theme.colors.neutral[0],
-                  fontWeight: theme.typography.weights.medium,
-                }}
-              >
+              <Badge variant="compact" color="primary">
                 {conversation.unreadCount}
-              </span>
-            )}
-            {contact?.status && (
-              <span
-                className="w-2 h-2"
-                style={{
-                  borderRadius: theme.radius.full,
-                  backgroundColor: getStatusColor(),
-                }}
-                title={contact.status}
-              />
+              </Badge>
             )}
           </div>
         </div>
