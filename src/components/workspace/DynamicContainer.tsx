@@ -1,36 +1,146 @@
-import { X, MessageSquare } from 'lucide-react';
+import { X, MessageSquare, MoreVertical, Copy, Maximize2, Plus } from 'lucide-react';
 import { useWorkspaceStore, useContainer } from '@/store/workspace';
 import ChatArea from '@components/chat/ChatArea';
+import { useState } from 'react';
 
 interface DynamicContainerProps {
   containerId: string;
 }
 
 /**
- * DynamicContainer - Contenedor Dinámico Individual
+ * DynamicContainer - Contenedor Dinámico Individual (Sección 6)
  *
- * Arquitectura Formal (del documento):
- * - Es UNA instancia dentro del Lienzo (Canvas)
- * - Alberga UNA herramienta renderizable (ChatArea, ContactArea, ToolArea, etc.)
- * - Soporta múltiples tabs de la misma o diferentes herramientas
- * - NO tiene lógica de negocio propia, solo gestiona distribución espacial
- * - Es redimensionable manualmente (width%) cuando hay split views
- * - Es replicable: pueden existir N instancias dentro del Lienzo
+ * ## Definición (Sección 6.1)
  *
- * Responsabilidades:
- * - Mostrar barra de tabs si hay múltiples tabs abiertas
+ * El Contenedor Dinámico es la unidad mínima de trabajo del sistema y constituye
+ * el entorno dentro del cual se renderizan las herramientas visuales del usuario.
+ * Cada Contenedor Dinámico:
+ *
+ * - Contiene exactamente UNA herramienta renderizable activa a la vez
+ *   (ChatArea, ContactArea, ToolArea, PluginRenderArea, etc.)
+ * - Soporta múltiples tabs de herramientas (como navegador web o VS Code)
+ * - Representa una ventana de trabajo autónoma con controles propios
+ * - NO posee lógica de negocio propia, únicamente gestiona distribución espacial
+ * - Se ajusta al ancho total cuando es el único contenedor activo
+ * - Comparte espacio proporcionalmente cuando coexiste con otros contenedores
+ *
+ * ## Capacidades Estructurales (Sección 6.2)
+ *
+ * **Cierre:**
+ * - El contenedor puede eliminarse sin afectar a otros contenedores existentes
+ * - Si es el único contenedor, se crea uno nuevo vacío automáticamente
+ * - Todas las tabs dentro del contenedor se cierran al eliminar el contenedor
+ *
+ * **Duplicación:**
+ * - El contenedor puede replicarse, creando una copia exacta con las mismas tabs
+ * - Útil para vista comparativa o trabajo paralelo
+ * - La duplicación crea un nuevo contenedor adyacente con split horizontal
+ *
+ * **Expansión total:**
+ * - El contenedor puede ocupar el 100% del Lienzo, ocultando temporalmente otros
+ * - Similar a "maximizar ventana" en sistemas operativos
+ * - Los demás contenedores permanecen en memoria, solo se ocultan visualmente
+ * - Usuario puede colapsar para volver al modo multi-contenedor
+ *
+ * **Persistencia modular:**
+ * - El contenedor conserva sus tabs mientras permanezca abierto
+ * - NO persiste sus tabs en localStorage (se recargan del servidor)
+ * - Solo persiste preferencias de layout (ancho, posición)
+ *
+ * ## Interfaz de Usuario (Sección 6.2)
+ *
+ * **Barra de pestañas (Tab Bar):**
+ * - Ubicada en la parte superior del contenedor
+ * - Permite navegar entre múltiples vistas lógicas (tabs)
+ * - Cada tab puede cerrarse individualmente si es closable
+ *
+ * **Menú de opciones (top-right):**
+ * - Duplicar contenedor: Crea copia exacta con mismas tabs
+ * - Expandir al 100%: Ocupa todo el Lienzo ocultando otros contenedores
+ * - Cerrar contenedor: Elimina el contenedor y todas sus tabs
+ *
+ * **Botón "+" (top-right):**
+ * - Abre un nuevo espacio adyacente dentro del Lienzo
+ * - Crea un nuevo contenedor vacío en split horizontal
+ * - Facilita creación rápida de vistas paralelas
+ *
+ * ## Tipologías de Herramientas (Sección 6.4)
+ *
+ * **ChatArea:**
+ * - Renderiza conversaciones de mensajería
+ * - entityId: conversationId
+ * - Permite enviar/recibir mensajes en tiempo real
+ *
+ * **ContactArea:**
+ * - Muestra perfil detallado de contactos
+ * - entityId: contactId
+ * - Incluye historial, notas, tags, campos personalizados
+ *
+ * **ToolArea:**
+ * - Renderiza herramientas del sistema (transcriptor, analizador, buscador)
+ * - entityId: toolId
+ * - Cada herramienta tiene su propia UI y lógica
+ *
+ * **PluginRenderArea:**
+ * - Renderiza extensiones de terceros
+ * - entityId: pluginId
+ * - Permite integración de funcionalidades externas
+ *
+ * ## Comportamiento Espacial (relacionado con Sección 5.2)
+ *
+ * **Contenedor único:**
+ * - Ocupa 100% del ancho disponible en el Lienzo
+ * - Estado base del sistema
+ *
+ * **Múltiples contenedores:**
+ * - Distribución proporcional (ej: 50%/50% para 2 contenedores)
+ * - Ancho definido por propiedad `width` (ej: "50%", "33%")
+ * - Usuario puede ajustar mediante divisores (futuro)
+ *
+ * ## Casos de Uso Típicos (Sección 5.3)
+ *
+ * - **Conversaciones paralelas:**
+ *   Contenedor 1: ChatArea(Juan) | Contenedor 2: ChatArea(María)
+ *
+ * - **Conversación + Perfil:**
+ *   Contenedor 1: ChatArea(Juan) | Contenedor 2: ContactArea(Juan)
+ *
+ * - **Conversación + Herramienta:**
+ *   Contenedor 1: ChatArea | Contenedor 2: ToolArea(Transcriptor)
+ *
+ * - **Herramientas múltiples:**
+ *   Contenedor 1: ToolArea(Analizador) | Contenedor 2: ToolArea(Buscador)
+ *
+ * ## Responsabilidades
+ *
+ * - Mostrar barra de tabs con todas las tabs abiertas
  * - Renderizar la herramienta de la tab activa
  * - Gestionar activación y cierre de tabs dentro de este contenedor
+ * - Proveer menú de opciones (cerrar, duplicar, expandir)
+ * - Proveer botón "+" para crear espacio adyacente
  * - Mostrar estado vacío cuando no hay tabs
+ * - Proveer feedback visual de contenedor activo (ring azul)
  *
- * NO hace:
- * - Gestionar el layout del Lienzo (eso es responsabilidad de Canvas)
+ * ## NO hace
+ *
+ * - Gestionar el layout del Lienzo (responsabilidad de Canvas)
  * - Conocer otros contenedores (están desacoplados)
  * - Manejar lógica de negocio de las herramientas
+ * - Persistir datos (responsabilidad del store/backend)
  */
 export default function DynamicContainer({ containerId }: DynamicContainerProps) {
   const container = useContainer(containerId);
-  const { setActiveTab, closeTab, activeContainerId, setActiveContainer } = useWorkspaceStore();
+  const {
+    setActiveTab,
+    closeTab,
+    activeContainerId,
+    setActiveContainer,
+    closeContainer,
+    duplicateContainer,
+    expandContainer,
+    splitCanvas,
+  } = useWorkspaceStore();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (!container) {
     return (
@@ -53,6 +163,25 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
     closeTab(tabId, containerId);
   };
 
+  const handleCloseContainer = () => {
+    closeContainer(containerId);
+    setMenuOpen(false);
+  };
+
+  const handleDuplicateContainer = () => {
+    duplicateContainer(containerId);
+    setMenuOpen(false);
+  };
+
+  const handleExpandContainer = () => {
+    expandContainer(containerId);
+    setMenuOpen(false);
+  };
+
+  const handleAddAdjacentSpace = () => {
+    splitCanvas('horizontal');
+  };
+
   return (
     <div
       className={`flex-1 flex flex-col bg-white ${
@@ -62,8 +191,9 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
       style={{ width: container.width }}
     >
       {/* Tab Bar */}
-      {container.tabs.length > 0 && (
-        <div className="h-10 bg-gray-100 border-b border-gray-200 flex overflow-x-auto">
+      <div className="h-10 bg-gray-100 border-b border-gray-200 flex">
+        {/* Tabs */}
+        <div className="flex-1 flex overflow-x-auto">
           {container.tabs.map((tab) => (
             <div
               key={tab.id}
@@ -93,7 +223,66 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             </div>
           ))}
         </div>
-      )}
+
+        {/* Container Controls */}
+        <div className="flex items-center gap-1 px-2 border-l border-gray-200">
+          {/* + Button - Abrir espacio adyacente */}
+          <button
+            onClick={handleAddAdjacentSpace}
+            className="p-1.5 hover:bg-gray-200 rounded transition"
+            title="Abrir espacio adyacente"
+          >
+            <Plus size={16} />
+          </button>
+
+          {/* Container Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-1.5 hover:bg-gray-200 rounded transition"
+              title="Opciones del contenedor"
+            >
+              <MoreVertical size={16} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {menuOpen && (
+              <>
+                {/* Backdrop to close menu */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setMenuOpen(false)}
+                />
+
+                {/* Menu */}
+                <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                  <button
+                    onClick={handleDuplicateContainer}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
+                  >
+                    <Copy size={14} />
+                    Duplicar contenedor
+                  </button>
+                  <button
+                    onClick={handleExpandContainer}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
+                  >
+                    <Maximize2 size={14} />
+                    Expandir al 100%
+                  </button>
+                  <button
+                    onClick={handleCloseContainer}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2"
+                  >
+                    <X size={14} />
+                    Cerrar contenedor
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Tab Content - Herramienta Activa */}
       <div className="flex-1 overflow-hidden">
