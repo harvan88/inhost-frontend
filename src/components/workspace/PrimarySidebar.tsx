@@ -76,7 +76,7 @@ export default function PrimarySidebar() {
 
   return (
     <div
-      className="overflow-auto flex flex-col"
+      className="overflow-auto flex flex-col flex-shrink-0"
       style={{
         width: `${sidebarWidth}px`,
         backgroundColor: theme.colors.neutral[50],

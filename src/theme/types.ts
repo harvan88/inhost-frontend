@@ -141,6 +141,62 @@ export interface ZIndex {
   notification: string;
 }
 
+export interface ComponentSizes {
+  avatar: {
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+  };
+  statusIndicator: string;
+  spinner: {
+    sm: string;
+    md: string;
+    lg: string;
+  };
+  toolbar: string;
+  controlBar: string;
+  messageInputContainer: string;
+  sidebar: {
+    activityBar: string;
+    primary: string;
+  };
+}
+
+export interface ComponentSpacing {
+  badge: {
+    compact: string;
+    default: string;
+    loose: string;
+  };
+  button: {
+    sm: string;
+    md: string;
+    lg: string;
+  };
+  input: {
+    sm: string;
+    md: string;
+  };
+  card: {
+    sm: string;
+    md: string;
+    lg: string;
+  };
+}
+
+export interface ComponentLayouts {
+  userCard: {
+    avatarSize: string;
+    gap: string;
+    statusPosition: string;
+  };
+  listItem: {
+    height: string;
+    padding: string;
+  };
+}
+
 /**
  * Tema completo de FluxCore
  *
@@ -158,6 +214,9 @@ export interface Theme {
   elevation: Elevation;
   transitions: Transitions;
   zIndex: ZIndex;
+  componentSizes: ComponentSizes;
+  componentSpacing: ComponentSpacing;
+  componentLayouts: ComponentLayouts;
 }
 
 /**

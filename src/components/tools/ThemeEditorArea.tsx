@@ -23,6 +23,8 @@ import SpacingEditor from './theme-editor/SpacingEditor';
 import TypographyEditor from './theme-editor/TypographyEditor';
 import IconSizesEditor from './theme-editor/IconSizesEditor';
 import RadiusEditor from './theme-editor/RadiusEditor';
+import defaultTheme from '@/theme/theme.json';
+import darkTheme from '@/theme/dark-theme.json';
 
 interface ThemeEditorAreaProps {
   themeId?: string; // ID-based architecture
@@ -31,7 +33,7 @@ interface ThemeEditorAreaProps {
 type TabType = 'colors' | 'typography' | 'spacing' | 'radius' | 'iconSizes' | 'export';
 
 export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>('colors');
   const [editedTheme, setEditedTheme] = useState<Theme>(theme);
   const [previewEnabled, setPreviewEnabled] = useState(true);
@@ -69,8 +71,11 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
 
   // Reset al tema original
   const handleReset = () => {
-    setEditedTheme(theme);
-    setTheme(theme);
+    const resetTheme = isDark ? darkTheme : defaultTheme;
+    setEditedTheme(resetTheme as Theme);
+    if (previewEnabled) {
+      setTheme(resetTheme as Theme);
+    }
   };
 
   const tabs: { id: TabType; label: string; icon: string }[] = [
@@ -95,32 +100,26 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
       {/* Header */}
       <div
         style={{
-          padding: theme.spacing[4],
+          padding: theme.spacing[3],
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
           backgroundColor: theme.colors.neutral[50],
+          height: theme.componentSizes.toolbar,
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <div>
             <h2
               style={{
                 margin: 0,
-                fontSize: theme.typography.sizes.xl,
-                fontWeight: theme.typography.weights.bold,
+                fontSize: theme.typography.sizes.lg,
+                fontWeight: theme.typography.weights.semibold,
                 color: theme.colors.neutral[900],
               }}
             >
               🎨 Theme Editor
             </h2>
-            <p
-              style={{
-                margin: `${theme.spacing[1]} 0 0 0`,
-                fontSize: theme.typography.sizes.sm,
-                color: theme.colors.neutral[600],
-              }}
-            >
-              Editor visual de temas en tiempo real - Estilo Photoshop
-            </p>
           </div>
 
           {/* Controls */}
@@ -130,12 +129,12 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: theme.spacing[2],
-                padding: `${theme.spacing[2]} ${theme.spacing[3]}`,
-                backgroundColor: previewEnabled ? theme.colors.primary[500] : theme.colors.neutral[200],
+                gap: theme.spacing[1],
+                padding: `${theme.spacing[1]} ${theme.spacing[2]}`,
+                backgroundColor: previewEnabled ? theme.colors.semantic.success : theme.colors.neutral[200],
                 color: previewEnabled ? theme.colors.neutral[0] : theme.colors.neutral[700],
                 border: 'none',
-                borderRadius: theme.radius.md,
+                borderRadius: theme.radius.sm,
                 fontSize: theme.typography.sizes.sm,
                 fontWeight: theme.typography.weights.medium,
                 cursor: 'pointer',
@@ -151,12 +150,12 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: theme.spacing[2],
-                padding: `${theme.spacing[2]} ${theme.spacing[3]}`,
+                gap: theme.spacing[1],
+                padding: `${theme.spacing[1]} ${theme.spacing[2]}`,
                 backgroundColor: theme.colors.neutral[0],
-                color: theme.colors.neutral[700],
+                color: theme.colors.neutral[500],
                 border: `1px solid ${theme.colors.neutral[300]}`,
-                borderRadius: theme.radius.md,
+                borderRadius: theme.radius.sm,
                 fontSize: theme.typography.sizes.sm,
                 cursor: 'pointer',
                 transition: `all ${theme.transitions.base}`,
@@ -187,12 +186,12 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: theme.spacing[2],
-              padding: `${theme.spacing[2]} ${theme.spacing[4]}`,
+              gap: theme.spacing[1],
+              padding: `${theme.spacing[1]} ${theme.spacing[3]}`,
               backgroundColor: activeTab === tab.id ? theme.colors.neutral[0] : 'transparent',
               color: activeTab === tab.id ? theme.colors.primary[600] : theme.colors.neutral[600],
               border: activeTab === tab.id ? `1px solid ${theme.colors.neutral[300]}` : '1px solid transparent',
-              borderRadius: theme.radius.md,
+              borderRadius: theme.radius.sm,
               fontSize: theme.typography.sizes.sm,
               fontWeight: activeTab === tab.id ? theme.typography.weights.semibold : theme.typography.weights.normal,
               cursor: 'pointer',
@@ -200,7 +199,7 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
               whiteSpace: 'nowrap',
             }}
           >
-            <span style={{ fontSize: theme.typography.sizes.base }}>{tab.icon}</span>
+            <span style={{ fontSize: theme.typography.sizes.sm }}>{tab.icon}</span>
             {tab.label}
           </button>
         ))}
@@ -211,7 +210,7 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: theme.spacing[6],
+          padding: theme.spacing[4],
         }}
       >
         {activeTab === 'colors' && (
@@ -256,7 +255,7 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
                 fontSize: theme.typography.sizes.lg,
                 fontWeight: theme.typography.weights.semibold,
                 color: theme.colors.neutral[900],
-                marginBottom: theme.spacing[4],
+                marginBottom: theme.spacing[3],
               }}
             >
               Exportar Tema
@@ -265,8 +264,8 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
             <div
               style={{
                 display: 'flex',
-                gap: theme.spacing[3],
-                marginBottom: theme.spacing[6],
+                gap: theme.spacing[2],
+                marginBottom: theme.spacing[4],
               }}
             >
               <button
@@ -275,18 +274,18 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: theme.spacing[2],
-                  padding: `${theme.spacing[3]} ${theme.spacing[5]}`,
+                  padding: `${theme.spacing[2]} ${theme.spacing[3]}`,
                   backgroundColor: copied ? theme.colors.semantic.success : theme.colors.primary[500],
                   color: theme.colors.neutral[0],
                   border: 'none',
-                  borderRadius: theme.radius.md,
-                  fontSize: theme.typography.sizes.base,
+                  borderRadius: theme.radius.sm,
+                  fontSize: theme.typography.sizes.sm,
                   fontWeight: theme.typography.weights.semibold,
                   cursor: 'pointer',
                   transition: `all ${theme.transitions.base}`,
                 }}
               >
-                <Copy size={theme.iconSizes.base} />
+                <Copy size={theme.iconSizes.sm} />
                 {copied ? '¡Copiado!' : 'Copiar JSON'}
               </button>
 
@@ -296,18 +295,18 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: theme.spacing[2],
-                  padding: `${theme.spacing[3]} ${theme.spacing[5]}`,
-                  backgroundColor: theme.colors.neutral[0],
-                  color: theme.colors.neutral[700],
-                  border: `1px solid ${theme.colors.neutral[300]}`,
-                  borderRadius: theme.radius.md,
-                  fontSize: theme.typography.sizes.base,
+                  padding: `${theme.spacing[2]} ${theme.spacing[3]}`,
+                  backgroundColor: theme.colors.primary[500],
+                  color: theme.colors.neutral[0],
+                  border: 'none',
+                  borderRadius: theme.radius.sm,
+                  fontSize: theme.typography.sizes.sm,
                   fontWeight: theme.typography.weights.semibold,
                   cursor: 'pointer',
                   transition: `all ${theme.transitions.base}`,
                 }}
               >
-                <Download size={theme.iconSizes.base} />
+                <Download size={theme.iconSizes.sm} />
                 Descargar .json
               </button>
             </div>
@@ -316,7 +315,7 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
             <div>
               <h4
                 style={{
-                  fontSize: theme.typography.sizes.base,
+                  fontSize: theme.typography.sizes.sm,
                   fontWeight: theme.typography.weights.semibold,
                   color: theme.colors.neutral[700],
                   marginBottom: theme.spacing[2],
@@ -326,11 +325,11 @@ export default function ThemeEditorArea({ themeId }: ThemeEditorAreaProps) {
               </h4>
               <pre
                 style={{
-                  padding: theme.spacing[4],
+                  padding: theme.componentSpacing.card.sm,
                   backgroundColor: theme.colors.neutral[900],
                   color: theme.colors.neutral[0],
-                  borderRadius: theme.radius.lg,
-                  fontSize: theme.typography.sizes.sm,
+                  borderRadius: theme.radius.md,
+                  fontSize: theme.typography.sizes.xs,
                   fontFamily: theme.typography.fontFamily.mono,
                   lineHeight: theme.typography.lineHeights.relaxed,
                   overflow: 'auto',

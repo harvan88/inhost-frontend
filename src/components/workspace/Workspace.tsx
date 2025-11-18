@@ -87,7 +87,10 @@ export default function Workspace() {
       }}
     >
       {/* Nivel 1: Activity Bar - Selección de dominio */}
-      <ActivityBar />
+      {/* FIXED: flex-shrink-0 para evitar que se encoja cuando Canvas se expande */}
+      <div className="flex-shrink-0">
+        <ActivityBar />
+      </div>
 
       {/* Nivel 2: Sidebar Contextual - Lista de entidades */}
       <PrimarySidebar />

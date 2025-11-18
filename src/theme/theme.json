@@ -164,5 +164,58 @@
     "popover": "30",
     "tooltip": "40",
     "notification": "50"
+  },
+  "componentSizes": {
+    "avatar": {
+      "sm": "32px",
+      "md": "40px",
+      "lg": "48px",
+      "xl": "64px"
+    },
+    "statusIndicator": "10px",
+    "spinner": {
+      "sm": "16px",
+      "md": "24px",
+      "lg": "32px"
+    },
+    "toolbar": "40px",
+    "controlBar": "32px",
+    "messageInputContainer": "80px",
+    "sidebar": {
+      "activityBar": "64px",
+      "primary": "320px"
+    }
+  },
+  "componentSpacing": {
+    "badge": {
+      "compact": "0px 8px",
+      "default": "4px 8px",
+      "loose": "6px 12px"
+    },
+    "button": {
+      "sm": "6px 12px",
+      "md": "8px 16px",
+      "lg": "12px 24px"
+    },
+    "input": {
+      "sm": "6px 12px",
+      "md": "8px 16px"
+    },
+    "card": {
+      "sm": "12px",
+      "md": "16px",
+      "lg": "24px"
+    }
+  },
+  "componentLayouts": {
+    "userCard": {
+      "avatarSize": "md",
+      "gap": "3",
+      "statusPosition": "corner"
+    },
+    "listItem": {
+      "height": "72px",
+      "padding": "3"
+    }
   }
 }

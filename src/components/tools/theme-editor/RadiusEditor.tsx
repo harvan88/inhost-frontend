@@ -1,5 +1,8 @@
 /**
- * RadiusEditor - Editor de Border Radius
+ * RadiusEditor - Editor de Border Radius (Compacto)
+ *
+ * Solo muestra tamaños críticos realmente usados: sm, md, lg
+ * Con sliders + input numérico auxiliar
  */
 
 import React from 'react';
@@ -11,62 +14,61 @@ interface RadiusEditorProps {
   onChange: (radius: Radius) => void;
 }
 
+// Solo mostramos los tamaños críticos realmente usados
+const RADIUS_KEYS: (keyof Radius)[] = ['sm', 'md', 'lg'];
+
 export default function RadiusEditor({ radius, onChange }: RadiusEditorProps) {
   const { theme } = useTheme();
 
-  const handleChange = (key: keyof Radius, value: number | string) => {
+  const handleChange = (key: keyof Radius, value: number) => {
     onChange({
       ...radius,
-      [key]: typeof value === 'number' ? `${value}px` : value,
+      [key]: `${value}px`,
     });
   };
-
-  const radiusKeys: (keyof Radius)[] = ['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'];
 
   return (
     <div style={{ maxWidth: '800px' }}>
       <h3
         style={{
-          fontSize: theme.typography.sizes['2xl'],
-          fontWeight: theme.typography.weights.bold,
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
           color: theme.colors.neutral[900],
-          marginBottom: theme.spacing[2],
+          marginBottom: theme.spacing[1],
         }}
       >
         ⭕ Editor de Border Radius
       </h3>
       <p
         style={{
-          fontSize: theme.typography.sizes.base,
+          fontSize: theme.typography.sizes.sm,
           color: theme.colors.neutral[600],
-          marginBottom: theme.spacing[6],
-          lineHeight: theme.typography.lineHeights.relaxed,
+          marginBottom: theme.spacing[3],
+          lineHeight: theme.typography.lineHeights.normal,
         }}
       >
-        Ajusta los valores de border-radius para esquinas redondeadas.
+        Solo tamaños críticos: sm, md, lg
       </p>
 
-      <div style={{ display: 'grid', gap: theme.spacing[4] }}>
-        {radiusKeys.map((key) => {
-          const currentValue = key === 'full' ? 9999 : parseInt(radius[key]);
-          const isNone = key === 'none';
-          const isFull = key === 'full';
+      <div style={{ display: 'grid', gap: theme.spacing[2] }}>
+        {RADIUS_KEYS.map((key) => {
+          const currentValue = parseInt(radius[key]);
 
           return (
             <div
               key={key}
               style={{
-                padding: theme.spacing[4],
+                padding: theme.componentSpacing.card.sm,
                 backgroundColor: theme.colors.neutral[50],
-                borderRadius: theme.radius.lg,
+                borderRadius: theme.radius.md,
                 border: `1px solid ${theme.colors.neutral[200]}`,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: theme.spacing[3] }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing[2] }}>
                 <div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.base,
+                      fontSize: theme.typography.sizes.sm,
                       fontWeight: theme.typography.weights.semibold,
                       color: theme.colors.neutral[900],
                     }}
@@ -75,20 +77,20 @@ export default function RadiusEditor({ radius, onChange }: RadiusEditorProps) {
                   </div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.sm,
+                      fontSize: theme.typography.sizes.xs,
                       color: theme.colors.neutral[600],
                       fontFamily: theme.typography.fontFamily.mono,
                     }}
                   >
-                    {isFull ? '9999px (full)' : `${currentValue}px`}
+                    {currentValue}px
                   </div>
                 </div>
 
                 {/* Visual preview */}
                 <div
                   style={{
-                    width: '80px',
-                    height: '80px',
+                    width: '60px',
+                    height: '60px',
                     backgroundColor: theme.colors.primary[100],
                     borderRadius: radius[key],
                     border: `3px solid ${theme.colors.primary[400]}`,
@@ -96,8 +98,8 @@ export default function RadiusEditor({ radius, onChange }: RadiusEditorProps) {
                 />
               </div>
 
-              {/* Slider (disabled for 'none' and 'full') */}
-              {!isFull && !isNone && (
+              {/* Slider + Input numérico */}
+              <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
                 <input
                   type="range"
                   min="0"
@@ -106,28 +108,30 @@ export default function RadiusEditor({ radius, onChange }: RadiusEditorProps) {
                   value={currentValue}
                   onChange={(e) => handleChange(key, parseInt(e.target.value))}
                   style={{
-                    width: '100%',
-                    height: '8px',
+                    flex: 1,
+                    height: '6px',
                     borderRadius: theme.radius.full,
                     background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${(currentValue / 48) * 100}%, ${theme.colors.neutral[200]} ${(currentValue / 48) * 100}%, ${theme.colors.neutral[200]} 100%)`,
                     outline: 'none',
                     cursor: 'pointer',
                   }}
                 />
-              )}
-
-              {(isFull || isNone) && (
-                <div
+                <input
+                  type="number"
+                  value={currentValue}
+                  onChange={(e) => handleChange(key, parseInt(e.target.value) || 0)}
                   style={{
+                    width: '60px',
+                    padding: theme.spacing[1],
+                    border: `1px solid ${theme.colors.neutral[300]}`,
+                    borderRadius: theme.radius.sm,
                     fontSize: theme.typography.sizes.sm,
-                    color: theme.colors.neutral[500],
-                    fontStyle: 'italic',
                     textAlign: 'center',
+                    color: theme.colors.neutral[900],
+                    backgroundColor: theme.colors.neutral[0],
                   }}
-                >
-                  {isFull ? 'Valor fijo: 9999px' : 'Valor fijo: 0px'}
-                </div>
-              )}
+                />
+              </div>
             </div>
           );
         })}

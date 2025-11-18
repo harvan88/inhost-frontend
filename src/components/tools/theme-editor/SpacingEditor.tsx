@@ -1,7 +1,8 @@
 /**
- * SpacingEditor - Editor de Espaciado
+ * SpacingEditor - Editor de Espaciado (Compacto)
  *
- * Sliders para ajustar spacing scale (0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24)
+ * Solo muestra valores críticos realmente usados: 2, 3, 4, 6
+ * Con sliders + input numérico auxiliar
  */
 
 import React from 'react';
@@ -13,6 +14,9 @@ interface SpacingEditorProps {
   onChange: (spacing: Spacing) => void;
 }
 
+// Solo mostramos los valores críticos realmente usados
+const SPACING_KEYS: (keyof Spacing)[] = ['2', '3', '4', '6'];
+
 export default function SpacingEditor({ spacing, onChange }: SpacingEditorProps) {
   const { theme } = useTheme();
 
@@ -23,50 +27,48 @@ export default function SpacingEditor({ spacing, onChange }: SpacingEditorProps)
     });
   };
 
-  const spacingKeys: (keyof Spacing)[] = ['0', '1', '2', '3', '4', '5', '6', '8', '10', '12', '16', '20', '24'];
-
   return (
     <div style={{ maxWidth: '800px' }}>
       <h3
         style={{
-          fontSize: theme.typography.sizes['2xl'],
-          fontWeight: theme.typography.weights.bold,
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
           color: theme.colors.neutral[900],
-          marginBottom: theme.spacing[2],
+          marginBottom: theme.spacing[1],
         }}
       >
         📏 Editor de Espaciado
       </h3>
       <p
         style={{
-          fontSize: theme.typography.sizes.base,
+          fontSize: theme.typography.sizes.sm,
           color: theme.colors.neutral[600],
-          marginBottom: theme.spacing[6],
-          lineHeight: theme.typography.lineHeights.relaxed,
+          marginBottom: theme.spacing[3],
+          lineHeight: theme.typography.lineHeights.normal,
         }}
       >
-        Ajusta los valores de spacing. Usados para padding, margin, gap, etc.
+        Solo valores críticos: 2, 3, 4, 6
       </p>
 
-      <div style={{ display: 'grid', gap: theme.spacing[4] }}>
-        {spacingKeys.map((key) => {
+      <div style={{ display: 'grid', gap: theme.spacing[2] }}>
+        {SPACING_KEYS.map((key) => {
           const currentValue = parseInt(spacing[key]);
 
           return (
             <div
               key={key}
               style={{
-                padding: theme.spacing[4],
+                padding: theme.componentSpacing.card.sm,
                 backgroundColor: theme.colors.neutral[50],
-                borderRadius: theme.radius.lg,
+                borderRadius: theme.radius.md,
                 border: `1px solid ${theme.colors.neutral[200]}`,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: theme.spacing[3] }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing[2] }}>
                 <div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.base,
+                      fontSize: theme.typography.sizes.sm,
                       fontWeight: theme.typography.weights.semibold,
                       color: theme.colors.neutral[900],
                     }}
@@ -75,7 +77,7 @@ export default function SpacingEditor({ spacing, onChange }: SpacingEditorProps)
                   </div>
                   <div
                     style={{
-                      fontSize: theme.typography.sizes.sm,
+                      fontSize: theme.typography.sizes.xs,
                       color: theme.colors.neutral[600],
                       fontFamily: theme.typography.fontFamily.mono,
                     }}
@@ -88,7 +90,7 @@ export default function SpacingEditor({ spacing, onChange }: SpacingEditorProps)
                 <div
                   style={{
                     width: `${Math.min(currentValue, 96)}px`,
-                    height: '40px',
+                    height: '32px',
                     backgroundColor: theme.colors.primary[200],
                     borderRadius: theme.radius.sm,
                     border: `2px solid ${theme.colors.primary[400]}`,
@@ -97,23 +99,40 @@ export default function SpacingEditor({ spacing, onChange }: SpacingEditorProps)
                 />
               </div>
 
-              {/* Slider */}
-              <input
-                type="range"
-                min="0"
-                max="128"
-                step="4"
-                value={currentValue}
-                onChange={(e) => handleChange(key, parseInt(e.target.value))}
-                style={{
-                  width: '100%',
-                  height: '8px',
-                  borderRadius: theme.radius.full,
-                  background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${(currentValue / 128) * 100}%, ${theme.colors.neutral[200]} ${(currentValue / 128) * 100}%, ${theme.colors.neutral[200]} 100%)`,
-                  outline: 'none',
-                  cursor: 'pointer',
-                }}
-              />
+              {/* Slider + Input numérico */}
+              <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
+                <input
+                  type="range"
+                  min="0"
+                  max="128"
+                  step="4"
+                  value={currentValue}
+                  onChange={(e) => handleChange(key, parseInt(e.target.value))}
+                  style={{
+                    flex: 1,
+                    height: '6px',
+                    borderRadius: theme.radius.full,
+                    background: `linear-gradient(to right, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[500]} ${(currentValue / 128) * 100}%, ${theme.colors.neutral[200]} ${(currentValue / 128) * 100}%, ${theme.colors.neutral[200]} 100%)`,
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                />
+                <input
+                  type="number"
+                  value={currentValue}
+                  onChange={(e) => handleChange(key, parseInt(e.target.value) || 0)}
+                  style={{
+                    width: '60px',
+                    padding: theme.spacing[1],
+                    border: `1px solid ${theme.colors.neutral[300]}`,
+                    borderRadius: theme.radius.sm,
+                    fontSize: theme.typography.sizes.sm,
+                    textAlign: 'center',
+                    color: theme.colors.neutral[900],
+                    backgroundColor: theme.colors.neutral[0],
+                  }}
+                />
+              </div>
             </div>
           );
         })}

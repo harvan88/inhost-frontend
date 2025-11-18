@@ -1,6 +1,7 @@
 import { useConversation, useContact } from '@/store';
 import { Phone, Video, MoreVertical } from 'lucide-react';
 import { useTheme } from '@/theme';
+import { Avatar, Badge } from '@/components/common';
 
 interface ChatHeaderProps {
   conversationId: string;
@@ -40,48 +41,12 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return theme.colors.semantic.success;
-      case 'away':
-        return theme.colors.semantic.warning;
-      default:
-        return theme.colors.neutral[400];
-    }
+  // Map conversation status to StatusIndicator format
+  const mapStatus = (status: string): 'online' | 'offline' | 'away' => {
+    if (status === 'online') return 'online';
+    if (status === 'away') return 'away';
+    return 'offline';
   };
-
-  const getChannelBadgeStyle = (channel: string) => {
-    switch (channel) {
-      case 'whatsapp':
-        return {
-          backgroundColor: theme.colors.channels.whatsapp[700],
-          color: theme.colors.neutral[0],
-        };
-      case 'telegram':
-        return {
-          backgroundColor: theme.colors.channels.telegram[700],
-          color: theme.colors.neutral[0],
-        };
-      case 'web':
-        return {
-          backgroundColor: theme.colors.channels.web[700],
-          color: theme.colors.neutral[0],
-        };
-      case 'sms':
-        return {
-          backgroundColor: theme.colors.channels.sms[700],
-          color: theme.colors.neutral[0],
-        };
-      default:
-        return {
-          backgroundColor: theme.colors.neutral[700],
-          color: theme.colors.neutral[0],
-        };
-    }
-  };
-
-  const channelBadgeStyle = getChannelBadgeStyle(conversation.channel);
 
   return (
     <div
@@ -93,46 +58,29 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
     >
       <div className="flex items-center justify-between">
         {/* Left: Contact info */}
-        <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <div className="relative">
-            {contact.avatar ? (
-              <img
-                src={contact.avatar}
-                alt={contact.name}
-                className="w-12 h-12 object-cover"
-                style={{
-                  borderRadius: theme.radius.full,
-                }}
-              />
-            ) : (
-              <div
-                className="w-12 h-12 flex items-center justify-center"
-                style={{
-                  borderRadius: theme.radius.full,
-                  backgroundColor: theme.colors.neutral[300],
-                  color: theme.colors.neutral[600],
-                  fontWeight: theme.typography.weights.semibold,
-                  fontSize: theme.typography.sizes.lg,
-                }}
-              >
-                {contact.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-            {/* Status indicator */}
-            <div
-              className="absolute bottom-0 right-0 w-3 h-3"
-              style={{
-                borderRadius: theme.radius.full,
-                border: `2px solid ${theme.colors.neutral[0]}`,
-                backgroundColor: getStatusColor(contact.status),
-              }}
-            />
-          </div>
+        <div
+          className="flex items-center"
+          style={{
+            gap: theme.spacing[4],
+          }}
+        >
+          {/* Avatar with status */}
+          <Avatar
+            src={contact.avatar}
+            alt={contact.name}
+            size="lg"
+            fallbackText={contact.name}
+            statusIndicator={mapStatus(contact.status)}
+          />
 
           {/* Name and metadata */}
           <div>
-            <div className="flex items-center gap-2">
+            <div
+              className="flex items-center"
+              style={{
+                gap: theme.spacing[2],
+              }}
+            >
               <h2
                 style={{
                   fontSize: theme.typography.sizes.lg,
@@ -142,17 +90,13 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
               >
                 {contact.name}
               </h2>
-              <span
-                className="px-2 py-0.5"
-                style={{
-                  ...channelBadgeStyle,
-                  fontSize: theme.typography.sizes.xs,
-                  fontWeight: theme.typography.weights.semibold,
-                  borderRadius: theme.radius.sm,
-                }}
+              <Badge
+                variant="compact"
+                color="channel"
+                channel={conversation.channel}
               >
                 {conversation.channel.toUpperCase()}
-              </span>
+              </Badge>
             </div>
             <p
               style={{

@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react';
 import { useMessages } from '@/store';
 import { useTheme } from '@/theme';
 import type { Message } from '@/types';
+import { Badge } from '@/components/common';
 
 interface MessageListProps {
   conversationId: string;
@@ -125,60 +126,7 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
     };
   };
 
-  const getChannelBadgeStyle = () => {
-    switch (message.channel) {
-      case 'whatsapp':
-        return {
-          backgroundColor: theme.colors.channels.whatsapp[100],
-          color: theme.colors.channels.whatsapp[800],
-          borderColor: theme.colors.channels.whatsapp[200],
-        };
-      case 'telegram':
-        return {
-          backgroundColor: theme.colors.channels.telegram[100],
-          color: theme.colors.channels.telegram[800],
-          borderColor: theme.colors.channels.telegram[200],
-        };
-      case 'web':
-        return {
-          backgroundColor: theme.colors.channels.web[100],
-          color: theme.colors.channels.web[800],
-          borderColor: theme.colors.channels.web[200],
-        };
-      case 'sms':
-        return {
-          backgroundColor: theme.colors.channels.sms[100],
-          color: theme.colors.channels.sms[800],
-          borderColor: theme.colors.channels.sms[200],
-        };
-      default:
-        return {
-          backgroundColor: theme.colors.neutral[100],
-          color: theme.colors.neutral[800],
-          borderColor: theme.colors.neutral[200],
-        };
-    }
-  };
-
-  const getTypeBadgeStyle = () => {
-    if (isIncoming) {
-      return {
-        backgroundColor: theme.colors.primary[50],
-        color: theme.colors.primary[700],
-        borderColor: theme.colors.primary[200],
-      };
-    }
-    // Outgoing: usar neutral-100 con primary-900 para mejor contraste
-    return {
-      backgroundColor: theme.colors.neutral[100],
-      color: theme.colors.primary[900],
-      borderColor: theme.colors.neutral[300],
-    };
-  };
-
   const bubbleStyle = getBubbleStyle();
-  const channelBadgeStyle = getChannelBadgeStyle();
-  const typeBadgeStyle = getTypeBadgeStyle();
 
   return (
     <div
@@ -217,32 +165,19 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
                 gap: theme.spacing[2],
               }}
             >
-              <span
-                className="px-2 py-1 border"
-                style={{
-                  ...channelBadgeStyle,
-                  fontSize: theme.typography.sizes.xs,
-                  fontWeight: theme.typography.weights.semibold,
-                  borderRadius: theme.radius.sm,
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                }}
+              <Badge
+                variant="default"
+                color="channel"
+                channel={message.channel}
               >
                 {message.channel.toUpperCase()}
-              </span>
-              <span
-                className="px-2 py-1 border"
-                style={{
-                  ...typeBadgeStyle,
-                  fontSize: theme.typography.sizes.xs,
-                  fontWeight: theme.typography.weights.semibold,
-                  borderRadius: theme.radius.sm,
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                }}
+              </Badge>
+              <Badge
+                variant="default"
+                color={isIncoming ? 'primary' : 'neutral'}
               >
                 {message.type.toUpperCase()}
-              </span>
+              </Badge>
             </div>
             <span
               style={{
