@@ -208,10 +208,23 @@ function ToolsView() {
       icon: '🎙️',
       category: 'IA',
     },
+    {
+      id: 'database-dev-tools',
+      name: 'Database Dev Tools',
+      description: 'Gestión de datos de desarrollo (IndexedDB)',
+      icon: '🗄️',
+      category: 'Desarrollo',
+    },
   ];
 
   const handleOpenTool = (toolId: string, toolName: string) => {
-    const toolType = toolId === 'theme-editor' ? 'theme_editor' : 'analytics';
+    // Map toolId to tab type
+    let toolType: 'theme_editor' | 'analytics' | 'database_dev_tools' = 'analytics';
+    if (toolId === 'theme-editor') {
+      toolType = 'theme_editor';
+    } else if (toolId === 'database-dev-tools') {
+      toolType = 'database_dev_tools';
+    }
 
     openTab(
       createTab({
@@ -247,7 +260,12 @@ function ToolsView() {
         {tools.map((tool) => {
           // Verificar si la herramienta está activa (usando fuente de verdad)
           const activeContainer = containers.find((c) => c.id === activeContainerId);
-          const toolType = tool.id === 'theme-editor' ? 'theme_editor' : 'analytics';
+          let toolType: 'theme_editor' | 'analytics' | 'database_dev_tools' = 'analytics';
+          if (tool.id === 'theme-editor') {
+            toolType = 'theme_editor';
+          } else if (tool.id === 'database-dev-tools') {
+            toolType = 'database_dev_tools';
+          }
           const isActive = isTabActive(activeContainer?.activeTabId ?? null, toolType as any, tool.id);
 
           return (
