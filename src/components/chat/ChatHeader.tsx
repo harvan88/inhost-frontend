@@ -2,6 +2,7 @@ import { useConversation, useContact } from '@/store';
 import { Phone, Video, MoreVertical } from 'lucide-react';
 import { useTheme } from '@/theme';
 import { Avatar, Badge } from '@/components/common';
+import { IconButton, Heading, Text } from '@/components/ui';
 
 interface ChatHeaderProps {
   conversationId: string;
@@ -30,13 +31,13 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
   if (!conversation || !contact) {
     return (
       <div
-        className="px-6 py-4"
         style={{
+          padding: `${theme.spacing[4]} ${theme.spacing[6]}`,
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
           backgroundColor: theme.colors.neutral[50],
         }}
       >
-        <div style={{ color: theme.colors.neutral[500] }}>Conversation not found</div>
+        <Text color="muted">Conversation not found</Text>
       </div>
     );
   }
@@ -50,17 +51,24 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
 
   return (
     <div
-      className="px-6 py-4"
       style={{
+        padding: `${theme.spacing[4]} ${theme.spacing[6]}`,
         borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         backgroundColor: theme.colors.neutral[0],
       }}
     >
-      <div className="flex items-center justify-between">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         {/* Left: Contact info */}
         <div
-          className="flex items-center"
           style={{
+            display: 'flex',
+            alignItems: 'center',
             gap: theme.spacing[4],
           }}
         >
@@ -76,20 +84,15 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
           {/* Name and metadata */}
           <div>
             <div
-              className="flex items-center"
               style={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: theme.spacing[2],
               }}
             >
-              <h2
-                style={{
-                  fontSize: theme.typography.sizes.lg,
-                  fontWeight: theme.typography.weights.semibold,
-                  color: theme.colors.neutral[900],
-                }}
-              >
+              <Heading level={2} noMargin>
                 {contact.name}
-              </h2>
+              </Heading>
               <Badge
                 variant="compact"
                 color="channel"
@@ -98,12 +101,7 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
                 {conversation.channel.toUpperCase()}
               </Badge>
             </div>
-            <p
-              style={{
-                fontSize: theme.typography.sizes.sm,
-                color: theme.colors.neutral[500],
-              }}
-            >
+            <Text variant="metadata" color="muted">
               {contact.status === 'online' ? (
                 'Online'
               ) : contact.metadata?.lastSeen ? (
@@ -111,81 +109,36 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
               ) : (
                 'Offline'
               )}
-            </p>
+            </Text>
           </div>
         </div>
 
         {/* Right: Action buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            className="transition"
-            style={{
-              padding: theme.spacing[2],
-              borderRadius: theme.radius.lg,
-              transitionDuration: theme.transitions.base,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-            title="Voice call"
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: theme.spacing[2],
+          }}
+        >
+          <IconButton
+            icon={<Phone size={theme.iconSizes.lg} />}
+            variant="ghost"
             aria-label="Voice call"
-          >
-            <Phone
-              className="w-5 h-5"
-              style={{
-                color: theme.colors.neutral[600],
-              }}
-            />
-          </button>
-          <button
-            className="transition"
-            style={{
-              padding: theme.spacing[2],
-              borderRadius: theme.radius.lg,
-              transitionDuration: theme.transitions.base,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-            title="Video call"
+            onClick={() => console.log('Voice call')}
+          />
+          <IconButton
+            icon={<Video size={theme.iconSizes.lg} />}
+            variant="ghost"
             aria-label="Video call"
-          >
-            <Video
-              className="w-5 h-5"
-              style={{
-                color: theme.colors.neutral[600],
-              }}
-            />
-          </button>
-          <button
-            className="transition"
-            style={{
-              padding: theme.spacing[2],
-              borderRadius: theme.radius.lg,
-              transitionDuration: theme.transitions.base,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-            title="More options"
+            onClick={() => console.log('Video call')}
+          />
+          <IconButton
+            icon={<MoreVertical size={theme.iconSizes.lg} />}
+            variant="ghost"
             aria-label="More options"
-          >
-            <MoreVertical
-              className="w-5 h-5"
-              style={{
-                color: theme.colors.neutral[600],
-              }}
-            />
-          </button>
+            onClick={() => console.log('More options')}
+          />
         </div>
       </div>
     </div>

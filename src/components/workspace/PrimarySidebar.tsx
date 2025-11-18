@@ -2,6 +2,7 @@ import { Search } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
+import { Heading, Text, Input } from '@/components/ui';
 import ConversationListItem from './ConversationListItem';
 
 /**
@@ -113,44 +114,21 @@ function ConversationListView() {
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
       >
-        <h2
+        <Heading
+          level={2}
           style={{
-            fontSize: theme.typography.sizes.lg,
-            fontWeight: theme.typography.weights.semibold,
-            color: theme.colors.neutral[900],
             marginBottom: theme.spacing[3],
           }}
         >
           Conversaciones
-        </h2>
+        </Heading>
 
         {/* Search */}
-        <div className="relative">
-          <Search
-            size={theme.iconSizes?.md || 18}
-            className="absolute left-3 top-1/2 -translate-y-1/2"
-            style={{
-              color: theme.colors.neutral[400],
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Buscar conversaciones..."
-            className="w-full pl-10 pr-4 py-2 focus:outline-none"
-            style={{
-              border: `1px solid ${theme.colors.neutral[300]}`,
-              borderRadius: theme.radius.lg,
-              fontSize: theme.typography.sizes.sm,
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.outline = 'none';
-              e.currentTarget.style.boxShadow = `0 0 0 2px ${theme.colors.primary[500]}`;
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          />
-        </div>
+        <Input
+          type="text"
+          placeholder="Buscar conversaciones..."
+          leftIcon={<Search size={theme.iconSizes?.md || 18} />}
+        />
       </div>
 
       {/* Conversation List */}
@@ -160,10 +138,9 @@ function ConversationListView() {
             className="text-center"
             style={{
               padding: theme.spacing[8],
-              color: theme.colors.neutral[500],
             }}
           >
-            <p>No hay conversaciones</p>
+            <Text color="muted">No hay conversaciones</Text>
           </div>
         ) : (
           conversationArray.map((conversation) => (
@@ -180,14 +157,9 @@ function ConversationListView() {
           backgroundColor: theme.colors.neutral[0],
         }}
       >
-        <p
-          style={{
-            fontSize: theme.typography.sizes.xs,
-            color: theme.colors.neutral[500],
-          }}
-        >
+        <Text variant="metadata" color="muted">
           Total: {conversationArray.length} conversaciones
-        </p>
+        </Text>
       </div>
     </div>
   );
@@ -204,24 +176,17 @@ function ContactsView() {
         padding: theme.spacing[4],
       }}
     >
-      <h2
+      <Heading
+        level={2}
         style={{
-          fontSize: theme.typography.sizes.lg,
-          fontWeight: theme.typography.weights.semibold,
-          color: theme.colors.neutral[900],
           marginBottom: theme.spacing[3],
         }}
       >
         Contactos
-      </h2>
-      <p
-        style={{
-          fontSize: theme.typography.sizes.sm,
-          color: theme.colors.neutral[500],
-        }}
-      >
+      </Heading>
+      <Text variant="metadata" color="muted">
         Directorio de contactos - Coming Soon
-      </p>
+      </Text>
     </div>
   );
 }
@@ -277,24 +242,17 @@ function ToolsView() {
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
       >
-        <h2
+        <Heading
+          level={2}
           style={{
-            fontSize: theme.typography.sizes.lg,
-            fontWeight: theme.typography.weights.semibold,
-            color: theme.colors.neutral[900],
             marginBottom: theme.spacing[1],
           }}
         >
           Herramientas
-        </h2>
-        <p
-          style={{
-            fontSize: theme.typography.sizes.sm,
-            color: theme.colors.neutral[600],
-          }}
-        >
+        </Heading>
+        <Text variant="metadata" color="muted">
           Sistema de herramientas y plugins
-        </p>
+        </Text>
       </div>
 
       {/* Tools List */}
@@ -330,25 +288,23 @@ function ToolsView() {
               {tool.icon}
             </div>
             <div style={{ flex: 1 }}>
-              <div
+              <Text
                 style={{
-                  fontSize: theme.componentStyles.text.normal.fontSize,
                   fontWeight: theme.typography.weights.semibold,
-                  color: theme.colors.neutral[900],
                   marginBottom: theme.spacing[1],
                 }}
               >
                 {tool.name}
-              </div>
-              <div
+              </Text>
+              <Text
+                variant="metadata"
+                color="muted"
                 style={{
-                  fontSize: theme.componentStyles.text.metadata.fontSize,
-                  color: theme.colors.neutral[600],
                   marginBottom: theme.spacing[2],
                 }}
               >
                 {tool.description}
-              </div>
+              </Text>
               <div
                 style={{
                   display: 'inline-block',
@@ -375,14 +331,9 @@ function ToolsView() {
           backgroundColor: theme.colors.neutral[0],
         }}
       >
-        <p
-          style={{
-            fontSize: theme.typography.sizes.xs,
-            color: theme.colors.neutral[500],
-          }}
-        >
+        <Text variant="metadata" color="muted">
           {tools.length} herramientas disponibles
-        </p>
+        </Text>
       </div>
     </div>
   );
@@ -396,24 +347,17 @@ function PluginsView() {
         padding: theme.spacing[4],
       }}
     >
-      <h2
+      <Heading
+        level={2}
         style={{
-          fontSize: theme.typography.sizes.lg,
-          fontWeight: theme.typography.weights.semibold,
-          color: theme.colors.neutral[900],
           marginBottom: theme.spacing[3],
         }}
       >
         Plugins
-      </h2>
-      <p
-        style={{
-          fontSize: theme.typography.sizes.sm,
-          color: theme.colors.neutral[500],
-        }}
-      >
+      </Heading>
+      <Text variant="metadata" color="muted">
         Extensiones y plugins instalados - Coming Soon
-      </p>
+      </Text>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Columns2, Rows2, Moon, Sun } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';
+import { Text } from '@/components/ui';
 import DynamicContainer from './DynamicContainer';
 
 /**
@@ -121,16 +122,14 @@ export default function Canvas() {
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
       >
-        <div
-          className="text-sm font-medium"
-          style={{
-            color: theme.colors.neutral[600],
-            fontSize: theme.typography.sizes.sm,
-          }}
+        <Text
+          className="font-medium"
+          variant="metadata"
+          color="muted"
         >
           Lienzo Dinámico ({containers.length}{' '}
           {containers.length === 1 ? 'contenedor' : 'contenedores'})
-        </div>
+        </Text>
         <div className="flex gap-2">
           <button
             onClick={() => splitCanvas('horizontal')}
@@ -218,15 +217,15 @@ export default function Canvas() {
               borderBottom: `1px solid ${theme.colors.primary[200]}`,
             }}
           >
-            <span
+            <Text
               className="font-medium"
+              variant="metadata"
               style={{
-                fontSize: theme.typography.sizes.xs,
                 color: theme.colors.primary[700],
               }}
             >
               Modo expandido (100%)
-            </span>
+            </Text>
             <button
               onClick={collapseContainer}
               className="underline transition"
@@ -257,7 +256,7 @@ export default function Canvas() {
               }}
             >
               <div className="text-center">
-                <p
+                <Text
                   className="mb-2"
                   style={{
                     fontSize: theme.typography.sizes.xl,
@@ -265,15 +264,15 @@ export default function Canvas() {
                   }}
                 >
                   Lienzo Dinámico vacío
-                </p>
-                <p
+                </Text>
+                <Text
+                  variant="metadata"
                   style={{
-                    fontSize: theme.typography.sizes.sm,
                     color: theme.colors.neutral[400],
                   }}
                 >
                   Selecciona un elemento del sidebar para comenzar
-                </p>
+                </Text>
               </div>
             </div>
           ) : expandedContainerId ? (

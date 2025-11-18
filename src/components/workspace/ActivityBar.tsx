@@ -1,6 +1,7 @@
 import { MessageSquare, Users, Wrench, Puzzle } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';
+import { IconButton, Text } from '@/components/ui';
 
 interface Activity {
   id: 'messages' | 'contacts' | 'tools' | 'plugins';
@@ -87,78 +88,106 @@ export default function ActivityBar() {
 
   return (
     <div
-      className="flex flex-col py-4 gap-2"
       style={{
+        display: 'flex',
+        flexDirection: 'column',
+        paddingTop: theme.spacing[4],
+        paddingBottom: theme.spacing[4],
+        gap: theme.spacing[2],
         width: theme.componentSizes.sidebar.activityBar,
         backgroundColor: theme.colors.neutral[900],
       }}
     >
       {/* Logo */}
-      <div
-        className="mb-4 font-bold text-xl text-center"
+      <Text
+        as="div"
+        variant="normal"
         style={{
+          marginBottom: theme.spacing[4],
+          fontWeight: theme.typography.weights.bold,
+          fontSize: theme.typography.sizes.xl,
+          textAlign: 'center',
           color: theme.colors.neutral[0],
         }}
       >
         FC
-      </div>
+      </Text>
 
       {/* Activities */}
-      <div className="flex flex-col gap-2">
-        {activities.map((activity) => (
-          <button
-            key={activity.id}
-            onClick={() => setActivity(activity.id)}
-            className="w-12 h-12 flex items-center justify-center mx-auto transition-all"
-            style={{
-              backgroundColor:
-                activeActivity === activity.id
-                  ? theme.colors.primary[500]
-                  : 'transparent',
-              color:
-                activeActivity === activity.id
-                  ? theme.colors.neutral[0]
-                  : theme.colors.neutral[400],
-              borderRadius: theme.radius.lg,
-              transitionDuration: theme.transitions.base,
-              boxShadow:
-                activeActivity === activity.id ? theme.elevation.base : 'none',
-            }}
-            onMouseEnter={(e) => {
-              if (activeActivity !== activity.id) {
-                e.currentTarget.style.backgroundColor = theme.colors.neutral[800];
-                e.currentTarget.style.color = theme.colors.neutral[0];
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (activeActivity !== activity.id) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = theme.colors.neutral[400];
-              }
-            }}
-            title={activity.label}
-            aria-label={activity.label}
-          >
-            {activity.icon}
-          </button>
-        ))}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: theme.spacing[2],
+        }}
+      >
+        {activities.map((activity) => {
+          const isActive = activeActivity === activity.id;
+
+          return (
+            <button
+              key={activity.id}
+              onClick={() => setActivity(activity.id)}
+              title={activity.label}
+              aria-label={activity.label}
+              aria-current={isActive ? 'page' : undefined}
+              style={{
+                width: theme.accessibility.touchTarget.recommended,
+                height: theme.accessibility.touchTarget.recommended,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: `0 auto`,
+                backgroundColor: isActive ? theme.colors.primary[500] : 'transparent',
+                color: isActive ? theme.colors.neutral[0] : theme.colors.neutral[400],
+                border: 'none',
+                borderRadius: theme.radius.lg,
+                cursor: 'pointer',
+                transition: `all ${theme.transitions.base} ease`,
+                boxShadow: isActive ? theme.elevation.base : 'none',
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = theme.colors.neutral[800];
+                  e.currentTarget.style.color = theme.colors.neutral[0];
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = theme.colors.neutral[400];
+                }
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.outline = `${theme.accessibility.focusRing.width} ${theme.accessibility.focusRing.style} ${theme.accessibility.focusRing.color.light}`;
+                e.currentTarget.style.outlineOffset = theme.accessibility.focusRing.offset;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.outline = 'none';
+              }}
+            >
+              {activity.icon}
+            </button>
+          );
+        })}
       </div>
 
       {/* Spacer */}
-      <div className="flex-1" />
+      <div style={{ flex: 1 }} />
 
       {/* Version Footer */}
-      <div className="text-center">
-        <div
-          className="text-xs"
-          style={{
-            color: theme.colors.neutral[600],
-            fontSize: theme.typography.sizes.xs,
-          }}
-        >
-          v1.0
-        </div>
-      </div>
+      <Text
+        as="div"
+        variant="metadata"
+        color="muted"
+        style={{
+          textAlign: 'center',
+          fontSize: theme.typography.sizes.xs,
+        }}
+      >
+        v1.0
+      </Text>
     </div>
   );
 }

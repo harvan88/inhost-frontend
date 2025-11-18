@@ -2,6 +2,7 @@ import { Pin, MessageSquare } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
+import { Text } from '@/components/ui';
 import type { Conversation } from '@/types';
 import { Avatar, Badge, StatusIndicator } from '@/components/common';
 
@@ -100,15 +101,14 @@ export default function ConversationListItem({ conversation }: ConversationListI
               gap: theme.spacing[2],
             }}
           >
-            <h3
+            <Text
               className="truncate flex-1"
               style={{
                 fontWeight: theme.typography.weights.medium,
-                color: theme.colors.neutral[900],
               }}
             >
               {contact?.name || conversation.entityId}
-            </h3>
+            </Text>
             {conversation.isPinned && (
               <Pin
                 size={theme.iconSizes.sm}
@@ -118,29 +118,25 @@ export default function ConversationListItem({ conversation }: ConversationListI
                 }}
               />
             )}
-            <span
+            <Text
+              variant="metadata"
+              color="muted"
               className="flex-shrink-0"
-              style={{
-                fontSize: theme.typography.sizes.xs,
-                color: theme.colors.neutral[500],
-              }}
             >
               {conversation.lastMessage?.timestamp &&
                 formatTime(conversation.lastMessage.timestamp)}
-            </span>
+            </Text>
           </div>
 
           {/* Last Message */}
           {conversation.lastMessage && (
-            <p
+            <Text
+              variant="metadata"
+              color="muted"
               className="truncate mb-1"
-              style={{
-                fontSize: theme.typography.sizes.sm,
-                color: theme.colors.neutral[600],
-              }}
             >
               {conversation.lastMessage.text}
-            </p>
+            </Text>
           )}
 
           {/* Footer */}
