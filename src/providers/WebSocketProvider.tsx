@@ -32,6 +32,7 @@ import type {
 import { db } from '@/services/database';
 import { syncService } from '@/services/sync';
 import { useStore } from '@/store';
+import { useToastStore } from '@/components/feedback';
 import { logger } from '@/services/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -81,11 +82,30 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const setConnectionStatus = useStore((s) => s.actions.setConnectionStatus);
   const addMessage = useStore((s) => s.actions.addMessage);
   const updateSimulationState = useStore((s) => s.actions.updateSimulationState);
+  const addToast = useToastStore((s) => s.addToast);
 
   // Config
   const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5173/realtime';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_INTERVAL = 3000; // 3 seconds
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // HELPER FUNCTIONS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  /**
+   * Genera un conversationId consistente basado en channel + from
+   * Esto asegura que todos los mensajes del mismo contacto se agrupen en la misma conversación
+   *
+   * @param channel - Canal de comunicación (whatsapp, telegram, etc)
+   * @param from - ID del contacto/número de teléfono
+   * @returns conversationId normalizado
+   */
+  const getConversationId = useCallback((channel: string, from: string): string => {
+    // Normalizar: channel-from
+    // Ejemplo: "whatsapp-+52 1234 5678" o "telegram-@username"
+    return `${channel}-${from}`;
+  }, []);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // EVENT HANDLERS
@@ -110,41 +130,51 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     console.log('📨 Message received:', event.data);
     const message = event.data;
 
+    // Normalizar conversationId basado en channel + from
+    const normalizedConversationId = getConversationId(message.channel, message.metadata.from);
+
+    // Actualizar mensaje con conversationId normalizado
+    const normalizedMessage = {
+      ...message,
+      conversationId: normalizedConversationId,
+    };
+
     logger.info('websocket', 'Message received', {
       event: 'message_received',
-      messageId: message.id,
-      conversationId: message.conversationId,
-      type: message.type,
-      channel: message.channel,
-      from: message.metadata.from,
-      to: message.metadata.to,
+      messageId: normalizedMessage.id,
+      conversationId: normalizedConversationId,
+      originalConversationId: message.conversationId,
+      type: normalizedMessage.type,
+      channel: normalizedMessage.channel,
+      from: normalizedMessage.metadata.from,
+      to: normalizedMessage.metadata.to,
     });
 
     // 1. Persist message in IndexedDB
-    await db.addMessage(message);
-    logger.debug('db', 'Message persisted to IndexedDB', { messageId: message.id });
+    await db.addMessage(normalizedMessage);
+    logger.debug('db', 'Message persisted to IndexedDB', { messageId: normalizedMessage.id });
 
     // 2. Ensure conversation exists
     const { entities, actions } = useStore.getState();
-    let conversation = entities.conversations.get(message.conversationId);
+    let conversation = entities.conversations.get(normalizedConversationId);
 
     if (!conversation) {
-      console.log(`📂 Creating new conversation: ${message.conversationId}`);
+      console.log(`📂 Creating new conversation: ${normalizedConversationId}`);
 
       // Create new conversation
       conversation = {
-        id: message.conversationId,
-        entityId: message.metadata.from,
-        channel: message.channel,
+        id: normalizedConversationId,
+        entityId: normalizedMessage.metadata.from,
+        channel: normalizedMessage.channel,
         lastMessage: {
-          text: message.content.text || '[Media]',
-          timestamp: message.metadata.timestamp,
-          type: message.type,
+          text: normalizedMessage.content.text || '[Media]',
+          timestamp: normalizedMessage.metadata.timestamp,
+          type: normalizedMessage.type,
         },
         unreadCount: 1,
         isPinned: false,
-        createdAt: message.metadata.timestamp,
-        updatedAt: message.metadata.timestamp,
+        createdAt: normalizedMessage.metadata.timestamp,
+        updatedAt: normalizedMessage.metadata.timestamp,
       };
 
       // Save to IndexedDB
@@ -155,20 +185,20 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
 
     // 3. Ensure contact exists
-    let contact = entities.contacts.get(message.metadata.from);
+    let contact = entities.contacts.get(normalizedMessage.metadata.from);
 
     if (!contact) {
-      console.log(`👤 Creating new contact: ${message.metadata.from}`);
+      console.log(`👤 Creating new contact: ${normalizedMessage.metadata.from}`);
 
       // Create new contact (basic info, can be enriched later)
       contact = {
-        id: message.metadata.from,
-        name: message.metadata.from, // Use ID as default name
+        id: normalizedMessage.metadata.from,
+        name: normalizedMessage.metadata.from, // Use ID as default name
         status: 'online', // Assume online when they send a message
-        channel: message.channel,
+        channel: normalizedMessage.channel,
         metadata: {
-          phoneNumber: message.metadata.from.startsWith('+') ? message.metadata.from : undefined,
-          lastSeen: message.metadata.timestamp,
+          phoneNumber: normalizedMessage.metadata.from.startsWith('+') ? normalizedMessage.metadata.from : undefined,
+          lastSeen: normalizedMessage.metadata.timestamp,
         },
       };
 
@@ -180,15 +210,21 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
 
     // 4. Update Zustand store with message
-    addMessage(message.conversationId, message);
+    addMessage(normalizedConversationId, normalizedMessage);
 
     // 5. Show notification if conversation is not active
     const { ui } = useStore.getState();
-    if (ui.activeConversationId !== message.conversationId && message.type === 'incoming') {
-      // TODO: Show browser notification
+    if (ui.activeConversationId !== normalizedConversationId && normalizedMessage.type === 'incoming') {
+      // Show toast notification for new incoming messages
+      addToast({
+        type: 'info',
+        message: `Nuevo mensaje de ${contact.name}`,
+        description: normalizedMessage.content.text || '[Media]',
+        duration: 4000,
+      });
       console.log(`🔔 New message from ${contact.name}`);
     }
-  }, [addMessage]);
+  }, [addMessage, addToast, getConversationId]);
 
   const handleMessageProcessing = useCallback((event: MessageProcessingEvent) => {
     console.log('⚙️ Message processing:', event);
@@ -199,48 +235,59 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     console.log('🔧 Extension response:', event.data);
     const message = event.data;
 
+    // Normalizar conversationId basado en channel + to (para respuestas, "to" es el destinatario original)
+    // Las extensiones responden al número que envió el mensaje original
+    const normalizedConversationId = getConversationId(message.channel, message.metadata.to);
+
+    // Actualizar mensaje con conversationId normalizado
+    const normalizedMessage = {
+      ...message,
+      conversationId: normalizedConversationId,
+    };
+
     // 1. Persist message in IndexedDB
-    await db.addMessage(message);
+    await db.addMessage(normalizedMessage);
 
     // 2. Ensure conversation exists (same logic as handleMessageReceived)
     const { entities, actions } = useStore.getState();
-    let conversation = entities.conversations.get(message.conversationId);
+    let conversation = entities.conversations.get(normalizedConversationId);
 
     if (!conversation) {
-      console.log(`📂 Creating new conversation for extension response: ${message.conversationId}`);
+      console.log(`📂 Creating new conversation for extension response: ${normalizedConversationId}`);
 
+      // Para respuestas de extensiones, el entityId es el destinatario (to) porque es la conversación con ese contacto
       conversation = {
-        id: message.conversationId,
-        entityId: message.metadata.from,
-        channel: message.channel,
+        id: normalizedConversationId,
+        entityId: normalizedMessage.metadata.to,
+        channel: normalizedMessage.channel,
         lastMessage: {
-          text: message.content.text || '[Media]',
-          timestamp: message.metadata.timestamp,
-          type: message.type,
+          text: normalizedMessage.content.text || '[Media]',
+          timestamp: normalizedMessage.metadata.timestamp,
+          type: normalizedMessage.type,
         },
         unreadCount: 0, // Extension responses don't increment unread
         isPinned: false,
-        createdAt: message.metadata.timestamp,
-        updatedAt: message.metadata.timestamp,
+        createdAt: normalizedMessage.metadata.timestamp,
+        updatedAt: normalizedMessage.metadata.timestamp,
       };
 
       await db.saveConversation(conversation);
       actions.addConversation(conversation);
     }
 
-    // 3. Ensure contact exists (if it's a new extension)
-    let contact = entities.contacts.get(message.metadata.from);
+    // 3. Ensure contact exists for the destination (usually already exists)
+    let contact = entities.contacts.get(normalizedMessage.metadata.to);
 
     if (!contact) {
-      console.log(`👤 Creating new contact for extension: ${message.metadata.from}`);
+      console.log(`👤 Creating new contact: ${normalizedMessage.metadata.to}`);
 
       contact = {
-        id: message.metadata.from,
-        name: message.metadata.extensionId || message.metadata.from,
+        id: normalizedMessage.metadata.to,
+        name: normalizedMessage.metadata.to,
         status: 'online',
-        channel: message.channel,
+        channel: normalizedMessage.channel,
         metadata: {
-          lastSeen: message.metadata.timestamp,
+          lastSeen: normalizedMessage.metadata.timestamp,
         },
       };
 
@@ -249,8 +296,20 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
 
     // 4. Update Zustand store with message
-    addMessage(message.conversationId, message);
-  }, [addMessage]);
+    addMessage(normalizedConversationId, normalizedMessage);
+
+    // 5. Show toast notification for extension responses
+    const extensionName = normalizedMessage.metadata.extensionId || 'Extension';
+    const { ui } = useStore.getState();
+    if (ui.activeConversationId !== normalizedConversationId) {
+      addToast({
+        type: 'success',
+        message: `Respuesta de ${extensionName}`,
+        description: normalizedMessage.content.text || '[Media]',
+        duration: 3000,
+      });
+    }
+  }, [addMessage, addToast, getConversationId]);
 
   const handleClientToggle = useCallback(async (event: ClientToggleEvent) => {
     console.log('🔌 Client toggle:', event);
@@ -358,9 +417,22 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     // Handle rate limiting
     if (event.code === 'RATE_LIMIT_EXCEEDED') {
       console.warn(`Rate limit exceeded. Retry after ${event.retryAfter}s`);
-      // TODO: Show user notification
+      addToast({
+        type: 'warning',
+        message: 'Rate limit excedido',
+        description: `Por favor espera ${event.retryAfter}s antes de reintentar`,
+        duration: 5000,
+      });
+    } else {
+      // Show generic error toast
+      addToast({
+        type: 'error',
+        message: 'Error de conexión',
+        description: event.message,
+        duration: 5000,
+      });
     }
-  }, []);
+  }, [addToast]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // MESSAGE ROUTING
