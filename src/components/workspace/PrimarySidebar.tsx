@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
-import { Heading, Text, Input } from '@/components/ui';
+import { Heading, Text, Input, ListCard } from '@/components/ui';
 import ConversationListItem from './ConversationListItem';
 
 /**
@@ -258,35 +258,27 @@ function ToolsView() {
       {/* Tools List */}
       <div className="flex-1 overflow-y-auto">
         {tools.map((tool) => (
-          <button
+          <ListCard
             key={tool.id}
             onClick={() => handleOpenTool(tool.id, tool.name)}
-            className="w-full text-left transition cursor-pointer"
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: theme.spacing[3],
-              padding: theme.componentStyles.sidebarListItem.padding,
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
-              transitionDuration: theme.transitions.fast,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
+            showActiveIndicator={false}
           >
             <div
+              className="w-full"
               style={{
-                fontSize: theme.typography.sizes['2xl'],
-                lineHeight: '1',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: theme.spacing[3],
               }}
             >
-              {tool.icon}
-            </div>
+              <div
+                style={{
+                  fontSize: theme.typography.sizes['2xl'],
+                  lineHeight: '1',
+                }}
+              >
+                {tool.icon}
+              </div>
             <div style={{ flex: 1 }}>
               <Text
                 style={{
@@ -319,7 +311,8 @@ function ToolsView() {
                 {tool.category}
               </div>
             </div>
-          </button>
+            </div>
+          </ListCard>
         ))}
       </div>
 

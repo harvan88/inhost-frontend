@@ -2,7 +2,7 @@ import { Pin, MessageSquare } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
-import { Text } from '@/components/ui';
+import { Text, ListCard } from '@/components/ui';
 import type { Conversation } from '@/types';
 import { Avatar, Badge, StatusIndicator } from '@/components/common';
 
@@ -57,30 +57,8 @@ export default function ConversationListItem({ conversation }: ConversationListI
   };
 
   return (
-    <div
-      onClick={handleClick}
-      className="cursor-pointer transition-colors"
-      style={{
-        padding: theme.componentStyles.sidebarListItem.padding,
-        borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
-        borderLeft: isActiveTab
-          ? `${theme.componentStyles.sidebarListItem.activeIndicatorWidth} solid ${theme.colors.primary[500]}`
-          : 'none',
-        backgroundColor: isActiveTab ? theme.colors.primary[50] : 'transparent',
-        transitionDuration: theme.transitions.fast,
-      }}
-      onMouseEnter={(e) => {
-        if (!isActiveTab) {
-          e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActiveTab) {
-          e.currentTarget.style.backgroundColor = 'transparent';
-        }
-      }}
-    >
-      <div className="flex items-start" style={{ gap: theme.spacing[3] }}>
+    <ListCard isActive={isActiveTab} onClick={handleClick}>
+      <div className="flex items-start w-full" style={{ gap: theme.spacing[3] }}>
         {/* Avatar with status */}
         <div className="flex-shrink-0">
           <Avatar
@@ -161,6 +139,6 @@ export default function ConversationListItem({ conversation }: ConversationListI
           </div>
         </div>
       </div>
-    </div>
+    </ListCard>
   );
 }

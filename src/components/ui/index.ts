@@ -30,3 +30,7 @@ export type { CardProps, CardSize, CardElevation } from './Card';
 // IconButton
 export { IconButton } from './IconButton';
 export type { IconButtonProps, IconButtonVariant, IconButtonSize } from './IconButton';
+
+// ListCard
+export { ListCard } from './ListCard';
+export type { ListCardProps } from './ListCard';
