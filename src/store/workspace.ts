@@ -62,6 +62,7 @@ interface WorkspaceState {
   closeContainer: (containerId: string) => void;
   setActiveContainer: (containerId: string) => void;
   duplicateContainer: (containerId: string) => void;
+  adjustContainerWidths: () => void; // CONTRATO: Redistribuir anchos proporcionalmente
 
   // Container Actions (operate on active container)
   openTab: (tab: WorkspaceTab, containerId?: string) => void;
@@ -128,8 +129,17 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             activeTabId: null,
           };
 
+          const newContainers = [...state.containers, newContainer];
+
+          // CONTRATO: Redistribuir anchos proporcionalmente
+          const equalWidth = `${100 / newContainers.length}%`;
+          const adjustedContainers = newContainers.map((c) => ({
+            ...c,
+            width: equalWidth,
+          }));
+
           return {
-            containers: [...state.containers, newContainer],
+            containers: adjustedContainers,
             activeContainerId: newContainer.id,
           };
         }),
@@ -141,7 +151,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           // If no containers left, create a default one
           if (newContainers.length === 0) {
             return {
-              containers: [{ id: 'container-1', tabs: [], activeTabId: null }],
+              containers: [{ id: 'container-1', tabs: [], activeTabId: null, width: '100%' }],
               activeContainerId: 'container-1',
             };
           }
@@ -152,8 +162,15 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             newActiveContainer = newContainers[newContainers.length - 1].id;
           }
 
+          // CONTRATO: Redistribuir anchos proporcionalmente
+          const equalWidth = `${100 / newContainers.length}%`;
+          const adjustedContainers = newContainers.map((c) => ({
+            ...c,
+            width: equalWidth,
+          }));
+
           return {
-            containers: newContainers,
+            containers: adjustedContainers,
             activeContainerId: newActiveContainer,
           };
         }),
@@ -179,10 +196,37 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             activeTabId: sourceContainer.activeTabId,
           };
 
+          const newContainers = [...state.containers, newContainer];
+
+          // CONTRATO: Redistribuir anchos proporcionalmente
+          const equalWidth = `${100 / newContainers.length}%`;
+          const adjustedContainers = newContainers.map((c) => ({
+            ...c,
+            width: equalWidth,
+          }));
+
           return {
-            containers: [...state.containers, newContainer],
+            containers: adjustedContainers,
             activeContainerId: newContainer.id,
           };
+        }),
+
+      // CONTRATO: "Si lienzo se achica se achican proporcionalmente"
+      // Redistribuir anchos de contenedores de manera equitativa
+      adjustContainerWidths: () =>
+        set((state) => {
+          if (state.containers.length === 0) return state;
+
+          // Calcular ancho equitativo
+          const equalWidth = `${100 / state.containers.length}%`;
+
+          // Actualizar todos los contenedores con ancho equitativo
+          const adjustedContainers = state.containers.map((container) => ({
+            ...container,
+            width: equalWidth,
+          }));
+
+          return { containers: adjustedContainers };
         }),
 
       // Container Actions - operate on specific or active container
