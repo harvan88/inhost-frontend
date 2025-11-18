@@ -34,3 +34,7 @@ export type { IconButtonProps, IconButtonVariant, IconButtonSize } from './IconB
 // ListCard
 export { ListCard } from './ListCard';
 export type { ListCardProps } from './ListCard';
+
+// Tag
+export { Tag } from './Tag';
+export type { TagProps, TagSize, TagColor } from './Tag';
