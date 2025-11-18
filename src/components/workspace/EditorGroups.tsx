@@ -3,10 +3,22 @@ import { useWorkspaceStore } from '@/store/workspace';
 import ChatArea from '@components/chat/ChatArea';
 
 /**
- * EditorGroups - Sistema de tabs para múltiples conversaciones abiertas
+ * EditorGroups - Contenedor Dinámico (Nivel 3)
  *
- * Metáfora: Como las tabs de VS Code o navegador web
- * Permite tener múltiples conversaciones abiertas simultáneamente
+ * Rol en la arquitectura de tres niveles:
+ * - Es el núcleo funcional del sistema
+ * - Área flexible que se abre/cierra según necesidad
+ * - Puede contener múltiples vistas en formato tabs (workspace multi-tab)
+ * - NO tiene lógica propia, solo alberga vistas
+ *
+ * Vistas que puede contener:
+ * - ChatArea: Vista de conversación
+ * - ContactArea: Perfil de contacto (Coming Soon)
+ * - ToolArea: Herramientas/Plugins (Coming Soon)
+ * - Analytics: Dashboard de métricas (Coming Soon)
+ * - Order: Detalles de pedidos (Coming Soon)
+ *
+ * Metáfora: Como las tabs de VS Code - múltiples documentos abiertos simultáneamente
  */
 export default function EditorGroups() {
   const { tabs, activeTabId, setActiveTab, closeTab } = useWorkspaceStore();

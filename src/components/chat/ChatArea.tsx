@@ -7,20 +7,27 @@ interface ChatAreaProps {
 }
 
 /**
- * ChatArea - Container component for a single conversation
+ * ChatArea - Vista de Conversación (vive en Contenedor Dinámico)
  *
- * Architecture: Receives only a conversationId and orchestrates the 3 child components.
- * This allows multiple ChatAreas to exist (tabs, split view) without code changes.
+ * Rol en la arquitectura de tres niveles:
+ * - Es una VISTA que se alberga en el Contenedor Dinámico (Nivel 3)
+ * - Se abre cuando el usuario selecciona una conversación en el Sidebar (Nivel 2)
+ * - Puede haber múltiples ChatAreas abiertas simultáneamente en tabs
  *
- * Responsibilities:
- * - Orchestrate ChatHeader, MessageList, MessageInput
- * - Pass conversationId to children
- * - Provide conversation context
+ * Arquitectura ID-based:
+ * - Recibe solo un conversationId
+ * - Orquesta 3 componentes: ChatHeader, MessageList, MessageInput
+ * - Permite múltiples instancias sin cambios de código
  *
- * Does NOT:
- * - Fetch data (that's the store's job)
- * - Know how many ChatAreas exist
- * - Handle routing or navigation
+ * Responsabilidades:
+ * - Orquestar ChatHeader, MessageList, MessageInput
+ * - Pasar conversationId a componentes hijos
+ * - Proveer contexto de conversación
+ *
+ * NO hace:
+ * - Fetch de datos (lo hace el store)
+ * - Manejar routing o navegación
+ * - Saber cuántas ChatAreas existen
  */
 export default function ChatArea({ conversationId }: ChatAreaProps) {
   if (!conversationId) {

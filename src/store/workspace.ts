@@ -14,33 +14,30 @@ export interface WorkspaceTab {
 }
 
 /**
- * Workspace State - manages the multi-tab workspace layout
+ * Workspace State - manages the three-level workspace layout
+ *
+ * Arquitectura de Tres Niveles:
+ * 1. Activity Bar: Selección de dominio
+ * 2. Sidebar Contextual: Lista de entidades
+ * 3. Contenedor Dinámico: Vista de entidad (multi-tab)
  */
 interface WorkspaceState {
-  // ━━━ ACTIVITY BAR ━━━
+  // ━━━ NIVEL 1: ACTIVITY BAR ━━━
   activeActivity: 'messages' | 'analytics' | 'contacts' | 'settings';
   setActivity: (activity: 'messages' | 'analytics' | 'contacts' | 'settings') => void;
 
-  // ━━━ PRIMARY SIDEBAR ━━━
+  // ━━━ NIVEL 2: SIDEBAR CONTEXTUAL ━━━
   sidebarVisible: boolean;
   sidebarWidth: number;
   toggleSidebar: () => void;
   setSidebarWidth: (width: number) => void;
 
-  // ━━━ EDITOR GROUPS (TABS) ━━━
+  // ━━━ NIVEL 3: CONTENEDOR DINÁMICO (TABS) ━━━
   tabs: WorkspaceTab[];
   activeTabId: string | null;
   openTab: (tab: WorkspaceTab) => void;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
-
-  // ━━━ TOOL PANELS ━━━
-  panelVisible: boolean;
-  panelWidth: number;
-  collapsedTools: Set<string>;
-  togglePanel: () => void;
-  setPanelWidth: (width: number) => void;
-  toggleTool: (toolId: string) => void;
 }
 
 /**
@@ -55,16 +52,13 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       sidebarWidth: 320,
       tabs: [],
       activeTabId: null,
-      panelVisible: true,
-      panelWidth: 350,
-      collapsedTools: new Set(),
 
       // ━━━ ACTIONS ━━━
 
-      // Activity Bar
+      // Nivel 1: Activity Bar
       setActivity: (activity) => set({ activeActivity: activity }),
 
-      // Sidebar
+      // Nivel 2: Sidebar Contextual
       toggleSidebar: () =>
         set((state) => ({
           sidebarVisible: !state.sidebarVisible,
@@ -72,7 +66,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       setSidebarWidth: (width) => set({ sidebarWidth: width }),
 
-      // Editor Groups (Tabs)
+      // Nivel 3: Contenedor Dinámico (Tabs)
       openTab: (tab) =>
         set((state) => {
           // Si la tab ya existe, solo activarla
@@ -105,25 +99,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         }),
 
       setActiveTab: (tabId) => set({ activeTabId: tabId }),
-
-      // Tool Panels
-      togglePanel: () =>
-        set((state) => ({
-          panelVisible: !state.panelVisible,
-        })),
-
-      setPanelWidth: (width) => set({ panelWidth: width }),
-
-      toggleTool: (toolId) =>
-        set((state) => {
-          const newCollapsed = new Set(state.collapsedTools);
-          if (newCollapsed.has(toolId)) {
-            newCollapsed.delete(toolId);
-          } else {
-            newCollapsed.add(toolId);
-          }
-          return { collapsedTools: newCollapsed };
-        }),
     }),
     {
       name: 'inhost-workspace',
@@ -131,8 +106,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       partialize: (state) => ({
         sidebarVisible: state.sidebarVisible,
         sidebarWidth: state.sidebarWidth,
-        panelVisible: state.panelVisible,
-        panelWidth: state.panelWidth,
         activeActivity: state.activeActivity,
       }),
     }
