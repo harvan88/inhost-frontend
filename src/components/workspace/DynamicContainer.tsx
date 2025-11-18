@@ -356,6 +356,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                     className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
                     style={{
                       fontSize: theme.typography.sizes.sm,
+                      color: theme.colors.neutral[900],
                       borderBottom: `1px solid ${theme.colors.neutral[100]}`,
                       transitionDuration: theme.transitions.base,
                     }}
@@ -374,6 +375,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                     className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
                     style={{
                       fontSize: theme.typography.sizes.sm,
+                      color: theme.colors.neutral[900],
                       borderBottom: `1px solid ${theme.colors.neutral[100]}`,
                       transitionDuration: theme.transitions.base,
                     }}

@@ -260,8 +260,6 @@ export default function Canvas() {
               className="h-full flex"
               style={{
                 flexDirection: layout === 'vertical-split' ? 'column' : 'row',
-                gap: containers.length > 1 ? theme.spacing[2] : '0',
-                padding: containers.length > 1 ? theme.spacing[2] : '0',
               }}
             >
               {containers.map((container) => (
