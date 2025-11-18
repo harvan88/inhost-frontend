@@ -5,6 +5,7 @@ import { useWebSocket } from '@hooks/useWebSocket';
 import { useStore } from '@/store';
 import type { Message, WebSocketMessage } from '@/types';
 import { useCallback } from 'react';
+import { useTheme } from '@/theme';
 
 /**
  * Workspace - Arquitectura de Tres Niveles (Versión Formal)
