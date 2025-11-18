@@ -57,11 +57,15 @@ interface WorkspaceState {
   layout: 'single' | 'horizontal-split' | 'vertical-split';
   containers: DynamicContainer[];
   activeContainerId: string | null;
+  expandedContainerId: string | null; // Container en modo expansión total
 
   // Canvas Actions
   splitCanvas: (direction: 'horizontal' | 'vertical') => void;
   closeContainer: (containerId: string) => void;
   setActiveContainer: (containerId: string) => void;
+  duplicateContainer: (containerId: string) => void;
+  expandContainer: (containerId: string) => void;
+  collapseContainer: () => void;
 
   // Container Actions (operate on active container)
   openTab: (tab: WorkspaceTab, containerId?: string) => void;
@@ -88,6 +92,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
       ],
       activeContainerId: 'container-1',
+      expandedContainerId: null,
 
       // ━━━ ACTIONS ━━━
 
@@ -168,6 +173,46 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       setActiveContainer: (containerId) =>
         set({ activeContainerId: containerId }),
+
+      // Duplicar contenedor (Sección 6.2)
+      duplicateContainer: (containerId) =>
+        set((state) => {
+          const sourceContainer = state.containers.find((c) => c.id === containerId);
+          if (!sourceContainer) return state;
+
+          // Create duplicate with same tabs
+          const newContainer: DynamicContainer = {
+            id: `container-${Date.now()}`,
+            tabs: [...sourceContainer.tabs], // Copy tabs
+            activeTabId: sourceContainer.activeTabId,
+            width: '50%',
+          };
+
+          // Update existing containers to share space
+          const updatedContainers = state.containers.map((c) => ({
+            ...c,
+            width: '50%',
+          }));
+
+          return {
+            layout: 'horizontal-split',
+            containers: [...updatedContainers, newContainer],
+            activeContainerId: newContainer.id,
+          };
+        }),
+
+      // Expandir contenedor (ocupar 100% ocultando otros) (Sección 6.2)
+      expandContainer: (containerId) =>
+        set({
+          expandedContainerId: containerId,
+          activeContainerId: containerId,
+        }),
+
+      // Colapsar contenedor (volver a mostrar todos)
+      collapseContainer: () =>
+        set({
+          expandedContainerId: null,
+        }),
 
       // Container Actions - operate on specific or active container
       openTab: (tab, containerId) =>

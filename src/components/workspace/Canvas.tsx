@@ -100,7 +100,8 @@ import DynamicContainer from './DynamicContainer';
  * - Paneles dinámicos de Figma/Adobe XD
  */
 export default function Canvas() {
-  const { containers, layout, splitCanvas } = useWorkspaceStore();
+  const { containers, layout, splitCanvas, expandedContainerId, collapseContainer } =
+    useWorkspaceStore();
 
   return (
     <div className="flex-1 flex flex-col bg-white">
@@ -133,27 +134,51 @@ export default function Canvas() {
       </div>
 
       {/* Canvas Area - Contenedores Dinámicos */}
-      <div className="flex-1 overflow-hidden">
-        {containers.length === 0 ? (
-          <div className="h-full flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <p className="text-xl text-gray-500 mb-2">Lienzo Dinámico vacío</p>
-              <p className="text-sm text-gray-400">
-                Selecciona un elemento del sidebar para comenzar
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div
-            className={`h-full flex ${
-              layout === 'vertical-split' ? 'flex-col' : 'flex-row'
-            }`}
-          >
-            {containers.map((container) => (
-              <DynamicContainer key={container.id} containerId={container.id} />
-            ))}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        {/* Expanded Mode Banner */}
+        {expandedContainerId && (
+          <div className="h-8 bg-blue-50 border-b border-blue-200 flex items-center justify-between px-4">
+            <span className="text-xs text-blue-700 font-medium">
+              Modo expandido (100%)
+            </span>
+            <button
+              onClick={collapseContainer}
+              className="text-xs text-blue-600 hover:text-blue-800 underline"
+            >
+              Volver a vista normal
+            </button>
           </div>
         )}
+
+        {/* Containers */}
+        <div className="flex-1 overflow-hidden">
+          {containers.length === 0 ? (
+            <div className="h-full flex items-center justify-center bg-gray-50">
+              <div className="text-center">
+                <p className="text-xl text-gray-500 mb-2">Lienzo Dinámico vacío</p>
+                <p className="text-sm text-gray-400">
+                  Selecciona un elemento del sidebar para comenzar
+                </p>
+              </div>
+            </div>
+          ) : expandedContainerId ? (
+            // Modo expandido: solo mostrar el contenedor expandido
+            <div className="h-full">
+              <DynamicContainer containerId={expandedContainerId} />
+            </div>
+          ) : (
+            // Modo normal: mostrar todos los contenedores
+            <div
+              className={`h-full flex ${
+                layout === 'vertical-split' ? 'flex-col' : 'flex-row'
+              }`}
+            >
+              {containers.map((container) => (
+                <DynamicContainer key={container.id} containerId={container.id} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
