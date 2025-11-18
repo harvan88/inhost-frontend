@@ -4,22 +4,22 @@ import { useStore } from '@/store';
 import ConversationListItem from './ConversationListItem';
 
 /**
- * PrimarySidebar - Nivel 2: Sidebar Contextual
+ * PrimarySidebar - Barra Lateral Contextual (Nivel 2)
  *
  * Rol en la arquitectura de tres niveles:
  * - Segundo nivel de navegación
  * - Muestra LISTA DE ENTIDADES del dominio seleccionado
- * - Su contenido depende 100% del Activity Bar (Nivel 1)
+ * - Su contenido depende 100% de la Barra de Actividad (Nivel 1)
  * - Permite seleccionar QUÉ ELEMENTO específico abrir
  *
  * Contenido según dominio:
  * - messages → Lista de conversaciones
- * - analytics → Dashboard de métricas (Coming Soon)
  * - contacts → Directorio de contactos (Coming Soon)
- * - settings → Configuración de la app (Coming Soon)
+ * - tools → Lista de herramientas (Coming Soon)
+ * - plugins → Lista de plugins instalados (Coming Soon)
  *
  * Cuando el usuario selecciona un elemento aquí,
- * se abre su vista correspondiente en el Contenedor Dinámico (Nivel 3)
+ * se abre su vista correspondiente en el Lienzo Dinámico (Nivel 3)
  *
  * Metáfora: Como el "Explorer" de VS Code cuando seleccionas el ícono de archivos
  */
@@ -34,9 +34,9 @@ export default function PrimarySidebar() {
       style={{ width: `${sidebarWidth}px` }}
     >
       {activeActivity === 'messages' && <ConversationListView />}
-      {activeActivity === 'analytics' && <AnalyticsView />}
       {activeActivity === 'contacts' && <ContactsView />}
-      {activeActivity === 'settings' && <SettingsView />}
+      {activeActivity === 'tools' && <ToolsView />}
+      {activeActivity === 'plugins' && <PluginsView />}
     </div>
   );
 }
@@ -99,15 +99,6 @@ function ConversationListView() {
 /**
  * Placeholder views for other activities
  */
-function AnalyticsView() {
-  return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Analytics</h2>
-      <p className="text-sm text-gray-500">Dashboard de métricas - Coming Soon</p>
-    </div>
-  );
-}
-
 function ContactsView() {
   return (
     <div className="p-4">
@@ -117,11 +108,20 @@ function ContactsView() {
   );
 }
 
-function SettingsView() {
+function ToolsView() {
   return (
     <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Configuración</h2>
-      <p className="text-sm text-gray-500">Ajustes de la aplicación - Coming Soon</p>
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">Herramientas</h2>
+      <p className="text-sm text-gray-500">Lista de herramientas del sistema - Coming Soon</p>
+    </div>
+  );
+}
+
+function PluginsView() {
+  return (
+    <div className="p-4">
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">Plugins</h2>
+      <p className="text-sm text-gray-500">Extensiones y plugins instalados - Coming Soon</p>
     </div>
   );
 }
