@@ -9,24 +9,67 @@ interface DynamicContainerProps {
 /**
  * DynamicContainer - Contenedor Dinámico Individual
  *
- * Arquitectura Formal (del documento):
- * - Es UNA instancia dentro del Lienzo (Canvas)
- * - Alberga UNA herramienta renderizable (ChatArea, ContactArea, ToolArea, etc.)
- * - Soporta múltiples tabs de la misma o diferentes herramientas
- * - NO tiene lógica de negocio propia, solo gestiona distribución espacial
- * - Es redimensionable manualmente (width%) cuando hay split views
- * - Es replicable: pueden existir N instancias dentro del Lienzo
+ * ## Definición
  *
- * Responsabilidades:
+ * Un Contenedor Dinámico es un marco (frame) autónomo que existe dentro del Lienzo Dinámico.
+ * Cada contenedor:
+ *
+ * - Contiene exactamente UNA herramienta renderizable activa a la vez
+ *   (ChatArea, ContactArea, ToolArea, PluginRenderArea, etc.)
+ * - Soporta múltiples tabs de herramientas (como navegador web o VS Code)
+ * - NO posee lógica de negocio propia, únicamente gestiona distribución espacial
+ * - Se ajusta al ancho total cuando es el único contenedor activo
+ * - Comparte espacio proporcionalmente cuando coexiste con otros contenedores
+ * - Es redimensionable manualmente mediante "drag-based resizing"
+ *
+ * ## Comportamiento Espacial (relacionado con Sección 5.2)
+ *
+ * **Contenedor único:**
+ * - Ocupa 100% del ancho disponible en el Lienzo
+ * - Estado base del sistema
+ *
+ * **Múltiples contenedores:**
+ * - Distribución proporcional (ej: 50%/50% para 2 contenedores)
+ * - Ancho definido por propiedad `width` (ej: "50%", "33%")
+ * - Usuario puede ajustar mediante divisores
+ *
+ * ## Propiedades Estructurales
+ *
+ * - **Unidades replicables:** Pueden instanciarse varias veces dentro del Lienzo
+ * - **Independencia jerárquica:** Cada contenedor es autónomo
+ * - **Multi-tab support:** Múltiples herramientas abiertas en tabs
+ * - **Visual feedback:** Ring azul cuando está activo
+ *
+ * ## Casos de Uso (Sección 5.3)
+ *
+ * Ejemplos de escenarios multivista:
+ *
+ * - **Conversaciones paralelas:**
+ *   Contenedor 1: ChatArea(Juan) | Contenedor 2: ChatArea(María)
+ *
+ * - **Conversación + Perfil:**
+ *   Contenedor 1: ChatArea(Juan) | Contenedor 2: ContactArea(Juan)
+ *
+ * - **Conversación + Herramienta:**
+ *   Contenedor 1: ChatArea | Contenedor 2: ToolArea(Transcriptor)
+ *
+ * - **Herramientas múltiples:**
+ *   Contenedor 1: ToolArea(Analizador) | Contenedor 2: ToolArea(Buscador)
+ *
+ * ## Responsabilidades
+ *
  * - Mostrar barra de tabs si hay múltiples tabs abiertas
  * - Renderizar la herramienta de la tab activa
  * - Gestionar activación y cierre de tabs dentro de este contenedor
  * - Mostrar estado vacío cuando no hay tabs
+ * - Proveer feedback visual de contenedor activo
  *
- * NO hace:
- * - Gestionar el layout del Lienzo (eso es responsabilidad de Canvas)
+ * ## NO hace
+ *
+ * - Gestionar el layout del Lienzo (responsabilidad de Canvas)
  * - Conocer otros contenedores (están desacoplados)
  * - Manejar lógica de negocio de las herramientas
+ * - Persistir datos (responsabilidad del store/backend)
  */
 export default function DynamicContainer({ containerId }: DynamicContainerProps) {
   const container = useContainer(containerId);
