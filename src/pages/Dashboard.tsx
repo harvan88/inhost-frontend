@@ -36,11 +36,14 @@ export default function Dashboard() {
       setHealth(healthData);
 
       // Load recent messages
-      const messagesData = await apiClient.getMessages();
-      setMessages(messagesData);
+    const messagesData = await apiClient.getMessages();
+    setMessages(Array.isArray(messagesData) ? messagesData : []);
     } catch (error) {
-      console.error('Failed to load dashboard:', error);
-    } finally {
+  console.error('Failed to load dashboard:', error);
+  // Set default values on error
+  setMessages([]);
+  setHealth({ status: 'error' });
+} finally {
       setIsLoading(false);
     }
   };
@@ -92,7 +95,7 @@ export default function Dashboard() {
           />
           <StatusCard
             title="Messages"
-            value={messages.length.toString()}
+            value={(messages?.length ?? 0).toString()}
             color="blue"
           />
         </div>
