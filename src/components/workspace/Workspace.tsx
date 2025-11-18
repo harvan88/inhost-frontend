@@ -1,21 +1,32 @@
 import ActivityBar from './ActivityBar';
 import PrimarySidebar from './PrimarySidebar';
-import EditorGroups from './EditorGroups';
+import Canvas from './Canvas';
 import { useWebSocket } from '@hooks/useWebSocket';
 import { useStore } from '@/store';
 import type { Message, WebSocketMessage } from '@/types';
 import { useCallback } from 'react';
 
 /**
- * Workspace - Arquitectura de Tres Niveles
+ * Workspace - Arquitectura de Tres Niveles (Versión Formal)
  *
  * Modelo arquitectónico adaptado de VS Code:
  *
  * ┌──────────────┬──────────────────┬────────────────────────────┐
- * │ Activity Bar │ Sidebar          │ Contenedor Dinámico        │
+ * │ Activity Bar │ Sidebar          │ Lienzo (Canvas)            │
  * │ (Nivel 1)    │ Contextual       │ (Nivel 3)                  │
  * │              │ (Nivel 2)        │                            │
  * └──────────────┴──────────────────┴────────────────────────────┘
+ *
+ * Arquitectura Completa:
+ *
+ * Nivel 1: Activity Bar
+ *          ↓
+ * Nivel 2: Sidebar Contextual
+ *          ↓
+ * Nivel 3: Lienzo (Canvas)
+ *          ├─ Contenedor Dinámico 1 → Herramienta A (con tabs)
+ *          ├─ Contenedor Dinámico 2 → Herramienta B (con tabs)
+ *          └─ Contenedor Dinámico N → Herramienta N (con tabs)
  *
  * Nivel 1 - Activity Bar:
  *   Selecciona el dominio (Mensajes, Contactos, Herramientas)
@@ -25,10 +36,11 @@ import { useCallback } from 'react';
  *   Muestra lista de entidades del dominio seleccionado
  *   Contenido 100% dependiente del Activity Bar
  *
- * Nivel 3 - Contenedor Dinámico:
- *   Área flexible que muestra la vista del elemento seleccionado
- *   Soporta múltiples vistas en pestañas (workspace multi-tab)
- *   Alberga: ChatArea, ContactArea, ToolArea, etc.
+ * Nivel 3 - Lienzo (Canvas):
+ *   Superficie estructural que alberga múltiples Contenedores Dinámicos
+ *   Permite división del espacio (horizontal/vertical)
+ *   Cada Contenedor Dinámico aloja una herramienta con tabs
+ *   Soporta configuraciones complejas (split views, múltiples instancias)
  *
  * Responsabilidades:
  * - Orquestar layout de 3 niveles desacoplados
@@ -73,8 +85,8 @@ export default function Workspace() {
       {/* Nivel 2: Sidebar Contextual - Lista de entidades */}
       <PrimarySidebar />
 
-      {/* Nivel 3: Contenedor Dinámico - Vista de entidad seleccionada */}
-      <EditorGroups />
+      {/* Nivel 3: Lienzo (Canvas) - Superficie con múltiples Contenedores Dinámicos */}
+      <Canvas />
     </div>
   );
 }

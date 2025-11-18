@@ -15,7 +15,7 @@ interface ConversationListItemProps {
  * - Activa la tab si ya está abierta
  */
 export default function ConversationListItem({ conversation }: ConversationListItemProps) {
-  const { openTab, activeTabId } = useWorkspaceStore();
+  const { openTab, containers, activeContainerId } = useWorkspaceStore();
   const contact = useStore((state) => state.entities.contacts.get(conversation.entityId));
 
   const handleClick = () => {
@@ -28,7 +28,9 @@ export default function ConversationListItem({ conversation }: ConversationListI
     });
   };
 
-  const isActiveTab = activeTabId === `chat-${conversation.id}`;
+  // Check if this conversation is open in the active container
+  const activeContainer = containers.find((c) => c.id === activeContainerId);
+  const isActiveTab = activeContainer?.activeTabId === `chat-${conversation.id}`;
 
   // Format timestamp
   const formatTime = (timestamp: string) => {
