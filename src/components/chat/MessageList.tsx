@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages } from '@/store';
+import { useTheme } from '@/theme';
 import type { Message } from '@/types';
 
 interface MessageListProps {
@@ -24,6 +25,7 @@ interface MessageListProps {
  */
 export default function MessageList({ conversationId }: MessageListProps) {
   const messages = useMessages(conversationId);
+  const { theme } = useTheme();
   const parentRef = useRef<HTMLDivElement>(null);
 
   // Virtual scrolling for performance with large message lists
@@ -53,10 +55,33 @@ export default function MessageList({ conversationId }: MessageListProps) {
 
   if (messages.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
-        <div className="text-center py-12 text-gray-500">
-          <p className="text-lg mb-2">No messages yet</p>
-          <p className="text-sm">Send your first message below!</p>
+      <div
+        className="flex items-center justify-center h-full"
+        style={{
+          backgroundColor: theme.colors.neutral[50],
+        }}
+      >
+        <div
+          className="text-center py-12"
+          style={{
+            color: theme.colors.neutral[600],
+          }}
+        >
+          <p
+            className="mb-2"
+            style={{
+              fontSize: theme.typography.sizes.lg,
+            }}
+          >
+            No messages yet
+          </p>
+          <p
+            style={{
+              fontSize: theme.typography.sizes.sm,
+            }}
+          >
+            Send your first message below!
+          </p>
         </div>
       </div>
     );
@@ -65,8 +90,11 @@ export default function MessageList({ conversationId }: MessageListProps) {
   return (
     <div
       ref={parentRef}
-      className="h-full overflow-y-auto px-6 py-4 bg-gray-50"
-      style={{ overflowAnchor: 'none' }}
+      className="h-full overflow-y-auto px-6 py-4"
+      style={{
+        backgroundColor: theme.colors.neutral[50],
+        overflowAnchor: 'none',
+      }}
     >
       <div
         style={{
@@ -88,7 +116,7 @@ export default function MessageList({ conversationId }: MessageListProps) {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <MessageBubble message={message} />
+              <MessageBubble message={message} theme={theme} />
             </div>
           );
         })}
@@ -100,58 +128,148 @@ export default function MessageList({ conversationId }: MessageListProps) {
 /**
  * MessageBubble - Individual message component
  */
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({ message, theme }: { message: Message; theme: any }) {
   const isIncoming = message.type === 'incoming';
   const isSystem = message.type === 'system';
 
   const getBubbleStyle = () => {
     if (isSystem) {
-      return 'bg-gray-100 border-gray-300 text-gray-700 mx-auto text-center max-w-md';
+      return {
+        backgroundColor: theme.colors.neutral[100],
+        borderColor: theme.colors.neutral[300],
+        color: theme.colors.neutral[700],
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        textAlign: 'center' as const,
+        maxWidth: '28rem',
+      };
     }
     if (isIncoming) {
-      return 'bg-white border-gray-200 text-gray-900';
+      return {
+        backgroundColor: theme.colors.neutral[0],
+        borderColor: theme.colors.neutral[200],
+        color: theme.colors.neutral[900],
+      };
     }
-    return 'bg-blue-500 border-blue-500 text-white ml-auto';
+    // Outgoing: usar primary-600 en lugar de primary-500 para mejor contraste
+    return {
+      backgroundColor: theme.colors.primary[600],
+      borderColor: theme.colors.primary[600],
+      color: theme.colors.neutral[0],
+      marginLeft: 'auto',
+    };
   };
 
-  const getChannelBadgeColor = () => {
+  const getChannelBadgeStyle = () => {
     switch (message.channel) {
       case 'whatsapp':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return {
+          backgroundColor: theme.colors.channels.whatsapp[100],
+          color: theme.colors.channels.whatsapp[800],
+          borderColor: theme.colors.channels.whatsapp[200],
+        };
       case 'telegram':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return {
+          backgroundColor: theme.colors.channels.telegram[100],
+          color: theme.colors.channels.telegram[800],
+          borderColor: theme.colors.channels.telegram[200],
+        };
       case 'web':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return {
+          backgroundColor: theme.colors.channels.web[100],
+          color: theme.colors.channels.web[800],
+          borderColor: theme.colors.channels.web[200],
+        };
       case 'sms':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+        return {
+          backgroundColor: theme.colors.channels.sms[100],
+          color: theme.colors.channels.sms[800],
+          borderColor: theme.colors.channels.sms[200],
+        };
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return {
+          backgroundColor: theme.colors.neutral[100],
+          color: theme.colors.neutral[800],
+          borderColor: theme.colors.neutral[200],
+        };
     }
   };
 
+  const getTypeBadgeStyle = () => {
+    if (isIncoming) {
+      return {
+        backgroundColor: theme.colors.primary[50],
+        color: theme.colors.primary[700],
+        borderColor: theme.colors.primary[200],
+      };
+    }
+    // Outgoing: usar neutral-100 con primary-900 para mejor contraste
+    return {
+      backgroundColor: theme.colors.neutral[100],
+      color: theme.colors.primary[900],
+      borderColor: theme.colors.neutral[300],
+    };
+  };
+
+  const bubbleStyle = getBubbleStyle();
+  const channelBadgeStyle = getChannelBadgeStyle();
+  const typeBadgeStyle = getTypeBadgeStyle();
+
   return (
-    <div className={`mb-4 ${isIncoming ? 'mr-auto' : isSystem ? 'mx-auto' : 'ml-auto'} max-w-2xl`}>
-      <div className={`p-4 rounded-lg border shadow-sm ${getBubbleStyle()}`}>
+    <div
+      className="mb-4 max-w-2xl"
+      style={{
+        marginLeft: isIncoming ? undefined : isSystem ? 'auto' : 'auto',
+        marginRight: isIncoming ? 'auto' : isSystem ? 'auto' : undefined,
+      }}
+    >
+      <div
+        className="p-4 border"
+        style={{
+          ...bubbleStyle,
+          borderRadius: theme.radius.lg,
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          boxShadow: theme.elevation.sm,
+        }}
+      >
         {/* Header: Channel and Type badges */}
         {!isSystem && (
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <span
-                className={`px-2 py-1 text-xs font-semibold rounded border ${getChannelBadgeColor()}`}
+                className="px-2 py-1 border"
+                style={{
+                  ...channelBadgeStyle,
+                  fontSize: theme.typography.sizes.xs,
+                  fontWeight: theme.typography.weights.semibold,
+                  borderRadius: theme.radius.sm,
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                }}
               >
                 {message.channel.toUpperCase()}
               </span>
               <span
-                className={`px-2 py-1 text-xs font-semibold rounded border ${
-                  isIncoming
-                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-white/20 text-white border-white/30'
-                }`}
+                className="px-2 py-1 border"
+                style={{
+                  ...typeBadgeStyle,
+                  fontSize: theme.typography.sizes.xs,
+                  fontWeight: theme.typography.weights.semibold,
+                  borderRadius: theme.radius.sm,
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                }}
               >
                 {message.type.toUpperCase()}
               </span>
             </div>
-            <span className={`text-xs ${isIncoming ? 'text-gray-500' : 'text-white/80'}`}>
+            <span
+              style={{
+                fontSize: theme.typography.sizes.xs,
+                color: isIncoming ? theme.colors.neutral[500] : theme.colors.neutral[100],
+              }}
+            >
               {new Date(message.metadata.timestamp).toLocaleTimeString('es-AR', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -161,22 +279,42 @@ function MessageBubble({ message }: { message: Message }) {
         )}
 
         {/* Message content */}
-        <p className={`${isSystem ? 'text-sm font-medium' : 'text-base'} whitespace-pre-wrap`}>
+        <p
+          className="whitespace-pre-wrap"
+          style={{
+            fontSize: isSystem ? theme.typography.sizes.sm : theme.typography.sizes.base,
+            fontWeight: isSystem ? theme.typography.weights.medium : theme.typography.weights.normal,
+          }}
+        >
           {message.content.text}
         </p>
 
         {/* Footer: From/To info */}
         {!isSystem && (
-          <div className={`text-xs mt-2 ${isIncoming ? 'text-gray-600' : 'text-white/70'}`}>
-            <span className="font-semibold">From:</span> {message.metadata.from}
+          <div
+            className="mt-2"
+            style={{
+              fontSize: theme.typography.sizes.xs,
+              color: isIncoming ? theme.colors.neutral[600] : theme.colors.neutral[100],
+            }}
+          >
+            <span style={{ fontWeight: theme.typography.weights.semibold }}>From:</span>{' '}
+            {message.metadata.from}
             {' • '}
-            <span className="font-semibold">To:</span> {message.metadata.to}
+            <span style={{ fontWeight: theme.typography.weights.semibold }}>To:</span>{' '}
+            {message.metadata.to}
           </div>
         )}
 
         {/* System messages timestamp */}
         {isSystem && (
-          <div className="text-xs text-gray-500 mt-1">
+          <div
+            className="mt-1"
+            style={{
+              fontSize: theme.typography.sizes.xs,
+              color: theme.colors.neutral[500],
+            }}
+          >
             {new Date(message.metadata.timestamp).toLocaleString('es-AR')}
           </div>
         )}

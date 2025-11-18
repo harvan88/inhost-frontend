@@ -36,10 +36,18 @@ export interface SemanticColors {
   infoDark: string;
 }
 
+export interface ChannelColors {
+  whatsapp: ColorScale;
+  telegram: ColorScale;
+  web: ColorScale;
+  sms: ColorScale;
+}
+
 export interface ThemeColors {
   primary: ColorScale;
   neutral: ColorScale;
   semantic: SemanticColors;
+  channels: ChannelColors;
 }
 
 export interface Typography {
