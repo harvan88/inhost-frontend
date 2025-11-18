@@ -1,0 +1,76 @@
+.message {
+  display: flex;
+  max-width: 70%;
+}
+
+.message.incoming {
+  align-self: flex-start;
+}
+
+.message.outgoing {
+  align-self: flex-end;
+}
+
+.message-content {
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.message.incoming .message-content {
+  background: var(--bg-secondary);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.message.outgoing .message-content {
+  background: var(--accent);
+  color: white;
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.message-text {
+  margin-bottom: var(--space-xs);
+}
+
+.message-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.message-status {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 0.75rem;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 2px;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+  0%, 80%, 100% { opacity: 0.3; }
+  40% { opacity: 1; }
+}

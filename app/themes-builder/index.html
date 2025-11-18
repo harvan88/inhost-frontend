@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Theme Builder</title>
+    
+    <!-- Estilos base -->
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/components/chat-area.css">
+    <link rel="stylesheet" href="styles/components/sidebar.css">
+    <link rel="stylesheet" href="styles/components/message.css">
+    <link rel="stylesheet" href="styles/themes/theme-applier.css">
+    <link rel="stylesheet" href="styles/components/inspector.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Panel de control de temas -->
+        <div class="theme-controls">
+            <h2>🎨 Theme Builder</h2>
+            <div class="theme-selector">
+                <label for="theme-select">Tema Actual:</label>
+                <select id="theme-select">
+                    <option value="professional-dark">Professional Dark</option>
+                    <option value="professional-light">Professional Light</option>
+                    <option value="blue-ocean">Blue Ocean</option>
+                    <option value="green-forest">Green Forest</option>
+                </select>
+            </div>
+            <button id="edit-theme-btn">✏️ Editar Tema Actual</button>
+            <button id="new-theme-btn">🆕 Nuevo Tema</button>
+            <div class="inspector-controls">
+                <button id="toggle-inspector-btn">🔍 Activar Inspector</button>
+                <div class="inspector-info">
+                    <p>Pasa el ratón sobre los elementos para ver sus variables CSS</p>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Simulador de Chat -->
+        <div class="chat-simulator">
+            <div class="chat-container">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-header">
+                        <h3>Conversaciones</h3>
+                        <div class="search-box">
+                            <input type="text" placeholder="Buscar conversación..." class="search-input">
+                        </div>
+                    </div>
+                    <div class="conversation-list">
+                        <div class="conversation-item active">
+                            <div class="avatar" data-inspector-type="avatar" data-inspector-role="user-avatar">J</div>
+                            <div class="conversation-info">
+                                <div class="contact-name">Juan Pérez</div>
+                                <div class="last-message">Claro, te envío el presupuesto...</div>
+                            </div>
+                            <div class="conversation-meta">
+                                <div class="time">10:30</div>
+                                <div class="unread-badge" data-inspector-type="badge" data-inspector-role="unread-counter">3</div>
+                            </div>
+                        </div>
+                        <div class="conversation-item">
+                            <div class="avatar" data-inspector-type="avatar" data-inspector-role="user-avatar">M</div>
+                            <div class="conversation-info">
+                                <div class="contact-name">María García</div>
+                                <div class="last-message">¿Tienes disponible el producto?</div>
+                            </div>
+                            <div class="conversation-meta">
+                                <div class="time">09:15</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Área de Chat -->
+                <main class="chat-area">
+                    <div class="chat-header">
+                        <div class="chat-contact">
+                            <div class="avatar large" data-inspector-type="avatar" data-inspector-role="active-user-avatar">J</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Juan Pérez</div>
+                                <div class="contact-status" data-inspector-type="status" data-inspector-role="user-status">En línea</div>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="icon-btn" data-inspector-type="button" data-inspector-role="call-action">📞</button>
+                            <button class="icon-btn" data-inspector-type="button" data-inspector-role="video-action">📹</button>
+                            <button class="icon-btn" data-inspector-type="button" data-inspector-role="settings-action">⚙️</button>
+                        </div>
+                    </div>
+
+                    <div class="message-list">
+                        <!-- Mensaje entrante -->
+                        <div class="message incoming" data-inspector-type="message" data-inspector-role="incoming-message">
+                            <div class="message-content">
+                                <div class="message-text">Hola, necesito el presupuesto para el proyecto</div>
+                                <div class="message-time">10:25</div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje saliente -->
+                        <div class="message outgoing" data-inspector-type="message" data-inspector-role="outgoing-message">
+                            <div class="message-content">
+                                <div class="message-text">Claro, te lo envío en un momento</div>
+                                <div class="message-time">10:26</div>
+                                <div class="message-status" data-inspector-type="status" data-inspector-role="message-status">✓✓</div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje entrante -->
+                        <div class="message incoming" data-inspector-type="message" data-inspector-role="incoming-message">
+                            <div class="message-content">
+                                <div class="message-text">Perfecto, también necesito saber los tiempos de entrega</div>
+                                <div class="message-time">10:28</div>
+                            </div>
+                        </div>
+
+                        <!-- Indicador de escritura -->
+                        <div class="typing-indicator" data-inspector-type="indicator" data-inspector-role="typing-indicator">
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <span>Juan está escribiendo...</span>
+                        </div>
+                    </div>
+
+                    <div class="message-input-container">
+                        <div class="input-actions">
+                            <button class="icon-btn" data-inspector-type="button" data-inspector-role="attach-action">📎</button>
+                            <button class="icon-btn" data-inspector-type="button" data-inspector-role="emoji-action">😊</button>
+                        </div>
+                        <input type="text" class="message-input" placeholder="Escribe un mensaje..." data-inspector-type="input" data-inspector-role="message-input">
+                        <button class="send-button" data-inspector-type="button" data-inspector-role="send-action">➤</button>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de edición de temas -->
+    <div id="theme-editor" class="modal hidden">
+        <div class="modal-content">
+            <h3>Editor de Tema</h3>
+            <div class="color-palette" id="color-palette">
+                <!-- Se genera dinámicamente -->
+            </div>
+            <div class="modal-actions">
+                <button id="save-theme-btn">💾 Guardar Tema</button>
+                <button id="cancel-theme-btn">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+<!-- Inspector Tooltip -->
+<div id="inspector-tooltip" class="inspector-tooltip hidden">
+    <div class="tooltip-header">
+        <span class="element-name">Element</span>
+        <span class="close-tooltip">×</span>
+    </div>
+    
+    <div class="color-preview">#FFFFFF</div>
+    
+    <div class="variables-list">
+        <!-- Las variables se insertarán aquí -->
+    </div>
+    
+    <div class="theme-info">
+        <div class="theme-name">Tema: professional-dark</div>
+        <div class="theme-type">Tipo: Oscuro</div>
+    </div>
+</div>
+
+    <script type="module" src="scripts/theme-manager.js"></script>
+    <script type="module" src="scripts/chat-simulator.js"></script>
+    <script type="module" src="scripts/inspector.js"></script>
+</body>
+</html>

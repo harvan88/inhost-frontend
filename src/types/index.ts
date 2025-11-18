@@ -1,6 +1,6 @@
 /**
- * Frontend-specific types
- * Re-exports types from @inhost/shared when needed
+ * Frontend-specific types for INHOST
+ * These types match the API contracts from the backend
  */
 
 export interface Message {

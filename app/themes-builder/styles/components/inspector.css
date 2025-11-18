@@ -1,0 +1,208 @@
+/* Inspector Controls */
+.inspector-controls {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+}
+
+.inspector-controls button {
+    background: var(--warning-500);
+    color: var(--gray-900);
+    font-weight: 600;
+}
+
+.inspector-controls button.active {
+    background: var(--success-500);
+}
+
+.inspector-info {
+    margin-top: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Inspector Tooltip */
+.inspector-tooltip {
+    position: fixed;
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    max-width: 300px;
+    z-index: 10000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.inspector-tooltip.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--border);
+}
+
+.element-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.close-tooltip {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.close-tooltip:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.color-preview {
+    width: 100%;
+    height: 40px;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.color-preview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+    z-index: -1;
+}
+
+.variables-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.variable-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+}
+
+.variable-item:last-child {
+    border-bottom: none;
+}
+
+.variable-name {
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+    display: flex;
+    align-items: center;
+}
+
+.variable-value {
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    display: inline-block;
+}
+
+.source-badge {
+    background: var(--accent);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    margin-left: 8px;
+}
+
+.theme-var {
+    color: var(--success-500);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.theme-info {
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--accent);
+}
+
+.theme-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.theme-type {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+/* Efecto de resaltado durante la inspección */
+.inspector-highlight {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px;
+    transition: outline-offset var(--transition-fast);
+}
+
+/* Mejoras de scroll para el inspector */
+.variables-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.variables-list::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 3px;
+}
+
+.variables-list::-webkit-scrollbar-thumb {
+    background: var(--gray-600);
+    border-radius: 3px;
+}
+
+.variables-list::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}

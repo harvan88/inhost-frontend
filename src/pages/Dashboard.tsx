@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   // WebSocket connection
-  const { connected, sendMessage } = useWebSocket({
+  const { connected } = useWebSocket({
     onMessage: (msg) => {
       console.log('WebSocket message:', msg);
       // Handle incoming WebSocket messages
