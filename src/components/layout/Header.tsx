@@ -1,7 +1,7 @@
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/theme';
 
 export default function Header() {
-  const theme = useTheme();
+  const { theme } = useTheme();
 
   return (
     <header style={{
