@@ -298,41 +298,33 @@ function ToolsView() {
       </div>
 
       {/* Tools List */}
-      <div
-        className="flex-1 overflow-y-auto"
-        style={{
-          padding: theme.spacing[2],
-        }}
-      >
+      <div className="flex-1 overflow-y-auto">
         {tools.map((tool) => (
           <button
             key={tool.id}
             onClick={() => handleOpenTool(tool.id, tool.name)}
-            className="w-full text-left transition"
+            className="w-full text-left transition cursor-pointer"
             style={{
               display: 'flex',
               alignItems: 'flex-start',
               gap: theme.spacing[3],
-              padding: theme.spacing[3],
-              marginBottom: theme.spacing[2],
-              backgroundColor: theme.colors.neutral[0],
-              border: `1px solid ${theme.colors.neutral[200]}`,
-              borderRadius: theme.radius.lg,
-              cursor: 'pointer',
-              transitionDuration: theme.transitions.base,
+              padding: theme.componentStyles.sidebarListItem.padding,
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderBottom: `${theme.componentStyles.sidebarListItem.borderBottomWidth} solid ${theme.colors.neutral[200]}`,
+              transitionDuration: theme.transitions.fast,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.primary[50];
-              e.currentTarget.style.borderColor = theme.colors.primary[300];
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
-              e.currentTarget.style.borderColor = theme.colors.neutral[200];
+              e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
             <div
               style={{
                 fontSize: theme.typography.sizes['2xl'],
+                lineHeight: '1',
               }}
             >
               {tool.icon}
@@ -340,7 +332,7 @@ function ToolsView() {
             <div style={{ flex: 1 }}>
               <div
                 style={{
-                  fontSize: theme.typography.sizes.base,
+                  fontSize: theme.componentStyles.text.normal.fontSize,
                   fontWeight: theme.typography.weights.semibold,
                   color: theme.colors.neutral[900],
                   marginBottom: theme.spacing[1],
@@ -350,9 +342,9 @@ function ToolsView() {
               </div>
               <div
                 style={{
-                  fontSize: theme.typography.sizes.sm,
+                  fontSize: theme.componentStyles.text.metadata.fontSize,
                   color: theme.colors.neutral[600],
-                  marginBottom: theme.spacing[1],
+                  marginBottom: theme.spacing[2],
                 }}
               >
                 {tool.description}
@@ -360,12 +352,12 @@ function ToolsView() {
               <div
                 style={{
                   display: 'inline-block',
-                  padding: `${theme.spacing[1]} ${theme.spacing[2]}`,
+                  padding: theme.componentStyles.tag.small.padding,
                   backgroundColor: theme.colors.neutral[100],
                   borderRadius: theme.radius.sm,
-                  fontSize: theme.typography.sizes.xs,
+                  fontSize: theme.componentStyles.tag.small.fontSize,
+                  fontWeight: theme.componentStyles.tag.small.fontWeight,
                   color: theme.colors.neutral[700],
-                  fontWeight: theme.typography.weights.medium,
                 }}
               >
                 {tool.category}
