@@ -1,5 +1,6 @@
 import { X, MessageSquare, MoreVertical, Copy, Maximize2, Plus } from 'lucide-react';
 import { useWorkspaceStore, useContainer } from '@/store/workspace';
+import { useTheme } from '@/theme';
 import ChatArea from '@components/chat/ChatArea';
 import { useState } from 'react';
 
@@ -140,12 +141,24 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
     expandContainer,
     splitCanvas,
   } = useWorkspaceStore();
+  const { theme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (!container) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Container not found</p>
+      <div
+        className="flex-1 flex items-center justify-center"
+        style={{
+          backgroundColor: theme.colors.neutral[50],
+        }}
+      >
+        <p
+          style={{
+            color: theme.colors.neutral[500],
+          }}
+        >
+          Container not found
+        </p>
       </div>
     );
   }
@@ -184,52 +197,107 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
 
   return (
     <div
-      className={`flex-1 flex flex-col bg-white ${
-        isActive ? 'ring-2 ring-blue-500' : 'ring-1 ring-gray-200'
-      }`}
+      className="flex-1 flex flex-col"
       onClick={() => setActiveContainer(containerId)}
-      style={{ width: container.width }}
+      style={{
+        width: container.width,
+        backgroundColor: theme.colors.neutral[0],
+        border: `${isActive ? '2px' : '1px'} solid ${
+          isActive ? theme.colors.primary[500] : theme.colors.neutral[200]
+        }`,
+      }}
     >
       {/* Tab Bar */}
-      <div className="h-10 bg-gray-100 border-b border-gray-200 flex">
+      <div
+        className="h-10 flex"
+        style={{
+          backgroundColor: theme.colors.neutral[100],
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+        }}
+      >
         {/* Tabs */}
         <div className="flex-1 flex overflow-x-auto">
-          {container.tabs.map((tab) => (
-            <div
-              key={tab.id}
-              className={`
-                px-4 flex items-center gap-2 border-r border-gray-200 cursor-pointer
-                min-w-[150px] max-w-[200px]
-                transition-colors duration-150
-                ${
-                  container.activeTabId === tab.id
-                    ? 'bg-white border-b-2 border-b-blue-500 text-gray-900'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }
-              `}
-              onClick={() => handleTabClick(tab.id)}
-            >
-              <MessageSquare size={14} className="flex-shrink-0" />
-              <span className="text-sm truncate flex-1">{tab.label}</span>
-              {tab.closable && (
-                <button
-                  onClick={(e) => handleCloseTab(tab.id, e)}
-                  className="ml-1 hover:bg-gray-200 rounded p-0.5 flex-shrink-0"
-                  title="Cerrar"
+          {container.tabs.map((tab) => {
+            const isActiveTab = container.activeTabId === tab.id;
+            return (
+              <div
+                key={tab.id}
+                className="px-4 flex items-center gap-2 cursor-pointer min-w-[150px] max-w-[200px] transition-colors"
+                style={{
+                  borderRight: `1px solid ${theme.colors.neutral[200]}`,
+                  transitionDuration: theme.transitions.fast,
+                  backgroundColor: isActiveTab ? theme.colors.neutral[0] : 'transparent',
+                  borderBottom: isActiveTab
+                    ? `2px solid ${theme.colors.primary[500]}`
+                    : 'none',
+                  color: isActiveTab ? theme.colors.neutral[900] : theme.colors.neutral[600],
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActiveTab) {
+                    e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActiveTab) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+                onClick={() => handleTabClick(tab.id)}
+              >
+                <MessageSquare size={14} className="flex-shrink-0" />
+                <span
+                  className="truncate flex-1"
+                  style={{
+                    fontSize: theme.typography.sizes.sm,
+                  }}
                 >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          ))}
+                  {tab.label}
+                </span>
+                {tab.closable && (
+                  <button
+                    className="ml-1 p-0.5 flex-shrink-0 transition"
+                    onClick={(e) => handleCloseTab(tab.id, e)}
+                    style={{
+                      borderRadius: theme.radius.sm,
+                      transitionDuration: theme.transitions.base,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = theme.colors.neutral[200];
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                    title="Cerrar"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Container Controls */}
-        <div className="flex items-center gap-1 px-2 border-l border-gray-200">
+        <div
+          className="flex items-center gap-1 px-2"
+          style={{
+            borderLeft: `1px solid ${theme.colors.neutral[200]}`,
+          }}
+        >
           {/* + Button - Abrir espacio adyacente */}
           <button
             onClick={handleAddAdjacentSpace}
-            className="p-1.5 hover:bg-gray-200 rounded transition"
+            className="p-1.5 transition"
+            style={{
+              borderRadius: theme.radius.sm,
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[200];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
             title="Abrir espacio adyacente"
           >
             <Plus size={16} />
@@ -239,7 +307,17 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
           <div className="relative">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-1.5 hover:bg-gray-200 rounded transition"
+              className="p-1.5 transition"
+              style={{
+                borderRadius: theme.radius.sm,
+                transitionDuration: theme.transitions.base,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = theme.colors.neutral[200];
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
               title="Opciones del contenedor"
             >
               <MoreVertical size={16} />
@@ -250,29 +328,74 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
               <>
                 {/* Backdrop to close menu */}
                 <div
-                  className="fixed inset-0 z-10"
+                  className="fixed inset-0"
                   onClick={() => setMenuOpen(false)}
+                  style={{
+                    zIndex: theme.zIndex.dropdown,
+                  }}
                 />
 
                 {/* Menu */}
-                <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                <div
+                  className="absolute right-0 mt-1 w-48"
+                  style={{
+                    backgroundColor: theme.colors.neutral[0],
+                    border: `1px solid ${theme.colors.neutral[200]}`,
+                    borderRadius: theme.radius.lg,
+                    boxShadow: theme.elevation.lg,
+                    zIndex: Number(theme.zIndex.dropdown) + 10,
+                  }}
+                >
                   <button
                     onClick={handleDuplicateContainer}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
+                    className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
+                    style={{
+                      fontSize: theme.typography.sizes.sm,
+                      borderBottom: `1px solid ${theme.colors.neutral[100]}`,
+                      transitionDuration: theme.transitions.base,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
                   >
                     <Copy size={14} />
                     Duplicar contenedor
                   </button>
                   <button
                     onClick={handleExpandContainer}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100"
+                    className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
+                    style={{
+                      fontSize: theme.typography.sizes.sm,
+                      borderBottom: `1px solid ${theme.colors.neutral[100]}`,
+                      transitionDuration: theme.transitions.base,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
                   >
                     <Maximize2 size={14} />
                     Expandir al 100%
                   </button>
                   <button
                     onClick={handleCloseContainer}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2"
+                    className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
+                    style={{
+                      fontSize: theme.typography.sizes.sm,
+                      color: theme.colors.semantic.danger,
+                      transitionDuration: theme.transitions.base,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = theme.colors.semantic.dangerLight;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
                   >
                     <X size={14} />
                     Cerrar contenedor
@@ -292,29 +415,66 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
               <ChatArea conversationId={activeTab.entityId} />
             )}
             {activeTab.type === 'analytics' && (
-              <div className="h-full flex items-center justify-center text-gray-500">
+              <div
+                className="h-full flex items-center justify-center"
+                style={{
+                  color: theme.colors.neutral[500],
+                }}
+              >
                 <p>Analytics View - Coming Soon</p>
               </div>
             )}
             {activeTab.type === 'customer_profile' && (
-              <div className="h-full flex items-center justify-center text-gray-500">
+              <div
+                className="h-full flex items-center justify-center"
+                style={{
+                  color: theme.colors.neutral[500],
+                }}
+              >
                 <p>Customer Profile - Coming Soon</p>
               </div>
             )}
             {activeTab.type === 'order' && (
-              <div className="h-full flex items-center justify-center text-gray-500">
+              <div
+                className="h-full flex items-center justify-center"
+                style={{
+                  color: theme.colors.neutral[500],
+                }}
+              >
                 <p>Order Details - Coming Soon</p>
               </div>
             )}
           </>
         ) : (
-          <div className="h-full flex items-center justify-center bg-gray-50">
+          <div
+            className="h-full flex items-center justify-center"
+            style={{
+              backgroundColor: theme.colors.neutral[50],
+            }}
+          >
             <div className="text-center">
-              <MessageSquare size={64} className="mx-auto mb-4 text-gray-300" />
-              <p className="text-xl text-gray-500 mb-2">
+              <MessageSquare
+                size={64}
+                className="mx-auto mb-4"
+                style={{
+                  color: theme.colors.neutral[300],
+                }}
+              />
+              <p
+                className="mb-2"
+                style={{
+                  fontSize: theme.typography.sizes.xl,
+                  color: theme.colors.neutral[500],
+                }}
+              >
                 No hay tabs abiertas en este contenedor
               </p>
-              <p className="text-sm text-gray-400">
+              <p
+                style={{
+                  fontSize: theme.typography.sizes.sm,
+                  color: theme.colors.neutral[400],
+                }}
+              >
                 Selecciona un elemento del sidebar para abrir aquí
               </p>
             </div>

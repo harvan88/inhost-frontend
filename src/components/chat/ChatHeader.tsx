@@ -1,5 +1,6 @@
 import { useConversation, useContact } from '@/store';
 import { Phone, Video, MoreVertical } from 'lucide-react';
+import { useTheme } from '@/theme';
 
 interface ChatHeaderProps {
   conversationId: string;
@@ -23,11 +24,18 @@ interface ChatHeaderProps {
 export default function ChatHeader({ conversationId }: ChatHeaderProps) {
   const conversation = useConversation(conversationId);
   const contact = useContact(conversation?.entityId ?? null);
+  const { theme } = useTheme();
 
   if (!conversation || !contact) {
     return (
-      <div className="border-b border-gray-200 px-6 py-4 bg-gray-50">
-        <div className="text-gray-500">Conversation not found</div>
+      <div
+        className="px-6 py-4"
+        style={{
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+          backgroundColor: theme.colors.neutral[50],
+        }}
+      >
+        <div style={{ color: theme.colors.neutral[500] }}>Conversation not found</div>
       </div>
     );
   }
@@ -35,68 +43,123 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'bg-green-500';
+        return theme.colors.semantic.success;
       case 'away':
-        return 'bg-yellow-500';
+        return theme.colors.semantic.warning;
       default:
-        return 'bg-gray-400';
+        return theme.colors.neutral[400];
     }
   };
 
-  const getChannelColor = (channel: string) => {
+  const getChannelBadgeStyle = (channel: string) => {
     switch (channel) {
       case 'whatsapp':
-        return 'bg-green-600 text-white';
+        return {
+          backgroundColor: theme.colors.channels.whatsapp[700],
+          color: theme.colors.neutral[0],
+        };
       case 'telegram':
-        return 'bg-blue-500 text-white';
+        return {
+          backgroundColor: theme.colors.channels.telegram[700],
+          color: theme.colors.neutral[0],
+        };
       case 'web':
-        return 'bg-purple-600 text-white';
+        return {
+          backgroundColor: theme.colors.channels.web[700],
+          color: theme.colors.neutral[0],
+        };
       case 'sms':
-        return 'bg-orange-500 text-white';
+        return {
+          backgroundColor: theme.colors.channels.sms[700],
+          color: theme.colors.neutral[0],
+        };
       default:
-        return 'bg-gray-600 text-white';
+        return {
+          backgroundColor: theme.colors.neutral[700],
+          color: theme.colors.neutral[0],
+        };
     }
   };
 
+  const channelBadgeStyle = getChannelBadgeStyle(conversation.channel);
+
   return (
-    <div className="border-b border-gray-200 px-6 py-4 bg-white">
+    <div
+      className="px-6 py-4"
+      style={{
+        borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+        backgroundColor: theme.colors.neutral[0],
+      }}
+    >
       <div className="flex items-center justify-between">
         {/* Left: Contact info */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
           {/* Avatar */}
           <div className="relative">
             {contact.avatar ? (
               <img
                 src={contact.avatar}
                 alt={contact.name}
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-12 h-12 object-cover"
+                style={{
+                  borderRadius: theme.radius.full,
+                }}
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-lg">
+              <div
+                className="w-12 h-12 flex items-center justify-center"
+                style={{
+                  borderRadius: theme.radius.full,
+                  backgroundColor: theme.colors.neutral[300],
+                  color: theme.colors.neutral[600],
+                  fontWeight: theme.typography.weights.semibold,
+                  fontSize: theme.typography.sizes.lg,
+                }}
+              >
                 {contact.name.charAt(0).toUpperCase()}
               </div>
             )}
             {/* Status indicator */}
             <div
-              className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(
-                contact.status
-              )}`}
+              className="absolute bottom-0 right-0 w-3 h-3"
+              style={{
+                borderRadius: theme.radius.full,
+                border: `2px solid ${theme.colors.neutral[0]}`,
+                backgroundColor: getStatusColor(contact.status),
+              }}
             />
           </div>
 
           {/* Name and metadata */}
           <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-lg font-semibold text-gray-900">{contact.name}</h2>
+            <div className="flex items-center gap-2">
+              <h2
+                style={{
+                  fontSize: theme.typography.sizes.lg,
+                  fontWeight: theme.typography.weights.semibold,
+                  color: theme.colors.neutral[900],
+                }}
+              >
+                {contact.name}
+              </h2>
               <span
-                className={`px-2 py-0.5 text-xs font-semibold rounded ${getChannelColor(
-                  conversation.channel
-                )}`}
+                className="px-2 py-0.5"
+                style={{
+                  ...channelBadgeStyle,
+                  fontSize: theme.typography.sizes.xs,
+                  fontWeight: theme.typography.weights.semibold,
+                  borderRadius: theme.radius.sm,
+                }}
               >
                 {conversation.channel.toUpperCase()}
               </span>
             </div>
-            <p className="text-sm text-gray-500">
+            <p
+              style={{
+                fontSize: theme.typography.sizes.sm,
+                color: theme.colors.neutral[500],
+              }}
+            >
               {contact.status === 'online' ? (
                 'Online'
               ) : contact.metadata?.lastSeen ? (
@@ -109,27 +172,72 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
         </div>
 
         {/* Right: Action buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <button
-            className="p-2 hover:bg-gray-100 rounded-lg transition"
+            className="p-2 transition"
+            style={{
+              borderRadius: theme.radius.lg,
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
             title="Voice call"
             aria-label="Voice call"
           >
-            <Phone className="w-5 h-5 text-gray-600" />
+            <Phone
+              className="w-5 h-5"
+              style={{
+                color: theme.colors.neutral[600],
+              }}
+            />
           </button>
           <button
-            className="p-2 hover:bg-gray-100 rounded-lg transition"
+            className="p-2 transition"
+            style={{
+              borderRadius: theme.radius.lg,
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
             title="Video call"
             aria-label="Video call"
           >
-            <Video className="w-5 h-5 text-gray-600" />
+            <Video
+              className="w-5 h-5"
+              style={{
+                color: theme.colors.neutral[600],
+              }}
+            />
           </button>
           <button
-            className="p-2 hover:bg-gray-100 rounded-lg transition"
+            className="p-2 transition"
+            style={{
+              borderRadius: theme.radius.lg,
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[100];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
             title="More options"
             aria-label="More options"
           >
-            <MoreVertical className="w-5 h-5 text-gray-600" />
+            <MoreVertical
+              className="w-5 h-5"
+              style={{
+                color: theme.colors.neutral[600],
+              }}
+            />
           </button>
         </div>
       </div>
