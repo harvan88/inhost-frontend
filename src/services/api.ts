@@ -3,20 +3,9 @@
  * Connects to http://localhost:3000 via Vite proxy (/api -> http://localhost:3000)
  */
 
-const API_BASE = '/api'; // Proxied to localhost:3000 by Vite
+import type { MessagePayload, HealthStatus, Message } from '@/types';
 
-interface MessagePayload {
-  type: 'incoming' | 'outgoing' | 'system';
-  channel: 'whatsapp' | 'telegram' | 'web' | 'sms';
-  content: {
-    text: string;
-  };
-  metadata: {
-    from: string;
-    to: string;
-    timestamp: string;
-  };
-}
+const API_BASE = '/api'; // Proxied to localhost:3000 by Vite
 
 class ApiClient {
   private baseUrl: string;
@@ -28,7 +17,7 @@ class ApiClient {
   /**
    * GET /health - Check API health
    */
-  async getHealth() {
+  async getHealth(): Promise<HealthStatus> {
     const response = await fetch(`${this.baseUrl}/health`);
     if (!response.ok) {
       throw new Error(`Health check failed: ${response.statusText}`);
@@ -39,7 +28,7 @@ class ApiClient {
   /**
    * POST /messages - Send a message
    */
-  async sendMessage(message: MessagePayload) {
+  async sendMessage(message: MessagePayload): Promise<Message> {
     const response = await fetch(`${this.baseUrl}/messages`, {
       method: 'POST',
       headers: {
@@ -60,7 +49,7 @@ class ApiClient {
   /**
    * GET /messages - Retrieve messages
    */
-  async getMessages(limit = 50) {
+  async getMessages(limit = 50): Promise<Message[]> {
     const response = await fetch(`${this.baseUrl}/messages?limit=${limit}`, {
       headers: {
         'X-User-Id': 'web-user',
@@ -71,7 +60,8 @@ class ApiClient {
       throw new Error(`Failed to get messages: ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
   }
 }
 

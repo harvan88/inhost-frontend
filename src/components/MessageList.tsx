@@ -1,16 +1,4 @@
-interface Message {
-  id: string;
-  type: 'incoming' | 'outgoing' | 'system';
-  channel: string;
-  content: {
-    text: string;
-  };
-  metadata: {
-    from: string;
-    to: string;
-    timestamp: string;
-  };
-}
+import type { Message } from '@/types';
 
 interface MessageListProps {
   messages: Message[];
