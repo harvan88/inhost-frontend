@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
+import { useTheme } from '@/theme';
 import ConversationListItem from './ConversationListItem';
 
 /**
@@ -69,13 +70,18 @@ import ConversationListItem from './ConversationListItem';
  */
 export default function PrimarySidebar() {
   const { activeActivity, sidebarVisible, sidebarWidth } = useWorkspaceStore();
+  const { theme } = useTheme();
 
   if (!sidebarVisible) return null;
 
   return (
     <div
-      className="bg-gray-50 border-r border-gray-200 overflow-auto flex flex-col"
-      style={{ width: `${sidebarWidth}px` }}
+      className="overflow-auto flex flex-col"
+      style={{
+        width: `${sidebarWidth}px`,
+        backgroundColor: theme.colors.neutral[50],
+        borderRight: `1px solid ${theme.colors.neutral[200]}`,
+      }}
     >
       {activeActivity === 'messages' && <ConversationListView />}
       {activeActivity === 'contacts' && <ContactsView />}
@@ -90,6 +96,7 @@ export default function PrimarySidebar() {
  */
 function ConversationListView() {
   const conversations = useStore((state) => state.entities.conversations);
+  const { theme } = useTheme();
   const conversationArray = Array.from(conversations.values()).sort((a, b) => {
     // Pinned first, then by updatedAt
     if (a.isPinned && !b.isPinned) return -1;
@@ -100,16 +107,48 @@ function ConversationListView() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Conversaciones</h2>
+      <div
+        style={{
+          padding: theme.spacing[4],
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+        }}
+      >
+        <h2
+          style={{
+            fontSize: theme.typography.sizes.lg,
+            fontWeight: theme.typography.weights.semibold,
+            color: theme.colors.neutral[900],
+            marginBottom: theme.spacing[3],
+          }}
+        >
+          Conversaciones
+        </h2>
 
         {/* Search */}
         <div className="relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+            style={{
+              color: theme.colors.neutral[400],
+            }}
+          />
           <input
             type="text"
             placeholder="Buscar conversaciones..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full pl-10 pr-4 py-2 focus:outline-none"
+            style={{
+              border: `1px solid ${theme.colors.neutral[300]}`,
+              borderRadius: theme.radius.lg,
+              fontSize: theme.typography.sizes.sm,
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = 'none';
+              e.currentTarget.style.boxShadow = `0 0 0 2px ${theme.colors.primary[500]}`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           />
         </div>
       </div>
@@ -117,22 +156,35 @@ function ConversationListView() {
       {/* Conversation List */}
       <div className="flex-1 overflow-y-auto">
         {conversationArray.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div
+            className="p-8 text-center"
+            style={{
+              color: theme.colors.neutral[500],
+            }}
+          >
             <p>No hay conversaciones</p>
           </div>
         ) : (
           conversationArray.map((conversation) => (
-            <ConversationListItem
-              key={conversation.id}
-              conversation={conversation}
-            />
+            <ConversationListItem key={conversation.id} conversation={conversation} />
           ))
         )}
       </div>
 
       {/* Footer Stats */}
-      <div className="p-3 border-t border-gray-200 bg-white">
-        <p className="text-xs text-gray-500">
+      <div
+        style={{
+          padding: theme.spacing[3],
+          borderTop: `1px solid ${theme.colors.neutral[200]}`,
+          backgroundColor: theme.colors.neutral[0],
+        }}
+      >
+        <p
+          style={{
+            fontSize: theme.typography.sizes.xs,
+            color: theme.colors.neutral[500],
+          }}
+        >
           Total: {conversationArray.length} conversaciones
         </p>
       </div>
@@ -144,28 +196,91 @@ function ConversationListView() {
  * Placeholder views for other activities
  */
 function ContactsView() {
+  const { theme } = useTheme();
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Contactos</h2>
-      <p className="text-sm text-gray-500">Directorio de contactos - Coming Soon</p>
+    <div
+      style={{
+        padding: theme.spacing[4],
+      }}
+    >
+      <h2
+        style={{
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
+          color: theme.colors.neutral[900],
+          marginBottom: theme.spacing[3],
+        }}
+      >
+        Contactos
+      </h2>
+      <p
+        style={{
+          fontSize: theme.typography.sizes.sm,
+          color: theme.colors.neutral[500],
+        }}
+      >
+        Directorio de contactos - Coming Soon
+      </p>
     </div>
   );
 }
 
 function ToolsView() {
+  const { theme } = useTheme();
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Herramientas</h2>
-      <p className="text-sm text-gray-500">Lista de herramientas del sistema - Coming Soon</p>
+    <div
+      style={{
+        padding: theme.spacing[4],
+      }}
+    >
+      <h2
+        style={{
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
+          color: theme.colors.neutral[900],
+          marginBottom: theme.spacing[3],
+        }}
+      >
+        Herramientas
+      </h2>
+      <p
+        style={{
+          fontSize: theme.typography.sizes.sm,
+          color: theme.colors.neutral[500],
+        }}
+      >
+        Lista de herramientas del sistema - Coming Soon
+      </p>
     </div>
   );
 }
 
 function PluginsView() {
+  const { theme } = useTheme();
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Plugins</h2>
-      <p className="text-sm text-gray-500">Extensiones y plugins instalados - Coming Soon</p>
+    <div
+      style={{
+        padding: theme.spacing[4],
+      }}
+    >
+      <h2
+        style={{
+          fontSize: theme.typography.sizes.lg,
+          fontWeight: theme.typography.weights.semibold,
+          color: theme.colors.neutral[900],
+          marginBottom: theme.spacing[3],
+        }}
+      >
+        Plugins
+      </h2>
+      <p
+        style={{
+          fontSize: theme.typography.sizes.sm,
+          color: theme.colors.neutral[500],
+        }}
+      >
+        Extensiones y plugins instalados - Coming Soon
+      </p>
     </div>
   );
 }

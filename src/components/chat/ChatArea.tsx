@@ -1,3 +1,4 @@
+import { useTheme } from '@/theme';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
@@ -30,19 +31,46 @@ interface ChatAreaProps {
  * - Saber cuántas ChatAreas existen
  */
 export default function ChatArea({ conversationId }: ChatAreaProps) {
+  const { theme } = useTheme();
+
   if (!conversationId) {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
+      <div
+        className="flex items-center justify-center h-full"
+        style={{
+          backgroundColor: theme.colors.neutral[50],
+        }}
+      >
         <div className="text-center">
-          <p className="text-xl text-gray-500 mb-2">No conversation selected</p>
-          <p className="text-sm text-gray-400">Select a conversation from the sidebar to start chatting</p>
+          <p
+            className="mb-2"
+            style={{
+              fontSize: theme.typography.sizes.xl,
+              color: theme.colors.neutral[500],
+            }}
+          >
+            No conversation selected
+          </p>
+          <p
+            style={{
+              fontSize: theme.typography.sizes.sm,
+              color: theme.colors.neutral[400],
+            }}
+          >
+            Select a conversation from the sidebar to start chatting
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div
+      className="flex flex-col h-full"
+      style={{
+        backgroundColor: theme.colors.neutral[0],
+      }}
+    >
       {/* Header: Shows who we're talking to */}
       <ChatHeader conversationId={conversationId} />
 
@@ -52,7 +80,12 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
       </div>
 
       {/* Input: Where user types messages */}
-      <div className="border-t border-gray-200 p-4">
+      <div
+        style={{
+          borderTop: `1px solid ${theme.colors.neutral[200]}`,
+          padding: theme.spacing[4],
+        }}
+      >
         <MessageInput conversationId={conversationId} />
       </div>
     </div>
