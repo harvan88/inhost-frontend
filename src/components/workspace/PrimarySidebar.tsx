@@ -4,13 +4,24 @@ import { useStore } from '@/store';
 import ConversationListItem from './ConversationListItem';
 
 /**
- * PrimarySidebar - Vista dinámica que cambia según el Activity seleccionado
+ * PrimarySidebar - Nivel 2: Sidebar Contextual
  *
- * Contenido:
- * - messages: Lista de conversaciones
- * - analytics: Dashboard de métricas
- * - contacts: Directorio de contactos
- * - settings: Configuración
+ * Rol en la arquitectura de tres niveles:
+ * - Segundo nivel de navegación
+ * - Muestra LISTA DE ENTIDADES del dominio seleccionado
+ * - Su contenido depende 100% del Activity Bar (Nivel 1)
+ * - Permite seleccionar QUÉ ELEMENTO específico abrir
+ *
+ * Contenido según dominio:
+ * - messages → Lista de conversaciones
+ * - analytics → Dashboard de métricas (Coming Soon)
+ * - contacts → Directorio de contactos (Coming Soon)
+ * - settings → Configuración de la app (Coming Soon)
+ *
+ * Cuando el usuario selecciona un elemento aquí,
+ * se abre su vista correspondiente en el Contenedor Dinámico (Nivel 3)
+ *
+ * Metáfora: Como el "Explorer" de VS Code cuando seleccionas el ícono de archivos
  */
 export default function PrimarySidebar() {
   const { activeActivity, sidebarVisible, sidebarWidth } = useWorkspaceStore();

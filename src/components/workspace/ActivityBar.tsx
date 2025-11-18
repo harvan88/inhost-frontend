@@ -15,10 +15,21 @@ const activities: Activity[] = [
 ];
 
 /**
- * ActivityBar - Barra de navegación principal vertical (izquierda)
+ * ActivityBar - Nivel 1: Selección de Dominio
  *
- * Metáfora: Como el "Activity Bar" de VS Code
- * Permite cambiar entre diferentes vistas en el Primary Sidebar
+ * Rol en la arquitectura de tres niveles:
+ * - Primer nivel de navegación (barra lateral izquierda)
+ * - Selecciona QUÉ TIPO de entidad se va a trabajar
+ * - NO muestra contenido, solo controla qué lista mostrar
+ * - Controla el contenido del Sidebar Contextual (Nivel 2)
+ *
+ * Dominios disponibles:
+ * - Mensajes: Conversaciones y chats
+ * - Analytics: Métricas y reportes
+ * - Contactos: Directorio de personas
+ * - Settings: Configuración de la app
+ *
+ * Metáfora: Como el "Activity Bar" de VS Code (Explorer, Search, Source Control)
  */
 export default function ActivityBar() {
   const { activeActivity, setActivity } = useWorkspaceStore();
