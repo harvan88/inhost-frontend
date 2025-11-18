@@ -294,6 +294,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             style={{
               borderRadius: theme.radius.sm,
               transitionDuration: theme.transitions.base,
+              color: theme.colors.neutral[700],
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = theme.colors.neutral[200];
@@ -314,6 +315,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
               style={{
                 borderRadius: theme.radius.sm,
                 transitionDuration: theme.transitions.base,
+                color: theme.colors.neutral[700],
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = theme.colors.neutral[200];
