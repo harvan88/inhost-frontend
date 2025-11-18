@@ -70,9 +70,56 @@ El archivo `theme.json` contiene los tokens base y sus derivados. Su estructura 
     "md": "0px 10px 15px rgba(0, 0, 0, 0.1)"
   },
   "transitions": { "fast": "150ms", "base": "200ms", "slow": "300ms" },
-  "zIndex": { "dropdown": "10", "modal": "20", "tooltip": "40" }
+  "zIndex": { "dropdown": "10", "modal": "20", "tooltip": "40" },
+  "componentStyles": {
+    "heading": {
+      "h1": { "fontSize": "24px", "fontWeight": "700", "margin": "16px", "lineHeight": "1.25" }
+    },
+    "button": {
+      "primary": { "fontSize": "14px", "fontWeight": "500", "padding": "12px 24px" }
+    },
+    "input": {
+      "default": { "fontSize": "14px", "fontWeight": "400", "padding": "12px 16px", "height": "44px" }
+    }
+  }
 }
 ```
+
+### 8.3.1 Component Styles (Nuevo)
+
+La sección `componentStyles` define estilos completos y reutilizables para cada tipo de componente, combinando tamaño, peso, espaciado y line-height en una única definición. Estos estilos son **independientes del tema de color** y solo definen estructura y jerarquía.
+
+**Principios:**
+- **Separación de roles**: Color solo determina apariencia visual; tipografía y espaciado son independientes
+- **Unicidad**: Cada tipo de componente tiene UNA sola definición de estilo
+- **Consistencia**: Reutilizable en todos los temas (light/dark)
+
+**Ejemplo de uso:**
+```tsx
+const { theme } = useTheme();
+
+// Título H1 con estilo completo del tema
+<h1 style={{
+  fontSize: theme.componentStyles.heading.h1.fontSize,      // 24px
+  fontWeight: theme.componentStyles.heading.h1.fontWeight,  // 700
+  margin: theme.componentStyles.heading.h1.margin,          // 16px
+  lineHeight: theme.componentStyles.heading.h1.lineHeight,  // 1.25
+  color: theme.colors.neutral[900]                           // Color desde theme.colors
+}}>
+  Título Principal
+</h1>
+
+// Botón primario con estilos estructurales + colores del tema
+<button style={{
+  ...theme.componentStyles.button.primary,                   // fontSize, fontWeight, padding
+  backgroundColor: theme.colors.primary[600],                 // Color desde theme.colors
+  color: theme.colors.neutral[0]
+}}>
+  Acción Principal
+</button>
+```
+
+Ver [COMPONENT_STYLES.md](./COMPONENT_STYLES.md) para el inventario completo de componentes y guía de uso detallada.
 
 ---
 
@@ -274,11 +321,13 @@ function ThemeSwitcher() {
 ```
 src/theme/
 ├── theme.json              # Tema por defecto (Professional Light)
+├── dark-theme.json         # Tema oscuro (Professional Dark)
 ├── types.ts                # Definiciones de tipos TypeScript
 ├── utils.ts                # Utilidades (validación de contraste WCAG)
 ├── ThemeProvider.tsx       # Proveedor de tema global
 ├── index.ts                # Exportaciones públicas
-└── README.md               # Esta documentación
+├── README.md               # Esta documentación
+└── COMPONENT_STYLES.md     # Guía de Estilos de Componentes FluxCore
 ```
 
 ---

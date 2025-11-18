@@ -198,6 +198,122 @@ export interface ComponentLayouts {
 }
 
 /**
+ * Estilos unificados de componentes (FluxCore Style Standards)
+ *
+ * Define estilos completos y reutilizables para cada tipo de componente.
+ * Cada estilo combina tamaño, peso, espaciado y line-height en una única definición.
+ * Estos estilos son independientes del tema de color - solo definen estructura y jerarquía.
+ */
+export interface ComponentStyles {
+  // Tipografía y títulos
+  heading: {
+    h1: {
+      fontSize: string;      // 24px
+      fontWeight: string;    // bold
+      margin: string;        // 16px
+      lineHeight: string;
+    };
+    h2: {
+      fontSize: string;      // 20px
+      fontWeight: string;    // semibold
+      margin: string;        // 12px
+      lineHeight: string;
+    };
+    h3: {
+      fontSize: string;
+      fontWeight: string;
+      margin: string;
+      lineHeight: string;
+    };
+  };
+
+  // Texto
+  text: {
+    normal: {
+      fontSize: string;      // 14px
+      fontWeight: string;    // regular
+      lineHeight: string;    // 1.5
+    };
+    metadata: {
+      fontSize: string;      // 12px
+      fontWeight: string;    // regular
+      lineHeight: string;    // 1.4
+    };
+    label: {
+      fontSize: string;
+      fontWeight: string;
+      lineHeight: string;
+    };
+  };
+
+  // Botones
+  button: {
+    primary: {
+      fontSize: string;      // 14px
+      fontWeight: string;    // medium
+      padding: string;       // 12px 24px
+    };
+    secondary: {
+      fontSize: string;      // 14px
+      fontWeight: string;    // medium
+      padding: string;       // 10px 20px
+    };
+    small: {
+      fontSize: string;
+      fontWeight: string;
+      padding: string;
+    };
+  };
+
+  // Inputs y formularios
+  input: {
+    default: {
+      fontSize: string;      // 14px
+      fontWeight: string;    // regular
+      padding: string;       // 12px 16px
+      height: string;
+    };
+    small: {
+      fontSize: string;
+      fontWeight: string;
+      padding: string;
+      height: string;
+    };
+  };
+
+  // Tags y badges
+  tag: {
+    default: {
+      fontSize: string;      // 12px
+      fontWeight: string;    // medium
+      padding: string;       // 4px 8px
+    };
+    small: {
+      fontSize: string;
+      fontWeight: string;
+      padding: string;
+    };
+  };
+
+  // Componentes de layout
+  layout: {
+    activityBar: {
+      iconSize: string;       // 24-28px
+      spacing: string;        // 16px vertical
+    };
+    sidebar: {
+      width: string;          // 280-320px
+      itemSpacing: string;
+    };
+    container: {
+      headerHeight: string;
+      footerHeight: string;
+      contentPadding: string;
+    };
+  };
+}
+
+/**
  * Tema completo de FluxCore
  *
  * Single Source of Truth (SSOT) para todos los valores visuales.
@@ -217,6 +333,7 @@ export interface Theme {
   componentSizes: ComponentSizes;
   componentSpacing: ComponentSpacing;
   componentLayouts: ComponentLayouts;
+  componentStyles: ComponentStyles;
 }
 
 /**
