@@ -52,9 +52,13 @@ export function Tag({
     console.error('[Tag] CONTRATO ROTO: Tag debe tener contenido (children)');
   }
 
-  const sizeStyles = size === 'small'
-    ? theme.componentStyles.tag.small
-    : theme.componentStyles.tag.default;
+  // FUENTE DE VERDAD ÚNICA: Tokens centrales de tipografía
+  // NO usar componentStyles.tag - valores hardcodeados que no reaccionan
+  const fontSize = size === 'small' ? theme.typography.sizes.xs : theme.typography.sizes.xs;
+  const fontWeight = theme.typography.weights.medium;
+  const padding = size === 'small'
+    ? `${theme.spacing[1]} ${theme.spacing[2]}` // 4px 8px
+    : `${theme.spacing[1]} ${theme.spacing[2]}`; // 4px 8px
 
   // Resolver colores del mapa
   const getColorValue = (path: string) => {
@@ -78,13 +82,14 @@ export function Tag({
       className={className}
       style={{
         display: 'inline-block',
-        padding: sizeStyles.padding,
-        fontSize: sizeStyles.fontSize,
-        fontWeight: sizeStyles.fontWeight,
+        padding,
+        fontSize,
+        fontWeight,
+        fontFamily: theme.typography.fontFamily.base,
         backgroundColor: getColorValue(colors.bg),
         color: getColorValue(colors.text),
         borderRadius: theme.radius.sm,
-        lineHeight: 1,
+        lineHeight: theme.typography.lineHeights.tight,
       }}
     >
       {children}

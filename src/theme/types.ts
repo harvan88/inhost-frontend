@@ -321,6 +321,25 @@ export interface ComponentStyles {
 }
 
 /**
+ * Accessibility - Valores de accesibilidad WCAG 2.1
+ */
+export interface Accessibility {
+  focusRing: {
+    width: string;
+    style: string;
+    offset: string;
+    color: {
+      light: string;
+      dark: string;
+    };
+  };
+  touchTarget: {
+    minimum: string;
+    recommended: string;
+  };
+}
+
+/**
  * Tema completo de FluxCore
  *
  * Single Source of Truth (SSOT) para todos los valores visuales.
@@ -341,6 +360,7 @@ export interface Theme {
   componentSpacing: ComponentSpacing;
   componentLayouts: ComponentLayouts;
   componentStyles: ComponentStyles;
+  accessibility: Accessibility;
 }
 
 /**

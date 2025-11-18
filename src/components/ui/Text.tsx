@@ -45,8 +45,25 @@ export function Text({
 }: TextProps) {
   const { theme } = useTheme();
 
-  // Estilos del theme según variante
-  const textStyles = theme.componentStyles.text[variant];
+  // FUENTE DE VERDAD ÚNICA: Tokens centrales de tipografía
+  // NO usar componentStyles.text - valores hardcodeados que no reaccionan
+  const variantStyles = {
+    normal: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.normal,
+      lineHeight: theme.typography.lineHeights.normal,
+    },
+    metadata: {
+      fontSize: theme.typography.sizes.xs,
+      fontWeight: theme.typography.weights.normal,
+      lineHeight: theme.typography.lineHeights.normal,
+    },
+    label: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.medium,
+      lineHeight: theme.typography.lineHeights.normal,
+    },
+  };
 
   // Colores por variante
   const colorMap = {
@@ -61,9 +78,9 @@ export function Text({
 
   // Estilos base del theme
   const baseStyles: CSSProperties = {
-    fontSize: textStyles.fontSize,
-    fontWeight: textStyles.fontWeight,
-    lineHeight: textStyles.lineHeight,
+    fontSize: variantStyles[variant].fontSize,
+    fontWeight: variantStyles[variant].fontWeight,
+    lineHeight: variantStyles[variant].lineHeight,
     fontFamily: theme.typography.fontFamily.base,
     color: colorMap[color],
     margin: 0,

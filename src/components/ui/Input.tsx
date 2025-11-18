@@ -61,14 +61,30 @@ export function Input({
 }: InputProps) {
   const { theme } = useTheme();
 
-  // Estilos del theme según variante
-  const variantMap = {
-    default: 'default',
-    small: 'small',
-    search: 'default', // search usa el mismo estilo que default
-  } as const;
+  // FUENTE DE VERDAD ÚNICA: Tokens centrales de tipografía y spacing
+  // NO usar componentStyles.input - valores hardcodeados que no reaccionan
+  const variantStyles = {
+    default: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.normal,
+      padding: `${theme.spacing[3]} ${theme.spacing[4]}`, // 12px 16px
+      height: theme.accessibility.touchTarget.minimum, // 44px
+    },
+    small: {
+      fontSize: theme.typography.sizes.xs,
+      fontWeight: theme.typography.weights.normal,
+      padding: `${theme.spacing[2]} ${theme.spacing[3]}`, // 8px 12px
+      height: '36px',
+    },
+    search: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.normal,
+      padding: `${theme.spacing[3]} ${theme.spacing[4]}`, // 12px 16px
+      height: theme.accessibility.touchTarget.minimum, // 44px
+    },
+  };
 
-  const inputStyles = theme.componentStyles.input[variantMap[variant]];
+  const inputStyles = variantStyles[variant];
 
   // Estados de color
   const borderColor = error
@@ -156,8 +172,9 @@ export function Input({
       {label && (
         <label
           style={{
-            fontSize: theme.componentStyles.text.label.fontSize,
-            fontWeight: theme.componentStyles.text.label.fontWeight,
+            fontSize: theme.typography.sizes.sm,
+            fontWeight: theme.typography.weights.medium,
+            lineHeight: theme.typography.lineHeights.normal,
             color: disabled ? theme.colors.neutral[400] : theme.colors.neutral[700],
           }}
         >
