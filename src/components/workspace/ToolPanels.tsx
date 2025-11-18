@@ -3,6 +3,7 @@ import { ChevronDown, User, Package, Zap, Phone, Mail, Tag } from 'lucide-react'
 import { useWorkspaceStore, useActiveTab } from '@/store/workspace';
 import { useConversation, useContact } from '@/store';
 import { useTheme } from '@/theme';
+import { Text } from '@/components/ui';
 import { Avatar, StatusIndicator, Badge } from '@/components/common';
 
 /**
@@ -39,11 +40,11 @@ export default function ToolPanels() {
         <div
           style={{
             padding: theme.spacing[4],
-            fontSize: theme.componentStyles.text.normal.fontSize,
-            color: theme.colors.neutral[500],
           }}
         >
-          Analytics tools - Coming Soon
+          <Text color="muted">
+            Analytics tools - Coming Soon
+          </Text>
         </div>
       )}
     </div>
@@ -93,31 +94,31 @@ function CustomerInfoPanel({ contact, theme }: { contact: NonNullable<ReturnType
             fallbackText={contact.name}
           />
           <div>
-            <h3 style={{ fontWeight: 500, color: theme.colors.neutral[900] }}>{contact.name}</h3>
+            <Text style={{ fontWeight: 500 }}>{contact.name}</Text>
             <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[1] }}>
               <StatusIndicator
                 status={contact.status as 'online' | 'offline' | 'away'}
                 position="inline"
               />
-              <span style={{ fontSize: theme.componentStyles.text.metadata.fontSize, color: theme.colors.neutral[500], textTransform: 'capitalize' }}>
+              <Text variant="metadata" color="muted" style={{ textTransform: 'capitalize' }}>
                 {contact.status}
-              </span>
+              </Text>
             </div>
           </div>
         </div>
 
         {/* Contact Details */}
         {contact.metadata?.phoneNumber && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2], fontSize: theme.componentStyles.text.normal.fontSize }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2] }}>
             <Phone size={theme.iconSizes.sm} style={{ color: theme.colors.neutral[400] }} />
-            <span style={{ color: theme.colors.neutral[700] }}>{contact.metadata.phoneNumber}</span>
+            <Text>{contact.metadata.phoneNumber}</Text>
           </div>
         )}
 
         {contact.metadata?.email && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2], fontSize: theme.componentStyles.text.normal.fontSize }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2] }}>
             <Mail size={theme.iconSizes.sm} style={{ color: theme.colors.neutral[400] }} />
-            <span style={{ color: theme.colors.neutral[700] }}>{contact.metadata.email}</span>
+            <Text>{contact.metadata.email}</Text>
           </div>
         )}
 
@@ -174,10 +175,10 @@ function RecentOrdersPanel({ theme }: { theme: any }) {
               onMouseLeave={() => setBorderColor(theme.colors.neutral[200])}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing[1] }}>
-                <span style={{ fontWeight: 500, color: theme.colors.neutral[900] }}>{order.number}</span>
-                <span style={{ fontSize: theme.componentStyles.text.normal.fontSize, fontWeight: 500, color: theme.colors.neutral[900] }}>
+                <Text style={{ fontWeight: 500 }}>{order.number}</Text>
+                <Text style={{ fontWeight: 500 }}>
                   ${order.total}
-                </span>
+                </Text>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2] }}>
                 <Badge
@@ -253,9 +254,9 @@ function QuickActionsPanel({ theme }: { theme: any }) {
               }}
             >
               <span style={{ fontSize: theme.typography.sizes.xl }}>{action.icon}</span>
-              <span style={{ fontSize: theme.componentStyles.text.normal.fontSize, fontWeight: 500, color: theme.colors.neutral[700] }}>
+              <Text style={{ fontWeight: 500, color: theme.colors.neutral[700] }}>
                 {action.label}
-              </span>
+              </Text>
             </button>
           );
         })}
@@ -301,9 +302,9 @@ function ToolPanel({ title, icon, isCollapsed, onToggle, children, theme }: Tool
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing[2] }}>
           {icon}
-          <span style={{ fontWeight: 500, fontSize: theme.componentStyles.text.normal.fontSize, color: theme.colors.neutral[900] }}>
+          <Text style={{ fontWeight: 500 }}>
             {title}
-          </span>
+          </Text>
         </div>
         <ChevronDown
           size={theme.iconSizes.md}
