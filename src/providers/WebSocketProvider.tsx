@@ -32,6 +32,7 @@ import type {
 import { db } from '@/services/database';
 import { syncService } from '@/services/sync';
 import { useStore } from '@/store';
+import { useToastStore } from '@/components/feedback';
 import { logger } from '@/services/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -81,6 +82,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const setConnectionStatus = useStore((s) => s.actions.setConnectionStatus);
   const addMessage = useStore((s) => s.actions.addMessage);
   const updateSimulationState = useStore((s) => s.actions.updateSimulationState);
+  const addToast = useToastStore((s) => s.addToast);
 
   // Config
   const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5173/realtime';
@@ -185,10 +187,16 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     // 5. Show notification if conversation is not active
     const { ui } = useStore.getState();
     if (ui.activeConversationId !== message.conversationId && message.type === 'incoming') {
-      // TODO: Show browser notification
+      // Show toast notification for new incoming messages
+      addToast({
+        type: 'info',
+        message: `Nuevo mensaje de ${contact.name}`,
+        description: message.content.text || '[Media]',
+        duration: 4000,
+      });
       console.log(`🔔 New message from ${contact.name}`);
     }
-  }, [addMessage]);
+  }, [addMessage, addToast]);
 
   const handleMessageProcessing = useCallback((event: MessageProcessingEvent) => {
     console.log('⚙️ Message processing:', event);
@@ -250,7 +258,19 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     // 4. Update Zustand store with message
     addMessage(message.conversationId, message);
-  }, [addMessage]);
+
+    // 5. Show toast notification for extension responses
+    const extensionName = message.metadata.extensionId || 'Extension';
+    const { ui } = useStore.getState();
+    if (ui.activeConversationId !== message.conversationId) {
+      addToast({
+        type: 'success',
+        message: `Respuesta de ${extensionName}`,
+        description: message.content.text || '[Media]',
+        duration: 3000,
+      });
+    }
+  }, [addMessage, addToast]);
 
   const handleClientToggle = useCallback(async (event: ClientToggleEvent) => {
     console.log('🔌 Client toggle:', event);
@@ -358,9 +378,22 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     // Handle rate limiting
     if (event.code === 'RATE_LIMIT_EXCEEDED') {
       console.warn(`Rate limit exceeded. Retry after ${event.retryAfter}s`);
-      // TODO: Show user notification
+      addToast({
+        type: 'warning',
+        message: 'Rate limit excedido',
+        description: `Por favor espera ${event.retryAfter}s antes de reintentar`,
+        duration: 5000,
+      });
+    } else {
+      // Show generic error toast
+      addToast({
+        type: 'error',
+        message: 'Error de conexión',
+        description: event.message,
+        duration: 5000,
+      });
     }
-  }, []);
+  }, [addToast]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // MESSAGE ROUTING
