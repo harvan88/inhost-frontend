@@ -43,11 +43,13 @@ export interface DynamicContainer {
  * - Persistencia del layout definido por el usuario
  */
 interface WorkspaceState {
-  // ━━━ NIVEL 1: ACTIVITY BAR ━━━
-  activeActivity: 'messages' | 'analytics' | 'contacts' | 'settings';
-  setActivity: (activity: 'messages' | 'analytics' | 'contacts' | 'settings') => void;
+  // ━━━ NIVEL 1: BARRA DE ACTIVIDAD (ACTIVITY BAR) ━━━
+  activeActivity: 'messages' | 'contacts' | 'tools' | 'plugins';
+  activityBarExpanded: boolean;
+  setActivity: (activity: 'messages' | 'contacts' | 'tools' | 'plugins') => void;
+  toggleActivityBar: () => void;
 
-  // ━━━ NIVEL 2: SIDEBAR CONTEXTUAL ━━━
+  // ━━━ NIVEL 2: BARRA LATERAL CONTEXTUAL (SIDEBAR) ━━━
   sidebarVisible: boolean;
   sidebarWidth: number;
   toggleSidebar: () => void;
@@ -77,6 +79,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     (set, get) => ({
       // ━━━ INITIAL STATE ━━━
       activeActivity: 'messages',
+      activityBarExpanded: true,
       sidebarVisible: true,
       sidebarWidth: 320,
       layout: 'single',
@@ -91,10 +94,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       // ━━━ ACTIONS ━━━
 
-      // Nivel 1: Activity Bar
+      // Nivel 1: Barra de Actividad
       setActivity: (activity) => set({ activeActivity: activity }),
+      toggleActivityBar: () =>
+        set((state) => ({
+          activityBarExpanded: !state.activityBarExpanded,
+        })),
 
-      // Nivel 2: Sidebar Contextual
+      // Nivel 2: Barra Lateral Contextual
       toggleSidebar: () =>
         set((state) => ({
           sidebarVisible: !state.sidebarVisible,
@@ -226,9 +233,10 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       name: 'inhost-workspace',
       // Solo persistir layout preferences, NO las tabs (se recargan del server)
       partialize: (state) => ({
+        activeActivity: state.activeActivity,
+        activityBarExpanded: state.activityBarExpanded,
         sidebarVisible: state.sidebarVisible,
         sidebarWidth: state.sidebarWidth,
-        activeActivity: state.activeActivity,
         layout: state.layout,
       }),
     }
