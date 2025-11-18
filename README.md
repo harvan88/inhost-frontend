@@ -51,26 +51,58 @@ This means you can call `/api/health` in your code and it will automatically rou
 ## Project Structure
 
 ```
-src/
-├── components/      # Reusable UI components
-│   ├── Header.tsx
-│   ├── MessageList.tsx
-│   ├── MessageInput.tsx
-│   └── StatusCard.tsx
-├── pages/          # Page components
-│   └── Dashboard.tsx
-├── services/       # API client services
-│   └── api.ts
-├── hooks/          # Custom React hooks
-│   └── useWebSocket.ts
-├── types/          # TypeScript type definitions
-│   └── index.ts
-├── styles/         # Global styles
-│   ├── index.css
-│   └── App.css
-├── App.tsx         # Root component
-└── main.tsx        # Entry point
+inhost-frontend/
+├── src/                      # 🎯 Main application code
+│   ├── components/
+│   │   ├── chat/            # Chat-specific components
+│   │   │   ├── MessageList.tsx
+│   │   │   └── MessageInput.tsx
+│   │   ├── layout/          # Layout components
+│   │   │   ├── Header.tsx
+│   │   │   └── StatusCard.tsx
+│   │   └── ui/              # Reusable UI components
+│   ├── pages/               # Page components
+│   │   └── Dashboard.tsx
+│   ├── services/            # API client services
+│   │   └── api.ts
+│   ├── hooks/               # Custom React hooks
+│   │   └── useWebSocket.ts
+│   ├── types/               # TypeScript type definitions
+│   │   └── index.ts
+│   ├── styles/              # Global styles
+│   │   ├── components/      # Component-specific styles
+│   │   └── themes/          # Theme styles
+│   ├── store/               # State management (future)
+│   ├── lib/                 # Utilities and helpers
+│   ├── config/              # Configuration files
+│   ├── App.tsx              # Root component
+│   └── main.tsx             # Entry point
+│
+├── docs/                    # 📚 Documentation
+│   ├── architecture/        # Architecture docs
+│   │   ├── RESUMEN_EJECUTIVO.md
+│   │   ├── ARQUITECTURA_PRIORITARIA.md
+│   │   ├── frontend-strategy.md
+│   │   └── plan-modular.md
+│   ├── guides/              # Setup and user guides
+│   │   ├── SETUP.md
+│   │   └── frontend-backend-separation.md
+│   └── decisions/           # Architecture Decision Records (ADRs)
+│       ├── 001-reorganizacion-y-stack.md
+│       └── 002-merge-preparation.md
+│
+├── tools/                   # 🛠️ Development tools (independent)
+│   └── theme-builder/       # Color palette visual tool
+│       ├── index.html       # Standalone tool UI
+│       ├── themes.json      # Source of truth for colors
+│       └── README.md
+│
+├── public/                  # Static assets
+├── .env.example            # Environment variables template
+└── package.json
 ```
+
+**Note**: `/tools/theme-builder` is a **separate standalone tool** for designers, not part of the main INHOST frontend app.
 
 ## Features
 

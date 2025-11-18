@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import Header from '@components/Header';
-import MessageList from '@components/MessageList';
-import MessageInput from '@components/MessageInput';
-import StatusCard from '@components/StatusCard';
+import Header from '@components/layout/Header';
+import MessageList from '@components/chat/MessageList';
+import MessageInput from '@components/chat/MessageInput';
+import StatusCard from '@components/layout/StatusCard';
 import { apiClient } from '@services/api';
 import { useWebSocket } from '@hooks/useWebSocket';
 import type { Message, HealthStatus, WebSocketMessage } from '@/types';
