@@ -228,30 +228,170 @@ function ContactsView() {
 
 function ToolsView() {
   const { theme } = useTheme();
+  const { openTab, activeContainerId } = useWorkspaceStore();
+
+  const tools = [
+    {
+      id: 'theme-editor',
+      name: 'Theme Editor',
+      description: 'Editor visual de temas en tiempo real',
+      icon: '🎨',
+      category: 'Diseño',
+    },
+    {
+      id: 'analytics',
+      name: 'Analytics',
+      description: 'Análisis y métricas del sistema',
+      icon: '📊',
+      category: 'Datos',
+    },
+    {
+      id: 'transcriptor',
+      name: 'Transcriptor',
+      description: 'Transcripción de audio a texto',
+      icon: '🎙️',
+      category: 'IA',
+    },
+  ];
+
+  const handleOpenTool = (toolId: string, toolName: string) => {
+    openTab(
+      {
+        id: `${toolId}-${Date.now()}`,
+        type: toolId === 'theme-editor' ? 'theme_editor' : 'analytics',
+        label: toolName,
+        entityId: toolId,
+        icon: tools.find((t) => t.id === toolId)?.icon,
+        closable: true,
+      },
+      activeContainerId || undefined
+    );
+  };
+
   return (
-    <div
-      style={{
-        padding: theme.spacing[4],
-      }}
-    >
-      <h2
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div
         style={{
-          fontSize: theme.typography.sizes.lg,
-          fontWeight: theme.typography.weights.semibold,
-          color: theme.colors.neutral[900],
-          marginBottom: theme.spacing[3],
+          padding: theme.spacing[4],
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
       >
-        Herramientas
-      </h2>
-      <p
+        <h2
+          style={{
+            fontSize: theme.typography.sizes.lg,
+            fontWeight: theme.typography.weights.semibold,
+            color: theme.colors.neutral[900],
+            marginBottom: theme.spacing[1],
+          }}
+        >
+          Herramientas
+        </h2>
+        <p
+          style={{
+            fontSize: theme.typography.sizes.sm,
+            color: theme.colors.neutral[600],
+          }}
+        >
+          Sistema de herramientas y plugins
+        </p>
+      </div>
+
+      {/* Tools List */}
+      <div
+        className="flex-1 overflow-y-auto"
         style={{
-          fontSize: theme.typography.sizes.sm,
-          color: theme.colors.neutral[500],
+          padding: theme.spacing[2],
         }}
       >
-        Lista de herramientas del sistema - Coming Soon
-      </p>
+        {tools.map((tool) => (
+          <button
+            key={tool.id}
+            onClick={() => handleOpenTool(tool.id, tool.name)}
+            className="w-full text-left transition"
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: theme.spacing[3],
+              padding: theme.spacing[3],
+              marginBottom: theme.spacing[2],
+              backgroundColor: theme.colors.neutral[0],
+              border: `1px solid ${theme.colors.neutral[200]}`,
+              borderRadius: theme.radius.lg,
+              cursor: 'pointer',
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.primary[50];
+              e.currentTarget.style.borderColor = theme.colors.primary[300];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
+              e.currentTarget.style.borderColor = theme.colors.neutral[200];
+            }}
+          >
+            <div
+              style={{
+                fontSize: theme.typography.sizes['2xl'],
+              }}
+            >
+              {tool.icon}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: theme.typography.sizes.base,
+                  fontWeight: theme.typography.weights.semibold,
+                  color: theme.colors.neutral[900],
+                  marginBottom: theme.spacing[1],
+                }}
+              >
+                {tool.name}
+              </div>
+              <div
+                style={{
+                  fontSize: theme.typography.sizes.sm,
+                  color: theme.colors.neutral[600],
+                  marginBottom: theme.spacing[1],
+                }}
+              >
+                {tool.description}
+              </div>
+              <div
+                style={{
+                  display: 'inline-block',
+                  padding: `${theme.spacing[1]} ${theme.spacing[2]}`,
+                  backgroundColor: theme.colors.neutral[100],
+                  borderRadius: theme.radius.sm,
+                  fontSize: theme.typography.sizes.xs,
+                  color: theme.colors.neutral[700],
+                  fontWeight: theme.typography.weights.medium,
+                }}
+              >
+                {tool.category}
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          padding: theme.spacing[3],
+          borderTop: `1px solid ${theme.colors.neutral[200]}`,
+          backgroundColor: theme.colors.neutral[0],
+        }}
+      >
+        <p
+          style={{
+            fontSize: theme.typography.sizes.xs,
+            color: theme.colors.neutral[500],
+          }}
+        >
+          {tools.length} herramientas disponibles
+        </p>
+      </div>
     </div>
   );
 }
