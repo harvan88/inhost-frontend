@@ -3,6 +3,7 @@ import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import { Text } from '@/components/ui';
 import DynamicContainer from './DynamicContainer';
+import { useResizeObserver } from '@/hooks/useResizeObserver';
 
 /**
  * Canvas - Lienzo Dinámico (Nivel 3)
@@ -102,14 +103,38 @@ import DynamicContainer from './DynamicContainer';
  * - Paneles dinámicos de Figma/Adobe XD
  */
 export default function Canvas() {
-  const { containers, createContainer } = useWorkspaceStore();
+  const { containers, createContainer, adjustContainerWidths } = useWorkspaceStore();
   const { theme, toggleTheme, isDark } = useTheme();
+
+  // CONTRATO: "Si lienzo se achica se achican proporcionalmente"
+  // Observar cambios de tamaño del Canvas para redistribuir contenedores
+  const canvasRef = useResizeObserver<HTMLDivElement>((entry) => {
+    const canvasWidth = entry.contentRect.width;
+    const MIN_CONTAINER_WIDTH = 300;
+    const containerCount = containers.length;
+
+    // Si el Canvas es demasiado pequeño para mostrar todos los contenedores
+    // con su ancho mínimo, redistribuir proporcionalmente
+    if (containerCount > 0 && canvasWidth < containerCount * MIN_CONTAINER_WIDTH) {
+      // Los contenedores se ajustarán automáticamente con min-width: 300px
+      // y scroll horizontal si es necesario
+      console.warn(
+        `Canvas width (${canvasWidth}px) is too small for ${containerCount} containers at min-width ${MIN_CONTAINER_WIDTH}px`
+      );
+    }
+
+    // Siempre redistribuir proporcionalmente cuando hay cambios de tamaño
+    if (containerCount > 1) {
+      adjustContainerWidths();
+    }
+  });
 
   // Máximo 3 contenedores
   const canAddContainer = containers.length < 3;
 
   return (
     <div
+      ref={canvasRef}
       className="flex-1 flex flex-col"
       style={{
         backgroundColor: theme.colors.neutral[0],

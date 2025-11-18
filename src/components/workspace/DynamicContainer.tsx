@@ -194,6 +194,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
       onClick={() => setActiveContainer(containerId)}
       style={{
         width: container.width,
+        minWidth: '300px', // CONTRATO: Ancho mínimo para evitar contenedores inutilizables
         height: '100%',
         maxHeight: '100%',
         overflow: 'hidden',

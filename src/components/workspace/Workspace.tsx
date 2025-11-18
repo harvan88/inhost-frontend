@@ -90,22 +90,40 @@ export default function Workspace() {
   // Desktop layout (existing)
   return (
     <div
-      className="h-screen flex"
+      className="h-screen"
       style={{
+        position: 'relative',
         backgroundColor: theme.colors.neutral[50],
       }}
     >
-      {/* Nivel 1: Activity Bar - Selección de dominio */}
-      {/* FIXED: flex-shrink-0 para evitar que se encoja cuando Canvas se expande */}
-      <div className="flex-shrink-0">
+      {/* Nivel 1: Activity Bar - Posición absoluta (muralla inamovible) */}
+      {/* CONTRATO: "Active bar tienen posición absoluta al lado izquierdo, nunca se desplaza o se mueve es una muralla" */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          height: '100%',
+          width: theme.componentSizes.sidebar.activityBar, // 64px
+          zIndex: theme.zIndex.sidebar,
+        }}
+      >
         <ActivityBar />
       </div>
 
-      {/* Nivel 2: Sidebar Contextual - Lista de entidades */}
-      <PrimarySidebar />
+      {/* Contenedor para Sidebar + Canvas (con margen izquierdo para ActivityBar) */}
+      <div
+        className="h-full flex"
+        style={{
+          marginLeft: theme.componentSizes.sidebar.activityBar, // 64px - espacio para ActivityBar
+        }}
+      >
+        {/* Nivel 2: Sidebar Contextual - Lista de entidades */}
+        <PrimarySidebar />
 
-      {/* Nivel 3: Lienzo (Canvas) - Superficie con múltiples Contenedores Dinámicos */}
-      <Canvas />
+        {/* Nivel 3: Lienzo (Canvas) - Superficie con múltiples Contenedores Dinámicos */}
+        <Canvas />
+      </div>
     </div>
   );
 }
