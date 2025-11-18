@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
-import { Heading, Text, Input, ListCard } from '@/components/ui';
+import { Heading, Text, Input, ListCard, Tag } from '@/components/ui';
 import { createTab, isTabActive } from '@/utils/tabHelpers';
 import ConversationListItem from './ConversationListItem';
 
@@ -305,19 +305,7 @@ function ToolsView() {
               >
                 {tool.description}
               </Text>
-              <div
-                style={{
-                  display: 'inline-block',
-                  padding: theme.componentStyles.tag.small.padding,
-                  backgroundColor: theme.colors.neutral[100],
-                  borderRadius: theme.radius.sm,
-                  fontSize: theme.componentStyles.tag.small.fontSize,
-                  fontWeight: theme.componentStyles.tag.small.fontWeight,
-                  color: theme.colors.neutral[700],
-                }}
-              >
-                {tool.category}
-              </div>
+              <Tag size="small">{tool.category}</Tag>
             </div>
             </div>
           </ListCard>
