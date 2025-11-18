@@ -91,6 +91,7 @@ export default function ActivityBar() {
       style={{
         display: 'flex',
         flexDirection: 'column',
+        height: '100%',
         paddingTop: theme.spacing[4],
         paddingBottom: theme.spacing[4],
         gap: theme.spacing[2],

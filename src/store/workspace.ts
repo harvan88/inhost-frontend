@@ -226,7 +226,51 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       // Container Actions - operate on specific or active container
       openTab: (tab, containerId) =>
         set((state) => {
-          const targetContainerId = containerId || state.activeContainerId;
+          // LÓGICA MEJORADA según requerimientos:
+          // 1. Si la tab está activa y se hace clic, cerrarla (retract)
+          // 2. Si no especifica containerId:
+          //    a. Buscar contenedor vacío (sin tabs) → abrir ahí
+          //    b. Si no hay vacío → abrir en contenedor activo
+          // 3. Si la tab ya existe en otro contenedor, activarla ahí
+
+          // Verificar si la tab ya está activa en algún contenedor
+          const activeContainer = state.containers.find(
+            (c) => c.activeTabId === tab.id && c.tabs.some((t) => t.id === tab.id)
+          );
+
+          // Si está activa y se hace clic de nuevo, cerrarla (toggle behavior)
+          if (activeContainer) {
+            return {
+              containers: state.containers.map((container) => {
+                if (container.id !== activeContainer.id) return container;
+
+                const newTabs = container.tabs.filter((t) => t.id !== tab.id);
+                const newActiveTab = newTabs.length > 0 ? newTabs[newTabs.length - 1].id : null;
+
+                return {
+                  ...container,
+                  tabs: newTabs,
+                  activeTabId: newActiveTab,
+                };
+              }),
+            };
+          }
+
+          // Determinar contenedor target
+          let targetContainerId = containerId;
+
+          if (!targetContainerId) {
+            // Buscar contenedor vacío
+            const emptyContainer = state.containers.find((c) => c.tabs.length === 0);
+
+            if (emptyContainer) {
+              targetContainerId = emptyContainer.id;
+            } else {
+              // No hay vacío, usar activo
+              targetContainerId = state.activeContainerId;
+            }
+          }
+
           if (!targetContainerId) return state;
 
           const updatedContainers = state.containers.map((container) => {
