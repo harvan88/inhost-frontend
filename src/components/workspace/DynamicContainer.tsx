@@ -8,6 +8,7 @@ import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 // CODE SPLITTING: Lazy load de componentes pesados
 const ChatArea = lazy(() => import('@components/chat/ChatArea'));
 const ThemeEditorArea = lazy(() => import('@components/tools/ThemeEditorArea'));
+const DatabaseDevToolsArea = lazy(() => import('@components/tools/DatabaseDevToolsArea'));
 
 interface DynamicContainerProps {
   containerId: string;
@@ -418,6 +419,11 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             {activeTab.type === 'theme_editor' && (
               <Suspense fallback={<ChatAreaSkeleton />}>
                 <ThemeEditorArea themeId={activeTab.entityId} />
+              </Suspense>
+            )}
+            {activeTab.type === 'database_dev_tools' && (
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <DatabaseDevToolsArea toolId={activeTab.entityId} />
               </Suspense>
             )}
             {activeTab.type === 'analytics' && (

@@ -1,7 +1,6 @@
 import Workspace from '@components/workspace/Workspace';
 import { ErrorBoundary, ToastContainer, useToastStore } from '@/components/feedback';
 import { WebSocketProvider } from '@/providers/WebSocketProvider';
-import DevTools from '@/components/dev/DevTools';
 import './styles/App.css';
 
 /**
@@ -28,7 +27,6 @@ function App() {
       <WebSocketProvider>
         <Workspace />
         <ToastContainer toasts={toasts} />
-        <DevTools />
       </WebSocketProvider>
     </ErrorBoundary>
   );

@@ -6,7 +6,7 @@ import { persist } from 'zustand/middleware';
  */
 export interface WorkspaceTab {
   id: string;
-  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor';
+  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'database_dev_tools';
   label: string;
   entityId: string; // conversationId, orderId, customerId, etc.
   icon?: string;
