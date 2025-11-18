@@ -4,3 +4,13 @@
   margin: 0 auto;
   padding: 2rem;
 }
+
+/* Typing indicator animation */
+@keyframes blink {
+  0%, 20%, 50%, 80%, 100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}

@@ -1,10 +1,7 @@
 import ActivityBar from './ActivityBar';
 import PrimarySidebar from './PrimarySidebar';
 import Canvas from './Canvas';
-import { useWebSocket } from '@hooks/useWebSocket';
-import { useStore } from '@/store';
-import type { Message, WebSocketMessage } from '@/types';
-import { useCallback } from 'react';
+import { useStore, useConnectionStatus } from '@/store';
 import { useTheme } from '@/theme';
 import { useIsMobile } from '@/hooks/useBreakpoint';
 import { MobileWorkspace } from '@/components/mobile';
@@ -51,36 +48,12 @@ import { MobileWorkspace } from '@/components/mobile';
  * - Coordinar navegación entre niveles
  */
 export default function Workspace() {
-  const addMessage = useStore((state) => state.actions.addMessage);
-  const setConnectionStatus = useStore((state) => state.actions.setConnectionStatus);
   const { theme } = useTheme();
   const isMobile = useIsMobile();
+  const connectionStatus = useConnectionStatus();
 
-  // WebSocket message handler
-  const handleWebSocketMessage = useCallback(
-    (msg: WebSocketMessage) => {
-      console.log('WebSocket message:', msg);
-
-      if (msg.type === 'new_message' && msg.data) {
-        const newMessage = msg.data as Message;
-        // TODO: Implementar lógica para encontrar/crear conversación correcta
-        // Por ahora, añadimos a la conversación activa
-        const conversationId = 'conv-1';
-        addMessage(conversationId, newMessage);
-      }
-    },
-    [addMessage]
-  );
-
-  // WebSocket connection
-  const { connected } = useWebSocket({
-    onMessage: handleWebSocketMessage,
-  });
-
-  // Sync connection status to store
-  useCallback(() => {
-    setConnectionStatus(connected ? 'connected' : 'disconnected');
-  }, [connected, setConnectionStatus])();
+  // NOTE: WebSocket connection is now handled by WebSocketProvider
+  // which wraps the entire app. No need for component-level WebSocket handling.
 
   // RESPONSIVE SWITCHING: Mobile vs Desktop
   if (isMobile) {
