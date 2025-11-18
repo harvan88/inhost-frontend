@@ -1,5 +1,6 @@
 import { Columns2, Rows2 } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
+import { useTheme } from '@/theme';
 import DynamicContainer from './DynamicContainer';
 
 /**
@@ -102,19 +103,51 @@ import DynamicContainer from './DynamicContainer';
 export default function Canvas() {
   const { containers, layout, splitCanvas, expandedContainerId, collapseContainer } =
     useWorkspaceStore();
+  const { theme } = useTheme();
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
+    <div
+      className="flex-1 flex flex-col"
+      style={{
+        backgroundColor: theme.colors.neutral[0],
+      }}
+    >
       {/* Canvas Toolbar - Controles para dividir el lienzo */}
-      <div className="h-10 bg-gray-100 border-b border-gray-200 flex items-center justify-between px-4">
-        <div className="text-sm text-gray-600 font-medium">
+      <div
+        className="h-10 flex items-center justify-between px-4"
+        style={{
+          backgroundColor: theme.colors.neutral[100],
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+        }}
+      >
+        <div
+          className="text-sm font-medium"
+          style={{
+            color: theme.colors.neutral[600],
+            fontSize: theme.typography.sizes.sm,
+          }}
+        >
           Lienzo Dinámico ({containers.length}{' '}
           {containers.length === 1 ? 'contenedor' : 'contenedores'})
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => splitCanvas('horizontal')}
-            className="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition flex items-center gap-1.5"
+            className="px-3 py-1.5 flex items-center gap-1.5 transition"
+            style={{
+              fontSize: theme.typography.sizes.xs,
+              backgroundColor: theme.colors.neutral[0],
+              border: `1px solid ${theme.colors.neutral[300]}`,
+              borderRadius: theme.radius.md,
+              color: theme.colors.neutral[700],
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
+            }}
             title="Dividir horizontalmente (50% / 50%)"
             disabled={containers.length === 0}
           >
@@ -123,7 +156,21 @@ export default function Canvas() {
           </button>
           <button
             onClick={() => splitCanvas('vertical')}
-            className="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition flex items-center gap-1.5"
+            className="px-3 py-1.5 flex items-center gap-1.5 transition"
+            style={{
+              fontSize: theme.typography.sizes.xs,
+              backgroundColor: theme.colors.neutral[0],
+              border: `1px solid ${theme.colors.neutral[300]}`,
+              borderRadius: theme.radius.md,
+              color: theme.colors.neutral[700],
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
+            }}
             title="Dividir verticalmente (50% / 50%)"
             disabled={containers.length === 0}
           >
@@ -137,13 +184,36 @@ export default function Canvas() {
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Expanded Mode Banner */}
         {expandedContainerId && (
-          <div className="h-8 bg-blue-50 border-b border-blue-200 flex items-center justify-between px-4">
-            <span className="text-xs text-blue-700 font-medium">
+          <div
+            className="h-8 flex items-center justify-between px-4"
+            style={{
+              backgroundColor: theme.colors.primary[50],
+              borderBottom: `1px solid ${theme.colors.primary[200]}`,
+            }}
+          >
+            <span
+              className="font-medium"
+              style={{
+                fontSize: theme.typography.sizes.xs,
+                color: theme.colors.primary[700],
+              }}
+            >
               Modo expandido (100%)
             </span>
             <button
               onClick={collapseContainer}
-              className="text-xs text-blue-600 hover:text-blue-800 underline"
+              className="underline transition"
+              style={{
+                fontSize: theme.typography.sizes.xs,
+                color: theme.colors.primary[600],
+                transitionDuration: theme.transitions.base,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = theme.colors.primary[800];
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = theme.colors.primary[600];
+              }}
             >
               Volver a vista normal
             </button>
@@ -153,10 +223,28 @@ export default function Canvas() {
         {/* Containers */}
         <div className="flex-1 overflow-hidden">
           {containers.length === 0 ? (
-            <div className="h-full flex items-center justify-center bg-gray-50">
+            <div
+              className="h-full flex items-center justify-center"
+              style={{
+                backgroundColor: theme.colors.neutral[50],
+              }}
+            >
               <div className="text-center">
-                <p className="text-xl text-gray-500 mb-2">Lienzo Dinámico vacío</p>
-                <p className="text-sm text-gray-400">
+                <p
+                  className="mb-2"
+                  style={{
+                    fontSize: theme.typography.sizes.xl,
+                    color: theme.colors.neutral[500],
+                  }}
+                >
+                  Lienzo Dinámico vacío
+                </p>
+                <p
+                  style={{
+                    fontSize: theme.typography.sizes.sm,
+                    color: theme.colors.neutral[400],
+                  }}
+                >
                   Selecciona un elemento del sidebar para comenzar
                 </p>
               </div>
