@@ -44,10 +44,8 @@ export interface DynamicContainer {
  */
 interface WorkspaceState {
   // ━━━ NIVEL 1: BARRA DE ACTIVIDAD (ACTIVITY BAR) ━━━
-  activeActivity: 'messages' | 'contacts' | 'tools' | 'plugins';
-  activityBarExpanded: boolean;
+  activeActivity: 'messages' | 'contacts' | 'tools' | 'plugins' | null;
   setActivity: (activity: 'messages' | 'contacts' | 'tools' | 'plugins') => void;
-  toggleActivityBar: () => void;
 
   // ━━━ NIVEL 2: BARRA LATERAL CONTEXTUAL (SIDEBAR) ━━━
   sidebarVisible: boolean;
@@ -79,7 +77,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     (set, get) => ({
       // ━━━ INITIAL STATE ━━━
       activeActivity: 'messages',
-      activityBarExpanded: true,
       sidebarVisible: true,
       sidebarWidth: 320,
       layout: 'single',
@@ -95,11 +92,19 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       // ━━━ ACTIONS ━━━
 
       // Nivel 1: Barra de Actividad
-      setActivity: (activity) => set({ activeActivity: activity }),
-      toggleActivityBar: () =>
-        set((state) => ({
-          activityBarExpanded: !state.activityBarExpanded,
-        })),
+      // Toggle Contextual: Click en dominio activo oculta/muestra sidebar
+      setActivity: (activity) =>
+        set((state) => {
+          // Si se hace click en el mismo dominio activo, toggle sidebar
+          if (state.activeActivity === activity) {
+            return { sidebarVisible: !state.sidebarVisible };
+          }
+          // Si es un dominio diferente, activar y mostrar sidebar
+          return {
+            activeActivity: activity,
+            sidebarVisible: true,
+          };
+        }),
 
       // Nivel 2: Barra Lateral Contextual
       toggleSidebar: () =>
@@ -234,7 +239,6 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       // Solo persistir layout preferences, NO las tabs (se recargan del server)
       partialize: (state) => ({
         activeActivity: state.activeActivity,
-        activityBarExpanded: state.activityBarExpanded,
         sidebarVisible: state.sidebarVisible,
         sidebarWidth: state.sidebarWidth,
         layout: state.layout,

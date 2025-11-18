@@ -6,20 +6,64 @@ import ConversationListItem from './ConversationListItem';
 /**
  * PrimarySidebar - Barra Lateral Contextual (Nivel 2)
  *
- * Rol en la arquitectura de tres niveles:
- * - Segundo nivel de navegación
- * - Muestra LISTA DE ENTIDADES del dominio seleccionado
- * - Su contenido depende 100% de la Barra de Actividad (Nivel 1)
- * - Permite seleccionar QUÉ ELEMENTO específico abrir
+ * ## Definición (según documento formal - Sección 4)
  *
- * Contenido según dominio:
- * - messages → Lista de conversaciones
- * - contacts → Directorio de contactos (Coming Soon)
- * - tools → Lista de herramientas (Coming Soon)
- * - plugins → Lista de plugins instalados (Coming Soon)
+ * La Barra Lateral Contextual constituye la segunda columna de la interfaz y actúa
+ * como un panel dependiente del dominio seleccionado en la Barra de Actividad.
+ * Su función principal es presentar listas, árboles o colecciones de elementos
+ * navegables que permiten al usuario elegir qué instancia será representada dentro
+ * del Lienzo Dinámico.
  *
- * Cuando el usuario selecciona un elemento aquí,
- * se abre su vista correspondiente en el Lienzo Dinámico (Nivel 3)
+ * ## Comportamiento Arquitectónico (Sección 4.2)
+ *
+ * 1. **NO es persistente**
+ *    - Su visibilidad depende del dominio seleccionado
+ *    - Puede aparecer/desaparecer según interacción del usuario
+ *
+ * 2. **Aparece solo al seleccionar un dominio**
+ *    - Click en ícono → Despliega sidebar con elementos relevantes
+ *    - Sin dominio activo → Sidebar oculta
+ *
+ * 3. **Toggle Contextual**
+ *    - Click en dominio activo → Oculta/muestra sidebar
+ *    - Maximiza espacio para el Lienzo cuando es necesario
+ *    - El dominio permanece activo aunque la sidebar esté oculta
+ *
+ * ## Ejemplos por Dominio (Sección 4.3)
+ *
+ * | Dominio         | Contenido en Sidebar           |
+ * |-----------------|--------------------------------|
+ * | Mensajes        | Lista de conversaciones        |
+ * | Contactos       | Lista de contactos             |
+ * | Herramientas    | Catálogo de herramientas       |
+ * | Plugins         | Plugins instalados             |
+ *
+ * ## Responsabilidades (Sección 4.4)
+ *
+ * 1. **Mostrar colecciones navegables** asociadas al dominio activo
+ * 2. **Permitir seleccionar un elemento** para renderizar en el Lienzo Dinámico
+ * 3. **Ofrecer capacidades complementarias**:
+ *    - Filtros contextuales
+ *    - Metadatos (conteos, estados, indicadores)
+ *    - Acciones rápidas (crear, añadir, instalar)
+ *
+ * ## Flujo Operativo (Sección 4.5)
+ *
+ * Flujo A: Apertura del dominio
+ *   1. Usuario hace click en ícono "Mensajes"
+ *   2. Sidebar se despliega con lista de conversaciones
+ *   3. Lienzo permanece vacío hasta selección
+ *
+ * Flujo B: Selección de elemento
+ *   1. Usuario selecciona conversación "Juan Pérez"
+ *   2. Sistema crea/reutiliza Contenedor Dinámico
+ *   3. Lienzo renderiza ChatArea(Juan Pérez)
+ *
+ * Flujo C: Minimización contextual
+ *   1. Usuario vuelve a hacer click en ícono activo
+ *   2. Sidebar se oculta
+ *   3. Lienzo recupera espacio completo
+ *   4. Dominio permanece activo, contenido intacto
  *
  * Metáfora: Como el "Explorer" de VS Code cuando seleccionas el ícono de archivos
  */
