@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { useStore, useConversation } from '@/store';
 import { useTheme } from '@/theme';
 import type { MessageEnvelope } from '@/types';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 import { apiClient } from '@/services/api';
+import { useWebSocketContext } from '@/providers/WebSocketProvider';
+import { logger } from '@/services/logger';
 
 interface MessageInputProps {
   conversationId: string;
@@ -33,10 +35,13 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
   const [text, setText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { theme } = useTheme();
 
   const conversation = useConversation(conversationId);
   const addMessage = useStore((state) => state.actions.addMessage);
+  const { sendTyping } = useWebSocketContext();
 
   // DIAGNÓSTICO: Detectar overflow en MessageInput
   const inputRef = useOverflowDetection<HTMLDivElement>(`MessageInput-${conversationId}`, {
@@ -56,6 +61,18 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
     },
   });
 
+  // ━━━ CLEANUP: Stop typing indicator on unmount ━━━
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      if (isTyping) {
+        sendTyping(conversationId, false);
+      }
+    };
+  }, [isTyping, conversationId, sendTyping]);
+
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
@@ -65,6 +82,30 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
     // Enforce max length
     if (value.length <= MAX_MESSAGE_LENGTH) {
       setText(value);
+    }
+
+    // ━━━ TYPING INDICATOR ━━━
+    // Start typing indicator if not already started
+    if (!isTyping && value.length > 0) {
+      setIsTyping(true);
+      sendTyping(conversationId, true);
+    }
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Stop typing indicator after 3 seconds of inactivity
+    if (value.length > 0) {
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+        sendTyping(conversationId, false);
+      }, 3000);
+    } else {
+      // Immediately stop typing if input is empty
+      setIsTyping(false);
+      sendTyping(conversationId, false);
     }
   };
 
@@ -92,28 +133,118 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
     const trimmed = text.trim();
     if (!validateMessage(trimmed)) return;
 
+    // Stop typing indicator when sending
+    if (isTyping) {
+      setIsTyping(false);
+      sendTyping(conversationId, false);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    }
+
     setIsSending(true);
     setError(null);
+
+    // ━━━ OPTIMISTIC UPDATE ━━━
+    // Create temporary message with "sending" status
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    const tempMessage: MessageEnvelope = {
+      id: tempId,
+      conversationId: conversation.id,
+      type: 'outgoing',
+      channel: conversation.channel,
+      content: {
+        text: trimmed,
+        contentType: 'text/plain',
+      },
+      metadata: {
+        from: 'system', // TODO: Get from auth context
+        to: conversation.entityId,
+        timestamp: new Date().toISOString(),
+      },
+      statusChain: [
+        {
+          status: 'sending',
+          timestamp: new Date().toISOString(),
+          messageId: tempId,
+        },
+      ],
+      context: {
+        plan: 'free',
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    // Add message to store immediately (optimistic)
+    addMessage(conversationId, tempMessage);
+    console.log('📤 Optimistic message added:', tempId);
+    logger.info('ui', 'Optimistic message added to store', {
+      messageId: tempId,
+      conversationId,
+      type: 'outgoing',
+      channel: conversation.channel,
+    });
+
+    // Clear input immediately
+    setText('');
 
     try {
       // Send message to backend simulation API
       // This will trigger WebSocket broadcasts automatically
+      logger.debug('api', 'Sending message to backend', {
+        conversationId,
+        channel: conversation.channel,
+        textLength: trimmed.length,
+      });
+
       const response = await apiClient.sendClientMessage({
         clientId: conversation.channel as 'whatsapp' | 'telegram' | 'web' | 'sms',
         text: trimmed,
       });
 
-      // The message will be added to the store via WebSocket broadcast
+      // The real message will be added to the store via WebSocket broadcast
       // (message_received event handled by WebSocketProvider)
+      // We should remove the temp message when the real one arrives
+      // For now, we'll let the backend message replace it via duplicate detection
 
-      console.log('✅ Message sent:', response);
-
-      // Clear input on success
-      setText('');
+      console.log('✅ Message sent to backend:', response);
+      logger.info('api', 'Message sent to backend successfully', {
+        conversationId,
+        processedCount: response.processedCount,
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
       console.error('❌ Failed to send message:', err);
+      logger.error('api', 'Failed to send message to backend', {
+        conversationId,
+        error: errorMessage,
+        tempMessageId: tempId,
+      });
+
+      // Update temp message status to "failed"
+      const { entities } = useStore.getState();
+      const messages = entities.messages.get(conversationId) || [];
+      const messageIndex = messages.findIndex((m) => m.id === tempId);
+
+      if (messageIndex !== -1) {
+        const updatedMessage = {
+          ...messages[messageIndex],
+          statusChain: [
+            ...messages[messageIndex].statusChain,
+            {
+              status: 'failed' as const,
+              timestamp: new Date().toISOString(),
+              messageId: tempId,
+              details: errorMessage,
+            },
+          ],
+        };
+
+        const updatedMessages = [...messages];
+        updatedMessages[messageIndex] = updatedMessage;
+        useStore.getState().actions.setMessages(conversationId, updatedMessages);
+      }
     } finally {
       setIsSending(false);
     }

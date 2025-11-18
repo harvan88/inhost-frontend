@@ -60,6 +60,7 @@ export const useStore = create<AppState>()(
         sidebarCollapsed: false,
         theme: 'light',
         workspace: undefined, // Workspace architecture (future)
+        typingUsers: new Map<string, string[]>(),
       },
 
       // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -260,6 +261,31 @@ export const useStore = create<AppState>()(
           set((state) => ({
             ui: { ...state.ui, theme },
           })),
+
+        setTyping: (conversationId, userId, isTyping) =>
+          set((state) => {
+            const typingUsers = new Map(state.ui.typingUsers);
+            const currentTyping = typingUsers.get(conversationId) || [];
+
+            if (isTyping) {
+              // Add user to typing list
+              if (!currentTyping.includes(userId)) {
+                typingUsers.set(conversationId, [...currentTyping, userId]);
+              }
+            } else {
+              // Remove user from typing list
+              const filtered = currentTyping.filter((id) => id !== userId);
+              if (filtered.length > 0) {
+                typingUsers.set(conversationId, filtered);
+              } else {
+                typingUsers.delete(conversationId);
+              }
+            }
+
+            return {
+              ui: { ...state.ui, typingUsers },
+            };
+          }),
 
         // ━━━ NETWORK ━━━
         setConnectionStatus: (status) =>

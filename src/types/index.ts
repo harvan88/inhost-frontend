@@ -393,6 +393,7 @@ export interface AppState {
     sidebarCollapsed: boolean;
     theme: 'light' | 'dark';
     workspace?: WorkspaceState;  // Workspace architecture
+    typingUsers: Map<string, string[]>; // conversationId → [userId1, userId2]
   };
 
   // ━━━ DOMAIN 4: Network (transient, sync state) ━━━
@@ -426,6 +427,7 @@ export interface AppState {
     // UI
     toggleSidebar: () => void;
     setTheme: (theme: 'light' | 'dark') => void;
+    setTyping: (conversationId: string, userId: string, isTyping: boolean) => void;
 
     // Network
     setConnectionStatus: (status: 'connected' | 'disconnected') => void;

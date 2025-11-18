@@ -1,11 +1,12 @@
 import { useRef, useEffect, memo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useMessages } from '@/store';
+import { useMessages, useStore } from '@/store';
 import { useTheme } from '@/theme';
 import type { MessageEnvelope } from '@/types';
 import { Badge } from '@/components/common';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 import { useCombinedRefs } from '@/hooks/useCombinedRefs';
+import { Clock, Check, CheckCheck, AlertCircle } from 'lucide-react';
 
 interface MessageListProps {
   conversationId: string;
@@ -34,6 +35,7 @@ interface MessageListProps {
  */
 export default function MessageList({ conversationId }: MessageListProps) {
   const messages = useMessages(conversationId);
+  const typingUsers = useStore((s) => s.ui.typingUsers.get(conversationId) || []);
   const { theme } = useTheme();
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -159,6 +161,21 @@ export default function MessageList({ conversationId }: MessageListProps) {
             </div>
           );
         })}
+
+        {/* Typing indicator */}
+        {typingUsers.length > 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              top: `${rowVirtualizer.getTotalSize()}px`,
+              left: 0,
+              width: '100%',
+              paddingTop: theme.spacing[2],
+            }}
+          >
+            <TypingIndicator users={typingUsers} theme={theme} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -173,7 +190,33 @@ export default function MessageList({ conversationId }: MessageListProps) {
 const MessageBubble = memo(
   function MessageBubble({ message, theme }: { message: MessageEnvelope; theme: any }) {
   const isIncoming = message.type === 'incoming';
+  const isOutgoing = message.type === 'outgoing';
   const isSystem = message.type === 'system';
+
+  // Get latest status from statusChain
+  const latestStatus = message.statusChain[message.statusChain.length - 1]?.status;
+
+  // Get status icon for outgoing messages
+  const getStatusIcon = () => {
+    if (!isOutgoing) return null;
+
+    const iconSize = 14;
+
+    switch (latestStatus) {
+      case 'sending':
+        return <Clock size={iconSize} style={{ color: theme.colors.neutral[400] }} />;
+      case 'sent':
+        return <Check size={iconSize} style={{ color: theme.colors.neutral[400] }} />;
+      case 'delivered':
+        return <CheckCheck size={iconSize} style={{ color: theme.colors.neutral[400] }} />;
+      case 'read':
+        return <CheckCheck size={iconSize} style={{ color: theme.colors.primary[500] }} />;
+      case 'failed':
+        return <AlertCircle size={iconSize} style={{ color: theme.colors.semantic.danger }} />;
+      default:
+        return null;
+    }
+  };
 
   const getBubbleStyle = () => {
     if (isSystem) {
@@ -257,17 +300,25 @@ const MessageBubble = memo(
                 {message.type.toUpperCase()}
               </Badge>
             </div>
-            <span
+            <div
+              className="flex items-center"
               style={{
-                fontSize: theme.typography.sizes.xs,
-                color: isIncoming ? theme.colors.neutral[500] : theme.colors.neutral[100],
+                gap: theme.spacing[2],
               }}
             >
-              {new Date(message.metadata.timestamp).toLocaleTimeString('es-AR', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
+              <span
+                style={{
+                  fontSize: theme.typography.sizes.xs,
+                  color: isIncoming ? theme.colors.neutral[500] : theme.colors.neutral[100],
+                }}
+              >
+                {new Date(message.metadata.timestamp).toLocaleTimeString('es-AR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
+              {getStatusIcon()}
+            </div>
           </div>
         )}
 
@@ -329,9 +380,65 @@ const MessageBubble = memo(
     </div>
   );
   },
-  // Comparación personalizada: solo re-renderizar si el message.id cambia
+  // Comparación personalizada: re-renderizar si el message.id o statusChain cambia
   (prevProps, nextProps) => {
+    const prevStatus = prevProps.message.statusChain[prevProps.message.statusChain.length - 1]?.status;
+    const nextStatus = nextProps.message.statusChain[nextProps.message.statusChain.length - 1]?.status;
+
     return prevProps.message.id === nextProps.message.id &&
-           prevProps.theme === nextProps.theme;
+           prevProps.theme === nextProps.theme &&
+           prevStatus === nextStatus;
+  }
+);
+
+/**
+ * TypingIndicator - Shows "User is typing..." indicator
+ */
+const TypingIndicator = memo(
+  function TypingIndicator({ users, theme }: { users: string[]; theme: any }) {
+    const userName = users[0]; // For now, show only first user typing
+    const additionalUsers = users.length - 1;
+
+    return (
+      <div
+        style={{
+          marginBottom: theme.spacing[4],
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'flex-start',
+        }}
+      >
+        <div
+          className="border"
+          style={{
+            backgroundColor: theme.colors.neutral[100],
+            borderColor: theme.colors.neutral[300],
+            color: theme.colors.neutral[700],
+            padding: `${theme.spacing[3]} ${theme.spacing[4]}`,
+            borderRadius: theme.radius.lg,
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            boxShadow: theme.elevation.sm,
+            display: 'flex',
+            alignItems: 'center',
+            gap: theme.spacing[2],
+            fontSize: theme.typography.sizes.sm,
+            fontStyle: 'italic',
+          }}
+        >
+          <span>{userName} está escribiendo</span>
+          <span className="typing-dots">
+            <span className="dot" style={{ animation: 'blink 1.4s infinite both' }}>.</span>
+            <span className="dot" style={{ animation: 'blink 1.4s infinite both 0.2s' }}>.</span>
+            <span className="dot" style={{ animation: 'blink 1.4s infinite both 0.4s' }}>.</span>
+          </span>
+          {additionalUsers > 0 && (
+            <span style={{ color: theme.colors.neutral[500] }}>
+              +{additionalUsers} more
+            </span>
+          )}
+        </div>
+      </div>
+    );
   }
 );

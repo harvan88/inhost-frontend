@@ -32,6 +32,7 @@ import type {
 import { db } from '@/services/database';
 import { syncService } from '@/services/sync';
 import { useStore } from '@/store';
+import { logger } from '@/services/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // TYPES
@@ -41,6 +42,7 @@ interface WebSocketContextValue {
   connected: boolean;
   reconnecting: boolean;
   error: string | null;
+  sendTyping: (conversationId: string, isTyping: boolean) => void;
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -51,6 +53,9 @@ const WebSocketContext = createContext<WebSocketContextValue>({
   connected: false,
   reconnecting: false,
   error: null,
+  sendTyping: () => {
+    console.warn('sendTyping called before WebSocket is initialized');
+  },
 });
 
 export const useWebSocketContext = () => useContext(WebSocketContext);
@@ -88,6 +93,12 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
   const handleConnection = useCallback((event: ConnectionEvent) => {
     console.log('✅ WebSocket connected:', event);
+    logger.info('websocket', 'WebSocket connected', {
+      event: 'connection',
+      clientId: event.clientId,
+      timestamp: event.timestamp,
+    });
+
     setConnected(true);
     setReconnecting(false);
     setError(null);
@@ -99,8 +110,19 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     console.log('📨 Message received:', event.data);
     const message = event.data;
 
+    logger.info('websocket', 'Message received', {
+      event: 'message_received',
+      messageId: message.id,
+      conversationId: message.conversationId,
+      type: message.type,
+      channel: message.channel,
+      from: message.metadata.from,
+      to: message.metadata.to,
+    });
+
     // 1. Persist message in IndexedDB
     await db.addMessage(message);
+    logger.debug('db', 'Message persisted to IndexedDB', { messageId: message.id });
 
     // 2. Ensure conversation exists
     const { entities, actions } = useStore.getState();
@@ -264,16 +286,69 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     } as MessageReceivedEvent);
   }, [handleMessageReceived]);
 
-  const handleMessageStatus = useCallback((event: MessageStatusEvent) => {
+  const handleMessageStatus = useCallback(async (event: MessageStatusEvent) => {
     console.log('📊 Message:status:', event.data);
+    logger.info('websocket', 'Message status update received', {
+      event: 'message:status',
+      messageId: event.data.messageId,
+      status: event.data.status,
+      details: event.data.details,
+    });
 
-    // TODO: Update message status in store
+    const { messageId, status, timestamp, details } = event.data;
+
+    // 1. Find message in store
+    const { entities } = useStore.getState();
+
+    // Search through all conversations to find the message
+    for (const [convId, messages] of entities.messages.entries()) {
+      const messageIndex = messages.findIndex((m) => m.id === messageId);
+
+      if (messageIndex !== -1) {
+        const message = messages[messageIndex];
+
+        // 2. Update statusChain
+        const updatedMessage = {
+          ...message,
+          statusChain: [
+            ...message.statusChain,
+            {
+              status,
+              timestamp,
+              messageId,
+              details,
+            },
+          ],
+        };
+
+        // 3. Update in IndexedDB
+        await db.addMessage(updatedMessage);
+
+        // 4. Update in store
+        const updatedMessages = [...messages];
+        updatedMessages[messageIndex] = updatedMessage;
+        useStore.getState().actions.setMessages(convId, updatedMessages);
+
+        console.log(`✅ Updated message ${messageId} status to ${status}`);
+        break;
+      }
+    }
   }, []);
 
   const handleTypingIndicator = useCallback((event: TypingIndicatorEvent) => {
     console.log('⌨️ Typing indicator:', event.data);
+    logger.debug('websocket', 'Typing indicator received', {
+      event: 'typing:indicator',
+      userId: event.data.userId,
+      conversationId: event.data.conversationId,
+      isTyping: event.data.isTyping,
+    });
 
-    // TODO: Update typing state in store
+    const { userId, conversationId, isTyping } = event.data;
+
+    // Update typing state in store
+    const { actions } = useStore.getState();
+    actions.setTyping(conversationId, userId, isTyping);
   }, []);
 
   const handleError = useCallback((event: ErrorEvent) => {
@@ -347,6 +422,40 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     handleTypingIndicator,
     handleError,
   ]);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // OUTGOING MESSAGES
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  const sendTyping = useCallback((conversationId: string, isTyping: boolean) => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      console.warn('⚠️ Cannot send typing indicator: WebSocket not connected');
+      logger.warn('websocket', 'Cannot send typing indicator: WebSocket not connected', {
+        conversationId,
+        isTyping,
+      });
+      return;
+    }
+
+    const event = {
+      type: 'typing:indicator',
+      data: {
+        conversationId,
+        userId: 'system', // TODO: Get from auth context
+        isTyping,
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    console.log('⌨️ Sending typing indicator:', event);
+    logger.debug('websocket', 'Sending typing indicator', {
+      event: 'typing:indicator',
+      conversationId,
+      isTyping,
+    });
+
+    wsRef.current.send(JSON.stringify(event));
+  }, []);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // CONNECTION MANAGEMENT
@@ -434,18 +543,29 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     // Initialize database and sync
     const initialize = async () => {
       try {
+        // 0. Initialize logger
+        await logger.init();
+        console.log('✅ Logger initialized');
+        logger.info('system', 'Application initializing', {});
+
         // 1. Initialize IndexedDB
         await db.init();
         console.log('✅ IndexedDB initialized');
+        logger.info('db', 'IndexedDB initialized', {});
 
         // 2. Load data from IndexedDB and API
         await syncService.initialSync();
         console.log('✅ Initial sync complete');
+        logger.info('sync', 'Initial sync completed', {});
 
         // 3. Connect WebSocket
         connect();
+        logger.info('websocket', 'WebSocket connection initiated', {});
       } catch (error) {
         console.error('❌ Initialization failed:', error);
+        logger.critical('system', 'Application initialization failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         setError('Failed to initialize application');
       }
     };
@@ -454,6 +574,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     // Cleanup
     return () => {
+      logger.info('system', 'Application shutting down', {});
       disconnect();
     };
   }, [connect, disconnect]);
@@ -466,6 +587,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     connected,
     reconnecting,
     error,
+    sendTyping,
   };
 
   return (
