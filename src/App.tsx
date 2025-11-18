@@ -1,12 +1,14 @@
-import Dashboard from '@pages/Dashboard';
+import Workspace from '@components/workspace/Workspace';
 import './styles/App.css';
 
+/**
+ * App - Root component
+ *
+ * Now using Workspace layout instead of Dashboard
+ * for multi-tab, VS Code-style interface
+ */
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Dashboard />
-    </div>
-  );
+  return <Workspace />;
 }
 
 export default App;
