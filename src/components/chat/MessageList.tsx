@@ -2,7 +2,7 @@ import { useRef, useEffect, memo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages } from '@/store';
 import { useTheme } from '@/theme';
-import type { Message } from '@/types';
+import type { MessageEnvelope } from '@/types';
 import { Badge } from '@/components/common';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 import { useCombinedRefs } from '@/hooks/useCombinedRefs';
@@ -171,7 +171,7 @@ export default function MessageList({ conversationId }: MessageListProps) {
  * Solo se re-renderiza si el mensaje específico cambia.
  */
 const MessageBubble = memo(
-  function MessageBubble({ message, theme }: { message: Message; theme: any }) {
+  function MessageBubble({ message, theme }: { message: MessageEnvelope; theme: any }) {
   const isIncoming = message.type === 'incoming';
   const isSystem = message.type === 'system';
 
@@ -279,8 +279,22 @@ const MessageBubble = memo(
             fontWeight: isSystem ? theme.typography.weights.medium : theme.typography.weights.normal,
           }}
         >
-          {message.content.text}
+          {message.content.text || '[Media message]'}
         </p>
+
+        {/* Media preview (if exists) */}
+        {message.content.media && (
+          <div
+            style={{
+              marginTop: theme.spacing[2],
+              fontSize: theme.typography.sizes.xs,
+              color: isIncoming ? theme.colors.neutral[500] : theme.colors.neutral[200],
+            }}
+          >
+            📎 {message.content.media.type.toUpperCase()}
+            {message.content.media.caption && `: ${message.content.media.caption}`}
+          </div>
+        )}
 
         {/* Footer: From/To info */}
         {!isSystem && (

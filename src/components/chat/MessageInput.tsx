@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { useStore, useConversation } from '@/store';
 import { useTheme } from '@/theme';
-import type { Message } from '@/types';
+import type { MessageEnvelope } from '@/types';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
+import { apiClient } from '@/services/api';
 
 interface MessageInputProps {
   conversationId: string;
@@ -95,30 +96,24 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
     setError(null);
 
     try {
-      // Create new message
-      const newMessage: Message = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        type: 'outgoing',
-        channel: conversation.channel,
-        content: { text: trimmed },
-        metadata: {
-          from: 'system',
-          to: conversation.entityId,
-          timestamp: new Date().toISOString(),
-        },
-      };
+      // Send message to backend simulation API
+      // This will trigger WebSocket broadcasts automatically
+      const response = await apiClient.sendClientMessage({
+        clientId: conversation.channel as 'whatsapp' | 'telegram' | 'web' | 'sms',
+        text: trimmed,
+      });
 
-      // Add to store (will trigger re-render in MessageList)
-      addMessage(conversationId, newMessage);
+      // The message will be added to the store via WebSocket broadcast
+      // (message_received event handled by WebSocketProvider)
+
+      console.log('✅ Message sent:', response);
 
       // Clear input on success
       setText('');
-
-      // TODO: Send to API/WebSocket
-      // await apiClient.sendMessage(newMessage);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
+      console.error('❌ Failed to send message:', err);
     } finally {
       setIsSending(false);
     }
