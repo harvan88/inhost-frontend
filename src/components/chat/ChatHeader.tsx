@@ -3,6 +3,7 @@ import { Phone, Video, MoreVertical } from 'lucide-react';
 import { useTheme } from '@/theme';
 import { Avatar, Badge } from '@/components/common';
 import { IconButton, Heading, Text } from '@/components/ui';
+import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 
 interface ChatHeaderProps {
   conversationId: string;
@@ -28,6 +29,24 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
   const contact = useContact(conversation?.entityId ?? null);
   const { theme } = useTheme();
 
+  // DIAGNÓSTICO: Detectar overflow en ChatHeader
+  const headerRef = useOverflowDetection<HTMLDivElement>(`ChatHeader-${conversationId}`, {
+    checkInterval: 3000,
+    logOverflow: true,
+    onOverflow: (data) => {
+      console.error(
+        `🔍 DIAGNÓSTICO - ChatHeader tiene overflow`,
+        {
+          conversationId,
+          overflowHorizontal: data.hasHorizontalOverflow ? `${data.overflowX}px` : 'No',
+          overflowVertical: data.hasVerticalOverflow ? `${data.overflowY}px` : 'No',
+          dimensiones: `${data.clientWidth}x${data.clientHeight}`,
+          scroll: `${data.scrollWidth}x${data.scrollHeight}`,
+        }
+      );
+    },
+  });
+
   if (!conversation || !contact) {
     return (
       <div
@@ -51,10 +70,12 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
 
   return (
     <div
+      ref={headerRef}
       style={{
         padding: `${theme.spacing[4]} ${theme.spacing[6]}`,
         borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         backgroundColor: theme.colors.neutral[0],
+        overflow: 'hidden', // CONTRATO: Evitar desbordamiento
       }}
     >
       <div
