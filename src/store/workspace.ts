@@ -122,6 +122,15 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       // Nivel 3: Lienzo (Canvas) - Container Management
       splitCanvas: (direction) =>
         set((state) => {
+          // Solo permitir máximo 2 contenedores
+          if (state.containers.length >= 2) {
+            // Si ya hay 2 contenedores, solo cambiar la dirección del layout
+            return {
+              layout: direction === 'horizontal' ? 'horizontal-split' : 'vertical-split',
+            };
+          }
+
+          // Crear nuevo contenedor solo si hay menos de 2
           const newContainer: DynamicContainer = {
             id: `container-${Date.now()}`,
             tabs: [],
