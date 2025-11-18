@@ -1,0 +1,159 @@
+{
+  "name": "Professional Dark",
+  "type": "dark",
+  "colors": {
+    "primary": {
+      "50": "#0c4a6e",
+      "100": "#075985",
+      "200": "#0369a1",
+      "300": "#0284c7",
+      "400": "#0ea5e9",
+      "500": "#38bdf8",
+      "600": "#7dd3fc",
+      "700": "#bae6fd",
+      "800": "#e0f2fe",
+      "900": "#f0f9ff"
+    },
+    "neutral": {
+      "0": "#0a0a0a",
+      "50": "#171717",
+      "100": "#262626",
+      "200": "#404040",
+      "300": "#525252",
+      "400": "#737373",
+      "500": "#a3a3a3",
+      "600": "#d4d4d4",
+      "700": "#e5e5e5",
+      "800": "#f5f5f5",
+      "900": "#fafafa",
+      "950": "#ffffff"
+    },
+    "semantic": {
+      "success": "#22c55e",
+      "successLight": "#14532d",
+      "successDark": "#d1fae5",
+      "warning": "#fbbf24",
+      "warningLight": "#78350f",
+      "warningDark": "#fef3c7",
+      "danger": "#f87171",
+      "dangerLight": "#7f1d1d",
+      "dangerDark": "#fee2e2",
+      "info": "#60a5fa",
+      "infoLight": "#1e3a8a",
+      "infoDark": "#dbeafe"
+    },
+    "channels": {
+      "whatsapp": {
+        "50": "#14532d",
+        "100": "#166534",
+        "500": "#22c55e",
+        "600": "#4ade80",
+        "700": "#86efac",
+        "800": "#bbf7d0",
+        "900": "#dcfce7"
+      },
+      "telegram": {
+        "50": "#1e3a8a",
+        "100": "#1e40af",
+        "500": "#3b82f6",
+        "600": "#60a5fa",
+        "700": "#93c5fd",
+        "800": "#bfdbfe",
+        "900": "#dbeafe"
+      },
+      "web": {
+        "50": "#581c87",
+        "100": "#6b21a8",
+        "500": "#a855f7",
+        "600": "#c084fc",
+        "700": "#d8b4fe",
+        "800": "#e9d5ff",
+        "900": "#f3e8ff"
+      },
+      "sms": {
+        "50": "#7c2d12",
+        "100": "#9a3412",
+        "500": "#f97316",
+        "600": "#fb923c",
+        "700": "#fdba74",
+        "800": "#fed7aa",
+        "900": "#ffedd5"
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "base": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "'JetBrains Mono', 'Fira Code', Consolas, monospace"
+    },
+    "sizes": {
+      "xs": "12px",
+      "sm": "14px",
+      "base": "16px",
+      "lg": "18px",
+      "xl": "20px",
+      "2xl": "24px",
+      "3xl": "30px",
+      "4xl": "36px"
+    },
+    "weights": {
+      "light": "300",
+      "normal": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700"
+    },
+    "lineHeights": {
+      "tight": "1.25",
+      "normal": "1.5",
+      "relaxed": "1.75"
+    }
+  },
+  "spacing": {
+    "0": "0px",
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "8": "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px",
+    "20": "80px",
+    "24": "96px"
+  },
+  "radius": {
+    "none": "0px",
+    "sm": "4px",
+    "md": "8px",
+    "lg": "12px",
+    "xl": "16px",
+    "2xl": "24px",
+    "full": "9999px"
+  },
+  "elevation": {
+    "none": "none",
+    "xs": "0px 1px 2px rgba(0, 0, 0, 0.3)",
+    "sm": "0px 1px 3px rgba(0, 0, 0, 0.4), 0px 1px 2px rgba(0, 0, 0, 0.3)",
+    "base": "0px 4px 6px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.3)",
+    "md": "0px 10px 15px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.3)",
+    "lg": "0px 20px 25px rgba(0, 0, 0, 0.6), 0px 10px 10px rgba(0, 0, 0, 0.3)",
+    "xl": "0px 25px 50px rgba(0, 0, 0, 0.7)"
+  },
+  "transitions": {
+    "fast": "150ms",
+    "base": "200ms",
+    "slow": "300ms",
+    "slower": "500ms"
+  },
+  "zIndex": {
+    "base": "0",
+    "dropdown": "10",
+    "modal": "20",
+    "popover": "30",
+    "tooltip": "40",
+    "notification": "50"
+  }
+}
