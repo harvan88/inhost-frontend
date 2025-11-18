@@ -6,6 +6,8 @@ import { useStore } from '@/store';
 import type { Message, WebSocketMessage } from '@/types';
 import { useCallback } from 'react';
 import { useTheme } from '@/theme';
+import { useIsMobile } from '@/hooks/useBreakpoint';
+import { MobileWorkspace } from '@/components/mobile';
 
 /**
  * Workspace - Arquitectura de Tres Niveles (Versión Formal)
@@ -52,6 +54,7 @@ export default function Workspace() {
   const addMessage = useStore((state) => state.actions.addMessage);
   const setConnectionStatus = useStore((state) => state.actions.setConnectionStatus);
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
 
   // WebSocket message handler
   const handleWebSocketMessage = useCallback(
@@ -79,6 +82,12 @@ export default function Workspace() {
     setConnectionStatus(connected ? 'connected' : 'disconnected');
   }, [connected, setConnectionStatus])();
 
+  // RESPONSIVE SWITCHING: Mobile vs Desktop
+  if (isMobile) {
+    return <MobileWorkspace />;
+  }
+
+  // Desktop layout (existing)
   return (
     <div
       className="h-screen flex"
