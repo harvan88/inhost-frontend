@@ -56,14 +56,33 @@ export function Button({
 }: ButtonProps) {
   const { theme } = useTheme();
 
-  // Mapeo de tamaño a componentStyles del theme
-  const sizeMap = {
-    small: 'small',
-    medium: 'secondary',
-    large: 'primary',
-  } as const;
+  // FUENTE DE VERDAD ÚNICA: Tokens centrales de tipografía y spacing
+  // NO usar componentStyles.button - valores hardcodeados que no reaccionan
+  const sizeStyles = {
+    small: {
+      fontSize: theme.typography.sizes.xs,
+      fontWeight: theme.typography.weights.medium,
+      padding: `${theme.spacing[2]} ${theme.spacing[4]}`, // 8px 16px
+      height: '36px',
+      borderRadius: theme.radius.md,
+    },
+    medium: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.medium,
+      padding: `${theme.spacing[2]} ${theme.spacing[5]}`, // 8px 20px
+      height: '40px',
+      borderRadius: theme.radius.md,
+    },
+    large: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.medium,
+      padding: `${theme.spacing[3]} ${theme.spacing[6]}`, // 12px 24px
+      height: theme.accessibility.touchTarget.minimum, // 44px
+      borderRadius: theme.radius.md,
+    },
+  };
 
-  const buttonStyles = theme.componentStyles.button[sizeMap[size]];
+  const buttonStyles = sizeStyles[size];
 
   // Colores por variante
   const variantColors = {

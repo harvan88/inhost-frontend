@@ -12,6 +12,7 @@
  * ```
  */
 
+import { createElement } from 'react';
 import { useTheme } from '@/theme';
 import type { ReactNode, HTMLAttributes, CSSProperties } from 'react';
 
@@ -41,9 +42,48 @@ export function Heading({
 }: HeadingProps) {
   const { theme } = useTheme();
 
-  // Mapeo de nivel a componentStyles
-  const styleKey = `h${level}` as keyof typeof theme.componentStyles.heading;
-  const headingStyles = theme.componentStyles.heading[styleKey];
+  // FUENTE DE VERDAD ÚNICA: Tokens centrales de tipografía
+  // NO usar componentStyles.heading - valores hardcodeados que no reaccionan
+  const levelStyles = {
+    1: {
+      fontSize: theme.typography.sizes['2xl'],
+      fontWeight: theme.typography.weights.bold,
+      lineHeight: theme.typography.lineHeights.tight,
+      margin: theme.spacing[4],
+    },
+    2: {
+      fontSize: theme.typography.sizes.xl,
+      fontWeight: theme.typography.weights.semibold,
+      lineHeight: theme.typography.lineHeights.tight,
+      margin: theme.spacing[3],
+    },
+    3: {
+      fontSize: theme.typography.sizes.lg,
+      fontWeight: theme.typography.weights.semibold,
+      lineHeight: theme.typography.lineHeights.tight,
+      margin: theme.spacing[3],
+    },
+    4: {
+      fontSize: theme.typography.sizes.base,
+      fontWeight: theme.typography.weights.semibold,
+      lineHeight: theme.typography.lineHeights.normal,
+      margin: theme.spacing[2],
+    },
+    5: {
+      fontSize: theme.typography.sizes.sm,
+      fontWeight: theme.typography.weights.semibold,
+      lineHeight: theme.typography.lineHeights.normal,
+      margin: theme.spacing[2],
+    },
+    6: {
+      fontSize: theme.typography.sizes.xs,
+      fontWeight: theme.typography.weights.semibold,
+      lineHeight: theme.typography.lineHeights.normal,
+      margin: theme.spacing[1],
+    },
+  };
+
+  const styles = levelStyles[level];
 
   // Colores por variante
   const colorMap = {
@@ -55,20 +95,20 @@ export function Heading({
 
   // Estilos base del theme
   const baseStyles: CSSProperties = {
-    fontSize: headingStyles.fontSize,
-    fontWeight: headingStyles.fontWeight,
-    lineHeight: headingStyles.lineHeight,
-    margin: noMargin ? '0' : headingStyles.margin,
+    fontSize: styles.fontSize,
+    fontWeight: styles.fontWeight,
+    lineHeight: styles.lineHeight,
+    margin: noMargin ? '0' : styles.margin,
     fontFamily: theme.typography.fontFamily.base,
     color: colorMap[color],
   };
 
   // Componente dinámico según el nivel
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const tagName = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
-  return (
-    <Tag className={className} style={baseStyles} {...props}>
-      {children}
-    </Tag>
+  return createElement(
+    tagName,
+    { className, style: baseStyles, ...props },
+    children
   );
 }

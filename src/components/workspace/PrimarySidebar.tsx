@@ -115,12 +115,7 @@ function ConversationListView() {
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
       >
-        <Heading
-          level={2}
-          style={{
-            marginBottom: theme.spacing[3],
-          }}
-        >
+        <Heading level={2}>
           Conversaciones
         </Heading>
 
@@ -177,12 +172,7 @@ function ContactsView() {
         padding: theme.spacing[4],
       }}
     >
-      <Heading
-        level={2}
-        style={{
-          marginBottom: theme.spacing[3],
-        }}
-      >
+      <Heading level={2}>
         Contactos
       </Heading>
       <Text variant="metadata" color="muted">
@@ -244,12 +234,7 @@ function ToolsView() {
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
         }}
       >
-        <Heading
-          level={2}
-          style={{
-            marginBottom: theme.spacing[1],
-          }}
-        >
+        <Heading level={2} noMargin>
           Herramientas
         </Heading>
         <Text variant="metadata" color="muted">
@@ -288,23 +273,16 @@ function ToolsView() {
                 {tool.icon}
               </div>
             <div style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontWeight: theme.typography.weights.semibold,
-                  marginBottom: theme.spacing[1],
-                }}
-              >
-                {tool.name}
-              </Text>
-              <Text
-                variant="metadata"
-                color="muted"
-                style={{
-                  marginBottom: theme.spacing[2],
-                }}
-              >
-                {tool.description}
-              </Text>
+              <div style={{ marginBottom: theme.spacing[1] }}>
+                <Text variant="label">
+                  {tool.name}
+                </Text>
+              </div>
+              <div style={{ marginBottom: theme.spacing[2] }}>
+                <Text variant="metadata" color="muted">
+                  {tool.description}
+                </Text>
+              </div>
               <Tag size="small">{tool.category}</Tag>
             </div>
             </div>
@@ -337,12 +315,7 @@ function PluginsView() {
         padding: theme.spacing[4],
       }}
     >
-      <Heading
-        level={2}
-        style={{
-          marginBottom: theme.spacing[3],
-        }}
-      >
+      <Heading level={2}>
         Plugins
       </Heading>
       <Text variant="metadata" color="muted">
