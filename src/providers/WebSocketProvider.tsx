@@ -97,15 +97,75 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
   const handleMessageReceived = useCallback(async (event: MessageReceivedEvent) => {
     console.log('📨 Message received:', event.data);
+    const message = event.data;
 
-    // 1. Persist in IndexedDB
-    await db.addMessage(event.data);
+    // 1. Persist message in IndexedDB
+    await db.addMessage(message);
 
-    // 2. Update Zustand store
-    addMessage(event.data.conversationId, event.data);
+    // 2. Ensure conversation exists
+    const { entities, actions } = useStore.getState();
+    let conversation = entities.conversations.get(message.conversationId);
 
-    // 3. Show notification if conversation is not active
-    // TODO: Check if conversation is active before showing notification
+    if (!conversation) {
+      console.log(`📂 Creating new conversation: ${message.conversationId}`);
+
+      // Create new conversation
+      conversation = {
+        id: message.conversationId,
+        entityId: message.metadata.from,
+        channel: message.channel,
+        lastMessage: {
+          text: message.content.text || '[Media]',
+          timestamp: message.metadata.timestamp,
+          type: message.type,
+        },
+        unreadCount: 1,
+        isPinned: false,
+        createdAt: message.metadata.timestamp,
+        updatedAt: message.metadata.timestamp,
+      };
+
+      // Save to IndexedDB
+      await db.saveConversation(conversation);
+
+      // Add to store
+      actions.addConversation(conversation);
+    }
+
+    // 3. Ensure contact exists
+    let contact = entities.contacts.get(message.metadata.from);
+
+    if (!contact) {
+      console.log(`👤 Creating new contact: ${message.metadata.from}`);
+
+      // Create new contact (basic info, can be enriched later)
+      contact = {
+        id: message.metadata.from,
+        name: message.metadata.from, // Use ID as default name
+        status: 'online', // Assume online when they send a message
+        channel: message.channel,
+        metadata: {
+          phoneNumber: message.metadata.from.startsWith('+') ? message.metadata.from : undefined,
+          lastSeen: message.metadata.timestamp,
+        },
+      };
+
+      // Save to IndexedDB
+      await db.saveContact(contact);
+
+      // Add to store
+      actions.addContact(contact);
+    }
+
+    // 4. Update Zustand store with message
+    addMessage(message.conversationId, message);
+
+    // 5. Show notification if conversation is not active
+    const { ui } = useStore.getState();
+    if (ui.activeConversationId !== message.conversationId && message.type === 'incoming') {
+      // TODO: Show browser notification
+      console.log(`🔔 New message from ${contact.name}`);
+    }
   }, [addMessage]);
 
   const handleMessageProcessing = useCallback((event: MessageProcessingEvent) => {
@@ -115,12 +175,59 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
   const handleExtensionResponse = useCallback(async (event: ExtensionResponseEvent) => {
     console.log('🔧 Extension response:', event.data);
+    const message = event.data;
 
-    // 1. Persist in IndexedDB
-    await db.addMessage(event.data);
+    // 1. Persist message in IndexedDB
+    await db.addMessage(message);
 
-    // 2. Update Zustand store
-    addMessage(event.data.conversationId, event.data);
+    // 2. Ensure conversation exists (same logic as handleMessageReceived)
+    const { entities, actions } = useStore.getState();
+    let conversation = entities.conversations.get(message.conversationId);
+
+    if (!conversation) {
+      console.log(`📂 Creating new conversation for extension response: ${message.conversationId}`);
+
+      conversation = {
+        id: message.conversationId,
+        entityId: message.metadata.from,
+        channel: message.channel,
+        lastMessage: {
+          text: message.content.text || '[Media]',
+          timestamp: message.metadata.timestamp,
+          type: message.type,
+        },
+        unreadCount: 0, // Extension responses don't increment unread
+        isPinned: false,
+        createdAt: message.metadata.timestamp,
+        updatedAt: message.metadata.timestamp,
+      };
+
+      await db.saveConversation(conversation);
+      actions.addConversation(conversation);
+    }
+
+    // 3. Ensure contact exists (if it's a new extension)
+    let contact = entities.contacts.get(message.metadata.from);
+
+    if (!contact) {
+      console.log(`👤 Creating new contact for extension: ${message.metadata.from}`);
+
+      contact = {
+        id: message.metadata.from,
+        name: message.metadata.extensionId || message.metadata.from,
+        status: 'online',
+        channel: message.channel,
+        metadata: {
+          lastSeen: message.metadata.timestamp,
+        },
+      };
+
+      await db.saveContact(contact);
+      actions.addContact(contact);
+    }
+
+    // 4. Update Zustand store with message
+    addMessage(message.conversationId, message);
   }, [addMessage]);
 
   const handleClientToggle = useCallback(async (event: ClientToggleEvent) => {
@@ -148,10 +255,14 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const handleMessageNew = useCallback(async (event: MessageNewEvent) => {
     console.log('📨 Message:new:', event.data);
 
-    // Same as message_received
-    await db.addMessage(event.data);
-    addMessage(event.data.conversationId, event.data);
-  }, [addMessage]);
+    // Same logic as handleMessageReceived
+    // (delegate to avoid code duplication)
+    await handleMessageReceived({
+      type: 'message_received',
+      data: event.data,
+      timestamp: event.timestamp
+    } as MessageReceivedEvent);
+  }, [handleMessageReceived]);
 
   const handleMessageStatus = useCallback((event: MessageStatusEvent) => {
     console.log('📊 Message:status:', event.data);
