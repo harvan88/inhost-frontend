@@ -50,6 +50,7 @@ import { useCallback } from 'react';
 export default function Workspace() {
   const addMessage = useStore((state) => state.actions.addMessage);
   const setConnectionStatus = useStore((state) => state.actions.setConnectionStatus);
+  const { theme } = useTheme();
 
   // WebSocket message handler
   const handleWebSocketMessage = useCallback(
@@ -78,7 +79,12 @@ export default function Workspace() {
   }, [connected, setConnectionStatus])();
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div
+      className="h-screen flex"
+      style={{
+        backgroundColor: theme.colors.neutral[50],
+      }}
+    >
       {/* Nivel 1: Activity Bar - Selección de dominio */}
       <ActivityBar />
 

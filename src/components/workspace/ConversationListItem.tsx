@@ -136,7 +136,7 @@ export default function ConversationListItem({ conversation }: ConversationListI
               }}
             >
               <MessageSquare
-                size={20}
+                size={theme.iconSizes.lg}
                 style={{
                   color: theme.colors.neutral[600],
                 }}
@@ -165,7 +165,7 @@ export default function ConversationListItem({ conversation }: ConversationListI
             </h3>
             {conversation.isPinned && (
               <Pin
-                size={14}
+                size={theme.iconSizes.sm}
                 className="flex-shrink-0"
                 style={{
                   color: theme.colors.primary[500],

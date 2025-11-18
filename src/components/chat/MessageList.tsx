@@ -44,15 +44,17 @@ export default function MessageList({ conversationId }: MessageListProps) {
         }}
       >
         <div
-          className="text-center py-12"
+          className="text-center"
           style={{
             color: theme.colors.neutral[600],
+            paddingTop: theme.spacing[12],
+            paddingBottom: theme.spacing[12],
           }}
         >
           <p
-            className="mb-2"
             style={{
               fontSize: theme.typography.sizes.lg,
+              marginBottom: theme.spacing[2],
             }}
           >
             No messages yet
@@ -103,7 +105,8 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
         marginLeft: 'auto',
         marginRight: 'auto',
         textAlign: 'center' as const,
-        maxWidth: '28rem',
+        // TODO: Create theme.maxWidth.md token or use theme.spacing[112] for system message width
+        maxWidth: `${theme.spacing[28]}`, // 28rem equivalent
       };
     }
     if (isIncoming) {
@@ -187,21 +190,33 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
       }}
     >
       <div
-        className="p-4 border"
+        className="border"
         style={{
           ...bubbleStyle,
+          padding: theme.spacing[4],
           borderRadius: theme.radius.lg,
           borderWidth: '1px',
           borderStyle: 'solid',
           boxShadow: theme.elevation.sm,
-          maxWidth: '640px', // max-w-2xl
+          // TODO: Create theme.maxWidth.lg token for message bubbles (640px)
+          maxWidth: `${theme.spacing[160]}`, // 640px equivalent
           width: isSystem ? 'auto' : '100%',
         }}
       >
         {/* Header: Channel and Type badges */}
         {!isSystem && (
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
+          <div
+            className="flex items-center justify-between"
+            style={{
+              marginBottom: theme.spacing[2],
+            }}
+          >
+            <div
+              className="flex items-center"
+              style={{
+                gap: theme.spacing[2],
+              }}
+            >
               <span
                 className="px-2 py-1 border"
                 style={{
@@ -257,8 +272,8 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
         {/* Footer: From/To info */}
         {!isSystem && (
           <div
-            className="mt-2"
             style={{
+              marginTop: theme.spacing[2],
               fontSize: theme.typography.sizes.xs,
               color: isIncoming ? theme.colors.neutral[600] : theme.colors.neutral[100],
             }}
@@ -274,8 +289,8 @@ function MessageBubble({ message, theme }: { message: Message; theme: any }) {
         {/* System messages timestamp */}
         {isSystem && (
           <div
-            className="mt-1"
             style={{
+              marginTop: theme.spacing[1],
               fontSize: theme.typography.sizes.xs,
               color: theme.colors.neutral[500],
             }}

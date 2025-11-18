@@ -8,13 +8,6 @@ interface Activity {
   label: string;
 }
 
-const activities: Activity[] = [
-  { id: 'messages', icon: <MessageSquare size={24} />, label: 'Mensajes' },
-  { id: 'contacts', icon: <Users size={24} />, label: 'Contactos' },
-  { id: 'tools', icon: <Wrench size={24} />, label: 'Herramientas' },
-  { id: 'plugins', icon: <Puzzle size={24} />, label: 'Plugins' },
-];
-
 /**
  * ActivityBar - Barra de Actividad (Nivel 1)
  *
@@ -83,6 +76,14 @@ const activities: Activity[] = [
 export default function ActivityBar() {
   const { activeActivity, setActivity } = useWorkspaceStore();
   const { theme } = useTheme();
+
+  // Create activities array with theme-based icon sizes
+  const activities: Activity[] = [
+    { id: 'messages', icon: <MessageSquare size={theme.iconSizes.xl} />, label: 'Mensajes' },
+    { id: 'contacts', icon: <Users size={theme.iconSizes.xl} />, label: 'Contactos' },
+    { id: 'tools', icon: <Wrench size={theme.iconSizes.xl} />, label: 'Herramientas' },
+    { id: 'plugins', icon: <Puzzle size={theme.iconSizes.xl} />, label: 'Plugins' },
+  ];
 
   return (
     <div

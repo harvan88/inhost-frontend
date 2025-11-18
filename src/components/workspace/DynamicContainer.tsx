@@ -225,8 +225,12 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             return (
               <div
                 key={tab.id}
-                className="px-4 flex items-center gap-2 cursor-pointer min-w-[150px] max-w-[200px] transition-colors"
+                className="flex items-center cursor-pointer min-w-[150px] max-w-[200px] transition-colors"
                 style={{
+                  paddingLeft: theme.spacing[4],
+                  paddingRight: theme.spacing[4],
+                  gap: theme.spacing[2],
+                  display: 'flex',
                   borderRight: `1px solid ${theme.colors.neutral[200]}`,
                   transitionDuration: theme.transitions.fast,
                   backgroundColor: isActiveTab ? theme.colors.neutral[0] : 'transparent',
@@ -247,7 +251,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                 }}
                 onClick={() => handleTabClick(tab.id)}
               >
-                <MessageSquare size={14} className="flex-shrink-0" />
+                <MessageSquare size={theme.iconSizes.sm} className="flex-shrink-0" />
                 <span
                   className="truncate flex-1"
                   style={{
@@ -272,7 +276,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                     }}
                     title="Cerrar"
                   >
-                    <X size={14} />
+                    <X size={theme.iconSizes.sm} />
                   </button>
                 )}
               </div>
@@ -282,16 +286,20 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
 
         {/* Container Controls */}
         <div
-          className="flex items-center gap-1 px-2"
+          className="flex items-center"
           style={{
+            gap: theme.spacing[1],
+            paddingLeft: theme.spacing[2],
+            paddingRight: theme.spacing[2],
             borderLeft: `1px solid ${theme.colors.neutral[200]}`,
           }}
         >
           {/* + Button - Abrir espacio adyacente */}
           <button
             onClick={handleAddAdjacentSpace}
-            className="p-1.5 transition"
+            className="transition"
             style={{
+              padding: theme.spacing[1.5],
               borderRadius: theme.radius.sm,
               transitionDuration: theme.transitions.base,
               color: theme.colors.neutral[700],
@@ -304,15 +312,16 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             }}
             title="Abrir espacio adyacente"
           >
-            <Plus size={16} />
+            <Plus size={theme.iconSizes.base} />
           </button>
 
           {/* Container Menu */}
           <div className="relative">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-1.5 transition"
+              className="transition"
               style={{
+                padding: theme.spacing[1.5],
                 borderRadius: theme.radius.sm,
                 transitionDuration: theme.transitions.base,
                 color: theme.colors.neutral[700],
@@ -325,7 +334,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
               }}
               title="Opciones del contenedor"
             >
-              <MoreVertical size={16} />
+              <MoreVertical size={theme.iconSizes.base} />
             </button>
 
             {/* Dropdown Menu */}
@@ -353,8 +362,13 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                 >
                   <button
                     onClick={handleDuplicateContainer}
-                    className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
+                    className="w-full text-left flex items-center transition"
                     style={{
+                      paddingLeft: theme.spacing[4],
+                      paddingRight: theme.spacing[4],
+                      paddingTop: theme.spacing[2],
+                      paddingBottom: theme.spacing[2],
+                      gap: theme.spacing[2],
                       fontSize: theme.typography.sizes.sm,
                       color: theme.colors.neutral[900],
                       borderBottom: `1px solid ${theme.colors.neutral[100]}`,
@@ -367,13 +381,18 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
-                    <Copy size={14} />
+                    <Copy size={theme.iconSizes.sm} />
                     Duplicar contenedor
                   </button>
                   <button
                     onClick={handleExpandContainer}
-                    className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
+                    className="w-full text-left flex items-center transition"
                     style={{
+                      paddingLeft: theme.spacing[4],
+                      paddingRight: theme.spacing[4],
+                      paddingTop: theme.spacing[2],
+                      paddingBottom: theme.spacing[2],
+                      gap: theme.spacing[2],
                       fontSize: theme.typography.sizes.sm,
                       color: theme.colors.neutral[900],
                       borderBottom: `1px solid ${theme.colors.neutral[100]}`,
@@ -386,13 +405,18 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
-                    <Maximize2 size={14} />
+                    <Maximize2 size={theme.iconSizes.sm} />
                     Expandir al 100%
                   </button>
                   <button
                     onClick={handleCloseContainer}
-                    className="w-full px-4 py-2 text-left flex items-center gap-2 transition"
+                    className="w-full text-left flex items-center transition"
                     style={{
+                      paddingLeft: theme.spacing[4],
+                      paddingRight: theme.spacing[4],
+                      paddingTop: theme.spacing[2],
+                      paddingBottom: theme.spacing[2],
+                      gap: theme.spacing[2],
                       fontSize: theme.typography.sizes.sm,
                       color: theme.colors.semantic.danger,
                       transitionDuration: theme.transitions.base,
@@ -404,7 +428,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
-                    <X size={14} />
+                    <X size={theme.iconSizes.sm} />
                     Cerrar contenedor
                   </button>
                 </div>
