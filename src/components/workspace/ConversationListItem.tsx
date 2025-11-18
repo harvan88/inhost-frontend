@@ -5,6 +5,7 @@ import { useTheme } from '@/theme';
 import { Text, ListCard } from '@/components/ui';
 import type { Conversation } from '@/types';
 import { Avatar, Badge, StatusIndicator } from '@/components/common';
+import { createTab, isTabActive } from '@/utils/tabHelpers';
 
 interface ConversationListItemProps {
   conversation: Conversation;
@@ -23,18 +24,19 @@ export default function ConversationListItem({ conversation }: ConversationListI
   const { theme } = useTheme();
 
   const handleClick = () => {
-    openTab({
-      id: `chat-${conversation.id}`,
-      type: 'conversation',
-      label: contact?.name || conversation.entityId,
-      entityId: conversation.id,
-      closable: true,
-    });
+    openTab(
+      createTab({
+        type: 'conversation',
+        entityId: conversation.id,
+        label: contact?.name || conversation.entityId,
+        closable: true,
+      })
+    );
   };
 
   // Check if this conversation is open in the active container
   const activeContainer = containers.find((c) => c.id === activeContainerId);
-  const isActiveTab = activeContainer?.activeTabId === `chat-${conversation.id}`;
+  const isActiveTab = isTabActive(activeContainer?.activeTabId ?? null, 'conversation', conversation.id);
 
   // Format timestamp
   const formatTime = (timestamp: string) => {

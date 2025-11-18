@@ -3,6 +3,7 @@ import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';
 import { useTheme } from '@/theme';
 import { Heading, Text, Input, ListCard } from '@/components/ui';
+import { createTab, isTabActive } from '@/utils/tabHelpers';
 import ConversationListItem from './ConversationListItem';
 
 /**
@@ -220,15 +221,16 @@ function ToolsView() {
   ];
 
   const handleOpenTool = (toolId: string, toolName: string) => {
+    const toolType = toolId === 'theme-editor' ? 'theme_editor' : 'analytics';
+
     openTab(
-      {
-        id: `${toolId}-${Date.now()}`,
-        type: toolId === 'theme-editor' ? 'theme_editor' : 'analytics',
-        label: toolName,
+      createTab({
+        type: toolType,
         entityId: toolId,
+        label: toolName,
         icon: tools.find((t) => t.id === toolId)?.icon,
         closable: true,
-      },
+      }),
       activeContainerId || undefined
     );
   };
@@ -258,10 +260,10 @@ function ToolsView() {
       {/* Tools List */}
       <div className="flex-1 overflow-y-auto">
         {tools.map((tool) => {
-          // Verificar si la herramienta está activa (similar a ConversationListItem)
+          // Verificar si la herramienta está activa (usando fuente de verdad)
           const activeContainer = containers.find((c) => c.id === activeContainerId);
-          const toolTabId = `${tool.id}-tab`;
-          const isActive = activeContainer?.activeTabId?.includes(tool.id) ?? false;
+          const toolType = tool.id === 'theme-editor' ? 'theme_editor' : 'analytics';
+          const isActive = isTabActive(activeContainer?.activeTabId ?? null, toolType as any, tool.id);
 
           return (
             <ListCard
