@@ -213,7 +213,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
       onClick={() => setActiveContainer(containerId)}
       style={{
         width: container.width,
-        minWidth: '300px', // CONTRATO: Ancho mínimo para evitar contenedores inutilizables
+        // CONTRATO: SIN anchos mínimos - adaptarse 100% al lienzo
         height: '100%',
         maxHeight: '100%',
         overflow: 'hidden',
@@ -238,7 +238,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
             return (
               <div
                 key={tab.id}
-                className="flex items-center cursor-pointer min-w-[150px] max-w-[200px] transition-colors"
+                className="flex items-center cursor-pointer transition-colors flex-1"
                 style={{
                   paddingLeft: theme.spacing[4],
                   paddingRight: theme.spacing[4],

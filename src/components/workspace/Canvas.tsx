@@ -110,22 +110,11 @@ export default function Canvas() {
 
   // CONTRATO: "Si lienzo se achica se achican proporcionalmente"
   // Observar cambios de tamaño del Canvas para redistribuir contenedores
-  const resizeRef = useResizeObserver<HTMLDivElement>((entry) => {
-    const canvasWidth = entry.contentRect.width;
-    const MIN_CONTAINER_WIDTH = 300;
+  const resizeRef = useResizeObserver<HTMLDivElement>(() => {
     const containerCount = containers.length;
 
-    // Si el Canvas es demasiado pequeño para mostrar todos los contenedores
-    // con su ancho mínimo, redistribuir proporcionalmente
-    if (containerCount > 0 && canvasWidth < containerCount * MIN_CONTAINER_WIDTH) {
-      // Los contenedores se ajustarán automáticamente con min-width: 300px
-      // y scroll horizontal si es necesario
-      console.warn(
-        `⚠️ Canvas width (${canvasWidth}px) is too small for ${containerCount} containers at min-width ${MIN_CONTAINER_WIDTH}px`
-      );
-    }
-
-    // Siempre redistribuir proporcionalmente cuando hay cambios de tamaño
+    // CONTRATO: Redistribuir anchos proporcionalmente cuando hay cambios de tamaño
+    // Los contenedores SIEMPRE se adaptan al 100% del lienzo, sin anchos mínimos
     if (containerCount > 1) {
       adjustContainerWidths();
     }
