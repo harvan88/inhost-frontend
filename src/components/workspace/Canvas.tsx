@@ -5,7 +5,7 @@ import { Text } from '@/components/ui';
 import DynamicContainer from './DynamicContainer';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
-import { useCallback } from 'react';
+import { useCombinedRefs } from '@/hooks/useCombinedRefs';
 
 /**
  * Canvas - Lienzo Dinámico (Nivel 3)
@@ -150,15 +150,7 @@ export default function Canvas() {
   });
 
   // Combinar refs (resize + overflow detection)
-  const canvasRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      // @ts-ignore
-      resizeRef.current = node;
-      // @ts-ignore
-      overflowRef.current = node;
-    },
-    [resizeRef, overflowRef]
-  );
+  const canvasRef = useCombinedRefs(resizeRef, overflowRef);
 
   // Máximo 3 contenedores
   const canAddContainer = containers.length < 3;

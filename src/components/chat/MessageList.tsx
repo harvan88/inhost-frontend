@@ -1,10 +1,11 @@
-import { useRef, useEffect, memo, useCallback } from 'react';
+import { useRef, useEffect, memo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages } from '@/store';
 import { useTheme } from '@/theme';
 import type { Message } from '@/types';
 import { Badge } from '@/components/common';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
+import { useCombinedRefs } from '@/hooks/useCombinedRefs';
 
 interface MessageListProps {
   conversationId: string;
@@ -58,14 +59,7 @@ export default function MessageList({ conversationId }: MessageListProps) {
   });
 
   // Combinar refs (parent para virtualizer + overflow detection)
-  const combinedRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      parentRef.current = node;
-      // @ts-ignore
-      overflowRef.current = node;
-    },
-    [overflowRef]
-  );
+  const combinedRef = useCombinedRefs(parentRef, overflowRef);
 
   // Virtualizer para renderizar solo mensajes visibles
   const rowVirtualizer = useVirtualizer({

@@ -90,9 +90,15 @@ export default function Workspace() {
   // Desktop layout (existing)
   return (
     <div
-      className="h-screen"
       style={{
-        position: 'relative',
+        position: 'fixed', // CONTRATO: Contenedor absoluto que toma dimensiones de viewport
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden', // CONTRATO: Evitar desbordamiento global
         backgroundColor: theme.colors.neutral[50],
       }}
     >
@@ -103,19 +109,25 @@ export default function Workspace() {
           position: 'absolute',
           left: 0,
           top: 0,
-          height: '100%',
+          bottom: 0,
           width: theme.componentSizes.sidebar.activityBar, // 64px
           zIndex: theme.zIndex.sidebar,
+          overflow: 'hidden',
         }}
       >
         <ActivityBar />
       </div>
 
-      {/* Contenedor para Sidebar + Canvas (con margen izquierdo para ActivityBar) */}
+      {/* Contenedor para Sidebar + Canvas - Position absolute para dimensiones exactas */}
       <div
-        className="h-full flex"
         style={{
-          marginLeft: theme.componentSizes.sidebar.activityBar, // 64px - espacio para ActivityBar
+          position: 'absolute',
+          left: theme.componentSizes.sidebar.activityBar, // 64px
+          top: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          overflow: 'hidden', // CONTRATO: Evitar desbordamiento
         }}
       >
         {/* Nivel 2: Sidebar Contextual - Lista de entidades */}
