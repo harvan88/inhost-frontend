@@ -1,23 +1,65 @@
+import { useTheme } from '@/theme';
+
 interface StatusCardProps {
   title: string;
   value: string;
-  color: 'green' | 'yellow' | 'red' | 'blue';
+  color: 'success' | 'warning' | 'danger' | 'info';
 }
 
-const colorClasses = {
-  green: 'bg-green-50 border-green-200 text-green-700',
-  yellow: 'bg-yellow-50 border-yellow-200 text-yellow-700',
-  red: 'bg-red-50 border-red-200 text-red-700',
-  blue: 'bg-blue-50 border-blue-200 text-blue-700',
-};
-
 export default function StatusCard({ title, value, color }: StatusCardProps) {
+  const { theme } = useTheme();
+
+  // Map color prop to semantic theme colors
+  const colorMap = {
+    success: {
+      bg: theme.colors.semantic.successLight,
+      border: theme.colors.semantic.success,
+      text: theme.colors.semantic.success,
+    },
+    warning: {
+      bg: theme.colors.semantic.warningLight,
+      border: theme.colors.semantic.warning,
+      text: theme.colors.semantic.warning,
+    },
+    danger: {
+      bg: theme.colors.semantic.dangerLight,
+      border: theme.colors.semantic.danger,
+      text: theme.colors.semantic.danger,
+    },
+    info: {
+      bg: theme.colors.semantic.infoLight,
+      border: theme.colors.semantic.info,
+      text: theme.colors.semantic.info,
+    },
+  };
+
+  const colors = colorMap[color];
+
   return (
-    <div className={`p-6 rounded-lg border-2 ${colorClasses[color]}`}>
-      <h3 className="text-sm font-semibold uppercase tracking-wide opacity-75 mb-2">
+    <div
+      style={{
+        padding: '1.5rem',
+        borderRadius: theme.radius.lg,
+        border: `2px solid ${colors.border}`,
+        backgroundColor: colors.bg,
+      }}
+    >
+      <h3
+        className="text-sm font-semibold uppercase tracking-wide opacity-75 mb-2"
+        style={{
+          color: colors.text,
+        }}
+      >
         {title}
       </h3>
-      <p className="text-3xl font-bold">{value}</p>
+      <p
+        className="text-3xl font-bold"
+        style={{
+          color: colors.text,
+        }}
+      >
+        {value}
+      </p>
     </div>
   );
 }

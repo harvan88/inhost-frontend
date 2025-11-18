@@ -81,7 +81,10 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
       <div
         className="flex-1 overflow-hidden"
         style={{
-          paddingBottom: '120px', // Space for fixed input
+          // TODO: Create theme.spacing.messageInputOffset token for message list padding
+          // Used to prevent messages from being hidden under the fixed input at bottom
+          // Current value: 120px provides space for MessageInput + padding + border
+          paddingBottom: '120px',
         }}
       >
         <MessageList conversationId={conversationId} />

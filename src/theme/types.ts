@@ -79,6 +79,16 @@ export interface Typography {
   };
 }
 
+export interface IconSizes {
+  xs: number;
+  sm: number;
+  base: number;
+  md: number;
+  lg: number;
+  xl: number;
+  '2xl': number;
+}
+
 export interface Spacing {
   0: string;
   1: string;
@@ -142,6 +152,7 @@ export interface Theme {
   type: 'light' | 'dark';
   colors: ThemeColors;
   typography: Typography;
+  iconSizes: IconSizes;
   spacing: Spacing;
   radius: Radius;
   elevation: Elevation;

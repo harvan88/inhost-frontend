@@ -174,8 +174,9 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
         {/* Right: Action buttons */}
         <div className="flex items-center gap-2">
           <button
-            className="p-2 transition"
+            className="transition"
             style={{
+              padding: theme.spacing[2],
               borderRadius: theme.radius.lg,
               transitionDuration: theme.transitions.base,
             }}
@@ -196,8 +197,9 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
             />
           </button>
           <button
-            className="p-2 transition"
+            className="transition"
             style={{
+              padding: theme.spacing[2],
               borderRadius: theme.radius.lg,
               transitionDuration: theme.transitions.base,
             }}
@@ -218,8 +220,9 @@ export default function ChatHeader({ conversationId }: ChatHeaderProps) {
             />
           </button>
           <button
-            className="p-2 transition"
+            className="transition"
             style={{
+              padding: theme.spacing[2],
               borderRadius: theme.radius.lg,
               transitionDuration: theme.transitions.base,
             }}

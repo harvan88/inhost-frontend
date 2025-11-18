@@ -151,7 +151,7 @@ export default function Canvas() {
             title="Dividir horizontalmente (50% / 50%)"
             disabled={containers.length === 0}
           >
-            <Columns2 size={14} />
+            <Columns2 size={theme.iconSizes.sm} />
             Split Horizontal
           </button>
           <button
@@ -174,7 +174,7 @@ export default function Canvas() {
             title="Dividir verticalmente (50% / 50%)"
             disabled={containers.length === 0}
           >
-            <Rows2 size={14} />
+            <Rows2 size={theme.iconSizes.sm} />
             Split Vertical
           </button>
           <button
@@ -196,7 +196,7 @@ export default function Canvas() {
             }}
             title={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
           >
-            {isDark ? <Sun size={14} /> : <Moon size={14} />}
+            {isDark ? <Sun size={theme.iconSizes.sm} /> : <Moon size={theme.iconSizes.sm} />}
             {isDark ? 'Tema Claro' : 'Tema Oscuro'}
           </button>
         </div>

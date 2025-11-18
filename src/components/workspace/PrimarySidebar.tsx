@@ -127,7 +127,7 @@ function ConversationListView() {
         {/* Search */}
         <div className="relative">
           <Search
-            size={18}
+            size={theme.iconSizes?.md || 18}
             className="absolute left-3 top-1/2 -translate-y-1/2"
             style={{
               color: theme.colors.neutral[400],
@@ -157,8 +157,9 @@ function ConversationListView() {
       <div className="flex-1 overflow-y-auto">
         {conversationArray.length === 0 ? (
           <div
-            className="p-8 text-center"
+            className="text-center"
             style={{
+              padding: theme.spacing[8],
               color: theme.colors.neutral[500],
             }}
           >
