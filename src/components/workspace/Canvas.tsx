@@ -1,4 +1,4 @@
-import { Columns2, Rows2 } from 'lucide-react';
+import { Columns2, Rows2, Moon, Sun } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import DynamicContainer from './DynamicContainer';
@@ -103,7 +103,7 @@ import DynamicContainer from './DynamicContainer';
 export default function Canvas() {
   const { containers, layout, splitCanvas, expandedContainerId, collapseContainer } =
     useWorkspaceStore();
-  const { theme } = useTheme();
+  const { theme, toggleTheme, isDark } = useTheme();
 
   return (
     <div
@@ -176,6 +176,28 @@ export default function Canvas() {
           >
             <Rows2 size={14} />
             Split Vertical
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="px-3 py-1.5 flex items-center gap-1.5 transition"
+            style={{
+              fontSize: theme.typography.sizes.xs,
+              backgroundColor: theme.colors.neutral[0],
+              border: `1px solid ${theme.colors.neutral[300]}`,
+              borderRadius: theme.radius.md,
+              color: theme.colors.neutral[700],
+              transitionDuration: theme.transitions.base,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[50];
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.neutral[0];
+            }}
+            title={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+          >
+            {isDark ? <Sun size={14} /> : <Moon size={14} />}
+            {isDark ? 'Tema Claro' : 'Tema Oscuro'}
           </button>
         </div>
       </div>

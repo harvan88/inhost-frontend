@@ -51,10 +51,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Theme } from './types';
 import { validateThemeStructure, validateThemeAccessibility } from './utils';
 import defaultTheme from './theme.json';
+import darkTheme from './dark-theme.json';
 
 interface ThemeContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
   isDark: boolean;
 }
 
@@ -100,10 +102,16 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
     setThemeState(newTheme);
   };
 
+  const toggleTheme = () => {
+    const newTheme = theme.type === 'dark' ? defaultTheme : darkTheme;
+    console.log('[ThemeProvider] Toggle tema:', theme.type, '→', newTheme.type);
+    setThemeState(newTheme as Theme);
+  };
+
   const isDark = theme.type === 'dark';
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, isDark }}>
       {children}
     </ThemeContext.Provider>
   );
