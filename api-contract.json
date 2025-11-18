@@ -1,0 +1,481 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "INHOST API Gateway",
+    "version": "1.0.0",
+    "description": "API para gestión de mensajería multicanal con extensiones",
+    "contact": {
+      "name": "INHOST Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desarrollo"
+    },
+    {
+      "url": "/api",
+      "description": "Proxied por Vite"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Health checks y status del sistema"
+    },
+    {
+      "name": "Simulation",
+      "description": "Endpoints de simulación de clientes y extensiones"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check del sistema",
+        "description": "Verifica el estado de todos los servicios (PostgreSQL, Redis, etc.)",
+        "responses": {
+          "200": {
+            "description": "Sistema saludable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sistema no disponible"
+          }
+        }
+      }
+    },
+    "/simulate/client-message": {
+      "post": {
+        "tags": ["Simulation"],
+        "summary": "Simular mensaje de cliente",
+        "description": "Simula un mensaje entrante desde un cliente externo (WhatsApp, Telegram, etc.)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mensaje procesado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientMessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simulate/client-toggle": {
+      "post": {
+        "tags": ["Simulation"],
+        "summary": "Conectar/desconectar cliente",
+        "description": "Cambia el estado de conexión de un cliente simulado",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientToggleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estado del cliente actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientToggleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simulate/extension-toggle": {
+      "post": {
+        "tags": ["Simulation"],
+        "summary": "Activar/desactivar extensión",
+        "description": "Cambia el estado de activación de una extensión",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionToggleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estado de extensión actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionToggleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simulate/extension-latency": {
+      "patch": {
+        "tags": ["Simulation"],
+        "summary": "Actualizar latencia de extensión",
+        "description": "Ajusta la latencia simulada de una extensión (útil para testing)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionLatencyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Latencia actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionLatencyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simulate/status": {
+      "get": {
+        "tags": ["Simulation"],
+        "summary": "Estado del sistema de simulación",
+        "description": "Obtiene el estado completo de clientes, extensiones y estadísticas",
+        "responses": {
+          "200": {
+            "description": "Estado del sistema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MessageEnvelope": {
+        "type": "object",
+        "required": ["id", "conversationId", "type", "channel", "content", "metadata", "statusChain", "context"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID único del mensaje"
+          },
+          "conversationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID de la conversación"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["incoming", "outgoing", "system", "status"],
+            "description": "Tipo de mensaje"
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["whatsapp", "telegram", "web", "sms"],
+            "description": "Canal de comunicación"
+          },
+          "content": {
+            "type": "object",
+            "required": ["contentType"],
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "Texto del mensaje (opcional si hay media)"
+              },
+              "contentType": {
+                "type": "string",
+                "description": "MIME type (text/plain, image/jpeg, etc.)"
+              },
+              "media": {
+                "type": "object",
+                "properties": {
+                  "url": { "type": "string" },
+                  "type": { "type": "string", "enum": ["image", "video", "audio", "document"] },
+                  "caption": { "type": "string" }
+                }
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "required": ["from", "to", "timestamp"],
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "platformMessageId": { "type": "string" },
+              "extensionId": { "type": "string" }
+            }
+          },
+          "statusChain": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["status", "timestamp", "messageId"],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": ["received", "processing", "sending", "sent", "delivered", "read", "failed"]
+                },
+                "timestamp": { "type": "string", "format": "date-time" },
+                "messageId": { "type": "string" },
+                "details": { "type": "string" }
+              }
+            }
+          },
+          "context": {
+            "type": "object",
+            "required": ["plan", "timestamp"],
+            "properties": {
+              "plan": { "type": "string", "enum": ["free", "premium"] },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "source": { "type": "string" }
+            }
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "string", "enum": ["healthy", "unhealthy"] },
+              "database": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" },
+              "version": { "type": "string" },
+              "redis": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string" },
+                  "host": { "type": "string" },
+                  "port": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ClientMessageRequest": {
+        "type": "object",
+        "required": ["clientId", "text"],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "enum": ["whatsapp", "telegram", "web", "sms"],
+            "description": "ID del cliente que envía el mensaje"
+          },
+          "text": {
+            "type": "string",
+            "description": "Texto del mensaje"
+          }
+        }
+      },
+      "ClientMessageResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "clientMessage": { "$ref": "#/components/schemas/MessageEnvelope" },
+              "extensionResponses": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/MessageEnvelope" }
+              },
+              "processedCount": { "type": "number" }
+            }
+          }
+        }
+      },
+      "ClientToggleRequest": {
+        "type": "object",
+        "required": ["clientId"],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "enum": ["whatsapp", "telegram", "web", "sms"]
+          }
+        }
+      },
+      "ClientToggleResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "clientId": { "type": "string" },
+              "connected": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "ExtensionToggleRequest": {
+        "type": "object",
+        "required": ["extensionId"],
+        "properties": {
+          "extensionId": {
+            "type": "string",
+            "enum": ["echo", "ai", "crm"]
+          }
+        }
+      },
+      "ExtensionToggleResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "extensionId": { "type": "string" },
+              "active": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "ExtensionLatencyRequest": {
+        "type": "object",
+        "required": ["extensionId", "latency"],
+        "properties": {
+          "extensionId": { "type": "string" },
+          "latency": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5000,
+            "description": "Latencia en milisegundos"
+          }
+        }
+      },
+      "ExtensionLatencyResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "extensionId": { "type": "string" },
+              "latency": { "type": "number" }
+            }
+          }
+        }
+      },
+      "SimulationStatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "clients": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "icon": { "type": "string" },
+                    "channel": { "type": "string" },
+                    "connected": { "type": "boolean" },
+                    "metadata": { "type": "object" }
+                  }
+                }
+              },
+              "extensions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "icon": { "type": "string" },
+                    "active": { "type": "boolean" },
+                    "latency": { "type": "number" },
+                    "subscriptions": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              },
+              "stats": {
+                "type": "object",
+                "properties": {
+                  "activeExtensions": { "type": "number" },
+                  "connectedClients": { "type": "number" },
+                  "totalClients": { "type": "number" },
+                  "totalExtensions": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "details": { "type": "object" },
+              "timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
