@@ -1,9 +1,12 @@
 import { X, MessageSquare, MoreVertical, Copy, Maximize2, Plus } from 'lucide-react';
 import { useWorkspaceStore, useContainer } from '@/store/workspace';
 import { useTheme } from '@/theme';
-import ChatArea from '@components/chat/ChatArea';
-import ThemeEditorArea from '@components/tools/ThemeEditorArea';
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
+import { ChatAreaSkeleton } from '@/components/feedback';
+
+// CODE SPLITTING: Lazy load de componentes pesados
+const ChatArea = lazy(() => import('@components/chat/ChatArea'));
+const ThemeEditorArea = lazy(() => import('@components/tools/ThemeEditorArea'));
 
 interface DynamicContainerProps {
   containerId: string;
@@ -444,10 +447,14 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
         {activeTab ? (
           <>
             {activeTab.type === 'conversation' && (
-              <ChatArea conversationId={activeTab.entityId} />
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <ChatArea conversationId={activeTab.entityId} />
+              </Suspense>
             )}
             {activeTab.type === 'theme_editor' && (
-              <ThemeEditorArea themeId={activeTab.entityId} />
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <ThemeEditorArea themeId={activeTab.entityId} />
+              </Suspense>
             )}
             {activeTab.type === 'analytics' && (
               <div

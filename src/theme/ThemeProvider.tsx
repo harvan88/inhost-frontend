@@ -47,7 +47,7 @@
  * ```
  */
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import type { Theme } from './types';
 import { validateThemeStructure, validateThemeAccessibility } from './utils';
 import defaultTheme from './theme.json';
@@ -110,8 +110,15 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
 
   const isDark = theme.type === 'dark';
 
+  // PERFORMANCE OPTIMIZATION: Memoizar context value
+  // Evita re-renders innecesarios de todos los componentes que usan useTheme
+  const contextValue = useMemo(
+    () => ({ theme, setTheme, toggleTheme, isDark }),
+    [theme, isDark] // Solo cambia cuando el tema cambia
+  );
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, isDark }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
