@@ -3,6 +3,7 @@ import { useWorkspaceStore, useContainer } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import { lazy, Suspense, useState } from 'react';
 import { ChatAreaSkeleton } from '@/components/feedback';
+import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 
 // CODE SPLITTING: Lazy load de componentes pesados
 const ChatArea = lazy(() => import('@components/chat/ChatArea'));
@@ -146,6 +147,23 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
   const { theme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // CONTRATO: "Ningún contenido del lienzo lo desborda"
+  // Detectar overflow en el contenedor dinámico
+  const containerRef = useOverflowDetection<HTMLDivElement>(`DynamicContainer-${containerId}`, {
+    checkInterval: 3000,
+    logOverflow: true,
+    onOverflow: (data) => {
+      console.error(
+        `🚨 VIOLACIÓN - DynamicContainer [${containerId}] tiene overflow`,
+        {
+          overflowHorizontal: data.hasHorizontalOverflow ? `${data.overflowX}px` : 'No',
+          overflowVertical: data.hasVerticalOverflow ? `${data.overflowY}px` : 'No',
+          dimensiones: `${data.clientWidth}x${data.clientHeight}`,
+        }
+      );
+    },
+  });
+
   if (!container) {
     return (
       <div
@@ -190,6 +208,7 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
 
   return (
     <div
+      ref={containerRef}
       className="flex-1 flex flex-col"
       onClick={() => setActiveContainer(containerId)}
       style={{

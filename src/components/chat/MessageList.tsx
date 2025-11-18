@@ -1,9 +1,10 @@
-import { useRef, useEffect, memo } from 'react';
+import { useRef, useEffect, memo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages } from '@/store';
 import { useTheme } from '@/theme';
 import type { Message } from '@/types';
 import { Badge } from '@/components/common';
+import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 
 interface MessageListProps {
   conversationId: string;
@@ -34,6 +35,37 @@ export default function MessageList({ conversationId }: MessageListProps) {
   const messages = useMessages(conversationId);
   const { theme } = useTheme();
   const parentRef = useRef<HTMLDivElement>(null);
+
+  // CONTRATO: "Ningún contenido del lienzo lo desborda"
+  // Detectar overflow HORIZONTAL (vertical es esperado y permitido)
+  const overflowRef = useOverflowDetection<HTMLDivElement>(`MessageList-${conversationId}`, {
+    checkInterval: 3000,
+    logOverflow: true,
+    onOverflow: (data) => {
+      // Solo alertar si hay overflow HORIZONTAL (vertical es normal)
+      if (data.hasHorizontalOverflow) {
+        console.error(
+          `🚨 VIOLACIÓN - MessageList tiene overflow horizontal`,
+          {
+            conversationId,
+            overflowHorizontal: `${data.overflowX}px`,
+            dimensiones: `${data.clientWidth}x${data.clientHeight}`,
+            scroll: `${data.scrollWidth}x${data.scrollHeight}`,
+          }
+        );
+      }
+    },
+  });
+
+  // Combinar refs (parent para virtualizer + overflow detection)
+  const combinedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      parentRef.current = node;
+      // @ts-ignore
+      overflowRef.current = node;
+    },
+    [overflowRef]
+  );
 
   // Virtualizer para renderizar solo mensajes visibles
   const rowVirtualizer = useVirtualizer({
@@ -99,7 +131,7 @@ export default function MessageList({ conversationId }: MessageListProps) {
 
   return (
     <div
-      ref={parentRef}
+      ref={combinedRef}
       className="h-full overflow-y-auto px-6 py-4"
       style={{
         backgroundColor: theme.colors.neutral[50],

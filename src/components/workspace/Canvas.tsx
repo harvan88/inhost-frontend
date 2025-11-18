@@ -4,6 +4,8 @@ import { useTheme } from '@/theme';
 import { Text } from '@/components/ui';
 import DynamicContainer from './DynamicContainer';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
+import { useOverflowDetection } from '@/hooks/useOverflowDetection';
+import { useCallback } from 'react';
 
 /**
  * Canvas - Lienzo Dinámico (Nivel 3)
@@ -108,7 +110,7 @@ export default function Canvas() {
 
   // CONTRATO: "Si lienzo se achica se achican proporcionalmente"
   // Observar cambios de tamaño del Canvas para redistribuir contenedores
-  const canvasRef = useResizeObserver<HTMLDivElement>((entry) => {
+  const resizeRef = useResizeObserver<HTMLDivElement>((entry) => {
     const canvasWidth = entry.contentRect.width;
     const MIN_CONTAINER_WIDTH = 300;
     const containerCount = containers.length;
@@ -119,7 +121,7 @@ export default function Canvas() {
       // Los contenedores se ajustarán automáticamente con min-width: 300px
       // y scroll horizontal si es necesario
       console.warn(
-        `Canvas width (${canvasWidth}px) is too small for ${containerCount} containers at min-width ${MIN_CONTAINER_WIDTH}px`
+        `⚠️ Canvas width (${canvasWidth}px) is too small for ${containerCount} containers at min-width ${MIN_CONTAINER_WIDTH}px`
       );
     }
 
@@ -128,6 +130,35 @@ export default function Canvas() {
       adjustContainerWidths();
     }
   });
+
+  // CONTRATO: "Ningún contenido del lienzo lo desborda"
+  // Detectar y reportar overflow en el Canvas
+  const overflowRef = useOverflowDetection<HTMLDivElement>('Canvas', {
+    checkInterval: 3000, // Chequear cada 3 segundos
+    logOverflow: true,
+    onOverflow: (data) => {
+      console.error(
+        '🚨 VIOLACIÓN DE CONTRATO - Canvas tiene overflow',
+        {
+          overflowHorizontal: data.hasHorizontalOverflow ? `${data.overflowX}px` : 'No',
+          overflowVertical: data.hasVerticalOverflow ? `${data.overflowY}px` : 'No',
+          dimensiones: `${data.clientWidth}x${data.clientHeight}`,
+          scroll: `${data.scrollWidth}x${data.scrollHeight}`,
+        }
+      );
+    },
+  });
+
+  // Combinar refs (resize + overflow detection)
+  const canvasRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      // @ts-ignore
+      resizeRef.current = node;
+      // @ts-ignore
+      overflowRef.current = node;
+    },
+    [resizeRef, overflowRef]
+  );
 
   // Máximo 3 contenedores
   const canAddContainer = containers.length < 3;

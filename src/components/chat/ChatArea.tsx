@@ -2,6 +2,7 @@ import { useTheme } from '@/theme';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 
 interface ChatAreaProps {
   conversationId: string;
@@ -32,6 +33,24 @@ interface ChatAreaProps {
  */
 export default function ChatArea({ conversationId }: ChatAreaProps) {
   const { theme } = useTheme();
+
+  // CONTRATO: "Ningún contenido del lienzo lo desborda"
+  // Detectar overflow en ChatArea
+  const chatAreaRef = useOverflowDetection<HTMLDivElement>(`ChatArea-${conversationId}`, {
+    checkInterval: 3000,
+    logOverflow: true,
+    onOverflow: (data) => {
+      console.error(
+        `🚨 VIOLACIÓN - ChatArea tiene overflow`,
+        {
+          conversationId,
+          overflowHorizontal: data.hasHorizontalOverflow ? `${data.overflowX}px` : 'No',
+          overflowVertical: data.hasVerticalOverflow ? `${data.overflowY}px` : 'No',
+          dimensiones: `${data.clientWidth}x${data.clientHeight}`,
+        }
+      );
+    },
+  });
 
   if (!conversationId) {
     return (
@@ -66,6 +85,7 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
 
   return (
     <div
+      ref={chatAreaRef}
       className="h-full"
       style={{
         backgroundColor: theme.colors.neutral[0],
