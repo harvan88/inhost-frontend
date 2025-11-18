@@ -1,4 +1,4 @@
-import { useRef, useEffect, memo } from 'react';
+import { useRef, useEffect, memo, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages, useStore } from '@/store';
 import { useTheme } from '@/theme';
@@ -7,6 +7,9 @@ import { Badge } from '@/components/common';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 import { useCombinedRefs } from '@/hooks/useCombinedRefs';
 import { Clock, Check, CheckCheck, AlertCircle } from 'lucide-react';
+
+// Constant empty array to avoid creating new arrays on every render
+const EMPTY_ARRAY: string[] = [];
 
 interface MessageListProps {
   conversationId: string;
@@ -35,7 +38,7 @@ interface MessageListProps {
  */
 export default function MessageList({ conversationId }: MessageListProps) {
   const messages = useMessages(conversationId);
-  const typingUsers = useStore((s) => s.ui.typingUsers.get(conversationId) || []);
+  const typingUsers = useStore((s) => s.ui.typingUsers.get(conversationId) ?? EMPTY_ARRAY);
   const { theme } = useTheme();
   const parentRef = useRef<HTMLDivElement>(null);
 
