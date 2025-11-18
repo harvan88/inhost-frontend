@@ -119,6 +119,8 @@ export default function ChatArea({ conversationId }: ChatAreaProps) {
           borderTop: `1px solid ${theme.colors.neutral[200]}`,
           padding: theme.spacing[4],
           backgroundColor: theme.colors.neutral[0],
+          overflow: 'hidden', // CONTRATO: Evitar desbordamiento del input
+          maxHeight: theme.componentSizes.messageInputContainer, // Límite de altura
         }}
       >
         <MessageInput conversationId={conversationId} />

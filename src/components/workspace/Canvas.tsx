@@ -161,6 +161,7 @@ export default function Canvas() {
       className="flex-1 flex flex-col"
       style={{
         backgroundColor: theme.colors.neutral[0],
+        overflow: 'hidden', // CONTRATO: Evitar desbordamiento del Canvas
       }}
     >
       {/* Canvas Toolbar - Controles para dividir el lienzo */}

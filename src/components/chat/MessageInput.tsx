@@ -3,6 +3,7 @@ import { Send } from 'lucide-react';
 import { useStore, useConversation } from '@/store';
 import { useTheme } from '@/theme';
 import type { Message } from '@/types';
+import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 
 interface MessageInputProps {
   conversationId: string;
@@ -35,6 +36,24 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
 
   const conversation = useConversation(conversationId);
   const addMessage = useStore((state) => state.actions.addMessage);
+
+  // DIAGNÓSTICO: Detectar overflow en MessageInput
+  const inputRef = useOverflowDetection<HTMLDivElement>(`MessageInput-${conversationId}`, {
+    checkInterval: 3000,
+    logOverflow: true,
+    onOverflow: (data) => {
+      console.error(
+        `🔍 DIAGNÓSTICO - MessageInput tiene overflow`,
+        {
+          conversationId,
+          overflowHorizontal: data.hasHorizontalOverflow ? `${data.overflowX}px` : 'No',
+          overflowVertical: data.hasVerticalOverflow ? `${data.overflowY}px` : 'No',
+          dimensiones: `${data.clientWidth}x${data.clientHeight}`,
+          scroll: `${data.scrollWidth}x${data.scrollHeight}`,
+        }
+      );
+    },
+  });
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -117,7 +136,15 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2] }}>
+    <div
+      ref={inputRef}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing[2],
+        overflow: 'hidden', // CONTRATO: Evitar desbordamiento
+      }}
+    >
       <form
         onSubmit={handleSubmit}
         style={{ display: 'flex', gap: theme.spacing[3] }}
