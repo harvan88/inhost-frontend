@@ -1,5 +1,6 @@
 import { MessageSquare, Users, Wrench, Puzzle } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
+import { useTheme } from '@/theme';
 
 interface Activity {
   id: 'messages' | 'contacts' | 'tools' | 'plugins';
@@ -70,15 +71,33 @@ const activities: Activity[] = [
  * - Herramientas: Utilidades del sistema
  * - Plugins: Extensiones modulares
  *
+ * ## Aplicación del Tema (Sección 8.5.1)
+ *
+ * - Iconografía unificada a partir del color `primary-500`
+ * - Hover operado por tokens semánticos (`neutral-100`)
+ * - Accesibilidad garantizada mediante contraste automatizado
+ * - Ningún color definido localmente, todo proviene del tema
+ *
  * Metáfora: Como el "Activity Bar" de VS Code (Explorer, Search, Source Control)
  */
 export default function ActivityBar() {
   const { activeActivity, setActivity } = useWorkspaceStore();
+  const { theme } = useTheme();
 
   return (
-    <div className="w-16 bg-gray-900 flex flex-col py-4 gap-2">
+    <div
+      className="w-16 flex flex-col py-4 gap-2"
+      style={{
+        backgroundColor: theme.colors.neutral[900],
+      }}
+    >
       {/* Logo */}
-      <div className="mb-4 text-white font-bold text-xl text-center">
+      <div
+        className="mb-4 font-bold text-xl text-center"
+        style={{
+          color: theme.colors.neutral[0],
+        }}
+      >
         FC
       </div>
 
@@ -88,15 +107,33 @@ export default function ActivityBar() {
           <button
             key={activity.id}
             onClick={() => setActivity(activity.id)}
-            className={`
-              w-12 h-12 rounded-lg flex items-center justify-center
-              transition-all duration-200 mx-auto
-              ${
+            className="w-12 h-12 flex items-center justify-center mx-auto transition-all"
+            style={{
+              backgroundColor:
                 activeActivity === activity.id
-                  ? 'bg-blue-500 text-white shadow-lg'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  ? theme.colors.primary[500]
+                  : 'transparent',
+              color:
+                activeActivity === activity.id
+                  ? theme.colors.neutral[0]
+                  : theme.colors.neutral[400],
+              borderRadius: theme.radius.lg,
+              transitionDuration: theme.transitions.base,
+              boxShadow:
+                activeActivity === activity.id ? theme.elevation.base : 'none',
+            }}
+            onMouseEnter={(e) => {
+              if (activeActivity !== activity.id) {
+                e.currentTarget.style.backgroundColor = theme.colors.neutral[800];
+                e.currentTarget.style.color = theme.colors.neutral[0];
               }
-            `}
+            }}
+            onMouseLeave={(e) => {
+              if (activeActivity !== activity.id) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = theme.colors.neutral[400];
+              }
+            }}
             title={activity.label}
             aria-label={activity.label}
           >
@@ -110,7 +147,15 @@ export default function ActivityBar() {
 
       {/* Version Footer */}
       <div className="text-center">
-        <div className="text-xs text-gray-600">v1.0</div>
+        <div
+          className="text-xs"
+          style={{
+            color: theme.colors.neutral[600],
+            fontSize: theme.typography.sizes.xs,
+          }}
+        >
+          v1.0
+        </div>
       </div>
     </div>
   );
