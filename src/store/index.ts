@@ -1,193 +1,84 @@
+/**
+ * Zustand Store para INHOST
+ * CONTRATO ESTRICTO - Basado en MessageEnvelope del backend
+ *
+ * Arquitectura:
+ * 1. Entities (persisted in IndexedDB) - conversations, messages, contacts
+ * 2. Simulation (ephemeral from API) - clients, extensions, stats
+ * 3. UI (ephemeral frontend-only) - activeConversation, theme, workspace
+ * 4. Network (transient sync state) - connectionStatus, pendingMessages
+ */
+
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { AppState, Conversation, Contact, Message } from '@/types';
-
-/**
- * Mock data for development
- */
-const mockContact1: Contact = {
-  id: 'contact-1',
-  name: 'Juan Pérez',
-  avatar: 'https://ui-avatars.com/api/?name=Juan+Perez&background=0ea5e9&color=fff',
-  status: 'online',
-  channel: 'whatsapp',
-  metadata: {
-    phoneNumber: '+54 9 11 1234-5678',
-  },
-};
-
-const mockContact2: Contact = {
-  id: 'contact-2',
-  name: 'María González',
-  avatar: 'https://ui-avatars.com/api/?name=Maria+Gonzalez&background=10b981&color=fff',
-  status: 'offline',
-  channel: 'telegram',
-  metadata: {
-    phoneNumber: '+54 9 11 8765-4321',
-  },
-};
-
-const mockContact3: Contact = {
-  id: 'contact-3',
-  name: 'Sistema Web',
-  avatar: 'https://ui-avatars.com/api/?name=Web&background=6366f1&color=fff',
-  status: 'online',
-  channel: 'web',
-};
-
-const mockConversations: Conversation[] = [
-  {
-    id: 'conv-1',
-    entityId: 'contact-1',
-    channel: 'whatsapp',
-    lastMessage: {
-      text: 'Hola! ¿Cómo estás?',
-      timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 min ago
-      type: 'incoming',
-    },
-    unreadCount: 2,
-    isPinned: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    updatedAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-  },
-  {
-    id: 'conv-2',
-    entityId: 'contact-2',
-    channel: 'telegram',
-    lastMessage: {
-      text: 'Perfecto, nos vemos mañana',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
-      type: 'outgoing',
-    },
-    unreadCount: 0,
-    isPinned: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-    updatedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-  },
-  {
-    id: 'conv-3',
-    entityId: 'contact-3',
-    channel: 'web',
-    lastMessage: {
-      text: 'Bienvenido al sistema INHOST',
-      timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(), // 2 hours ago
-      type: 'system',
-    },
-    unreadCount: 0,
-    isPinned: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
-    updatedAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-  },
-];
-
-const mockMessages: Record<string, Message[]> = {
-  'conv-1': [
-    {
-      id: 'msg-1-1',
-      type: 'incoming',
-      channel: 'whatsapp',
-      content: { text: 'Hola! ¿Cómo estás?' },
-      metadata: {
-        from: '+54 9 11 1234-5678',
-        to: 'system',
-        timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
-      },
-    },
-    {
-      id: 'msg-1-2',
-      type: 'outgoing',
-      channel: 'whatsapp',
-      content: { text: 'Todo bien! ¿Y vos?' },
-      metadata: {
-        from: 'system',
-        to: '+54 9 11 1234-5678',
-        timestamp: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-      },
-    },
-    {
-      id: 'msg-1-3',
-      type: 'incoming',
-      channel: 'whatsapp',
-      content: { text: 'Muy bien, gracias por preguntar' },
-      metadata: {
-        from: '+54 9 11 1234-5678',
-        to: 'system',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-      },
-    },
-  ],
-  'conv-2': [
-    {
-      id: 'msg-2-1',
-      type: 'outgoing',
-      channel: 'telegram',
-      content: { text: '¿Nos vemos mañana a las 10?' },
-      metadata: {
-        from: 'system',
-        to: '@mariagonzalez',
-        timestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-      },
-    },
-    {
-      id: 'msg-2-2',
-      type: 'incoming',
-      channel: 'telegram',
-      content: { text: 'Perfecto, nos vemos mañana' },
-      metadata: {
-        from: '@mariagonzalez',
-        to: 'system',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      },
-    },
-  ],
-  'conv-3': [
-    {
-      id: 'msg-3-1',
-      type: 'system',
-      channel: 'web',
-      content: { text: 'Bienvenido al sistema INHOST' },
-      metadata: {
-        from: 'system',
-        to: 'web-user',
-        timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-      },
-    },
-  ],
-};
+import type {
+  AppState,
+  Conversation,
+  Contact,
+  MessageEnvelope,
+  SimulationClient,
+  SimulationExtension,
+} from '@/types';
 
 /**
  * Zustand store for the application
  */
 export const useStore = create<AppState>()(
   devtools(
-    (set) => ({
-      // ━━━ INITIAL STATE ━━━
+    (set, get) => ({
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // DOMAIN 1: ENTITIES (persisted in IndexedDB)
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
       entities: {
-        conversations: new Map(mockConversations.map((c) => [c.id, c])),
-        messages: new Map(Object.entries(mockMessages)),
-        contacts: new Map([
-          [mockContact1.id, mockContact1],
-          [mockContact2.id, mockContact2],
-          [mockContact3.id, mockContact3],
-        ]),
+        conversations: new Map<string, Conversation>(),
+        messages: new Map<string, MessageEnvelope[]>(),
+        contacts: new Map<string, Contact>(),
       },
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // DOMAIN 2: SIMULATION STATE (ephemeral from API)
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      simulation: {
+        clients: new Map<string, SimulationClient>(),
+        extensions: new Map<string, SimulationExtension>(),
+        stats: {
+          activeExtensions: 0,
+          connectedClients: 0,
+          totalClients: 0,
+          totalExtensions: 0,
+        },
+      },
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // DOMAIN 3: UI (ephemeral, frontend-only)
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
       ui: {
-        activeConversationId: 'conv-1', // Start with first conversation active
+        activeConversationId: null,
         sidebarCollapsed: false,
         theme: 'light',
+        workspace: undefined, // Workspace architecture (future)
       },
 
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // DOMAIN 4: NETWORK (transient, sync state)
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
       network: {
-        connectionStatus: 'connected',
-        pendingMessages: new Set(),
-        lastSync: new Map(),
+        connectionStatus: 'disconnected',
+        pendingMessages: new Set<string>(),
+        lastSync: null,
         retryQueue: [],
       },
 
-      // ━━━ ACTIONS ━━━
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // ACTIONS
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
       actions: {
-        // Conversations
+        // ━━━ CONVERSATIONS ━━━
         setActiveConversation: (id) =>
           set((state) => ({
             ui: { ...state.ui, activeConversationId: id },
@@ -221,22 +112,30 @@ export const useStore = create<AppState>()(
             };
           }),
 
-        // Messages
+        // ━━━ MESSAGES ━━━
         addMessage: (conversationId, message) =>
           set((state) => {
             const existingMessages = state.entities.messages.get(conversationId) || [];
+
+            // Evitar duplicados
+            const messageExists = existingMessages.some((m) => m.id === message.id);
+            if (messageExists) {
+              console.warn(`Message ${message.id} already exists, skipping`);
+              return state;
+            }
+
             const newMessages = new Map(state.entities.messages).set(conversationId, [
               ...existingMessages,
               message,
             ]);
 
-            // Update conversation's last message
+            // Actualizar lastMessage de la conversación
             const conversation = state.entities.conversations.get(conversationId);
             const updatedConversations = conversation
               ? new Map(state.entities.conversations).set(conversationId, {
                   ...conversation,
                   lastMessage: {
-                    text: message.content.text,
+                    text: message.content.text || '[Media]',
                     timestamp: message.metadata.timestamp,
                     type: message.type,
                   },
@@ -261,7 +160,7 @@ export const useStore = create<AppState>()(
             },
           })),
 
-        // Contacts
+        // ━━━ CONTACTS ━━━
         addContact: (contact) =>
           set((state) => ({
             entities: {
@@ -286,7 +185,72 @@ export const useStore = create<AppState>()(
             };
           }),
 
-        // UI
+        // ━━━ SIMULATION ━━━
+        updateSimulationState: (updates) =>
+          set((state) => ({
+            simulation: {
+              ...state.simulation,
+              ...updates,
+            },
+          })),
+
+        toggleClient: (clientId) =>
+          set((state) => {
+            const client = state.simulation.clients.get(clientId);
+            if (!client) return state;
+
+            const updatedClient = { ...client, connected: !client.connected };
+            const updatedClients = new Map(state.simulation.clients).set(
+              clientId,
+              updatedClient
+            );
+
+            // Recalcular stats
+            const connectedClients = Array.from(updatedClients.values()).filter(
+              (c) => c.connected
+            ).length;
+
+            return {
+              simulation: {
+                ...state.simulation,
+                clients: updatedClients,
+                stats: {
+                  ...state.simulation.stats,
+                  connectedClients,
+                },
+              },
+            };
+          }),
+
+        toggleExtension: (extensionId) =>
+          set((state) => {
+            const extension = state.simulation.extensions.get(extensionId);
+            if (!extension) return state;
+
+            const updatedExtension = { ...extension, active: !extension.active };
+            const updatedExtensions = new Map(state.simulation.extensions).set(
+              extensionId,
+              updatedExtension
+            );
+
+            // Recalcular stats
+            const activeExtensions = Array.from(updatedExtensions.values()).filter(
+              (e) => e.active
+            ).length;
+
+            return {
+              simulation: {
+                ...state.simulation,
+                extensions: updatedExtensions,
+                stats: {
+                  ...state.simulation.stats,
+                  activeExtensions,
+                },
+              },
+            };
+          }),
+
+        // ━━━ UI ━━━
         toggleSidebar: () =>
           set((state) => ({
             ui: { ...state.ui, sidebarCollapsed: !state.ui.sidebarCollapsed },
@@ -297,7 +261,7 @@ export const useStore = create<AppState>()(
             ui: { ...state.ui, theme },
           })),
 
-        // Network
+        // ━━━ NETWORK ━━━
         setConnectionStatus: (status) =>
           set((state) => ({
             network: { ...state.network, connectionStatus: status },
@@ -322,15 +286,24 @@ export const useStore = create<AppState>()(
               },
             };
           }),
+
+        updateLastSync: (timestamp) =>
+          set((state) => ({
+            network: {
+              ...state.network,
+              lastSync: timestamp,
+            },
+          })),
       },
     }),
     { name: 'inhost-store' }
   )
 );
 
-/**
- * Selector hooks for common use cases
- */
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SELECTOR HOOKS (for common use cases)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 export const useActiveConversationId = () =>
   useStore((state) => state.ui.activeConversationId);
 
@@ -338,10 +311,26 @@ export const useConversation = (id: string | null) =>
   useStore((state) => (id ? state.entities.conversations.get(id) : undefined));
 
 export const useMessages = (conversationId: string | null) =>
-  useStore((state) => (conversationId ? state.entities.messages.get(conversationId) ?? [] : []));
+  useStore((state) =>
+    conversationId ? state.entities.messages.get(conversationId) ?? [] : []
+  );
 
 export const useContact = (id: string | null) =>
   useStore((state) => (id ? state.entities.contacts.get(id) : undefined));
 
 export const useConnectionStatus = () =>
   useStore((state) => state.network.connectionStatus);
+
+export const useAllConversations = () =>
+  useStore((state) => Array.from(state.entities.conversations.values()));
+
+export const useAllContacts = () =>
+  useStore((state) => Array.from(state.entities.contacts.values()));
+
+export const useSimulationClients = () =>
+  useStore((state) => Array.from(state.simulation.clients.values()));
+
+export const useSimulationExtensions = () =>
+  useStore((state) => Array.from(state.simulation.extensions.values()));
+
+export const useSimulationStats = () => useStore((state) => state.simulation.stats);

@@ -1,0 +1,227 @@
+/**
+ * Sync Service
+ * Sincronización entre IndexedDB, Zustand Store y Backend
+ *
+ * Flujo:
+ * 1. App Load → loadFromIndexedDB() → Hydrate Zustand Store
+ * 2. App Load → loadSimulationStatus() → Update Simulation State
+ * 3. WebSocket → Persist to IndexedDB → Update Zustand Store
+ */
+
+import { db } from './database';
+import { apiClient } from './api';
+import { useStore } from '@/store';
+import type { Conversation, Contact } from '@/types';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SYNC SERVICE CLASS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class SyncService {
+  private syncing = false;
+
+  /**
+   * Cargar datos desde IndexedDB al store
+   * Se ejecuta al iniciar la app
+   */
+  async loadFromIndexedDB(): Promise<void> {
+    console.log('🔄 Loading data from IndexedDB...');
+
+    try {
+      // 1. Cargar conversaciones
+      const conversations = await db.getAllConversations();
+      console.log(`📂 Loaded ${conversations.length} conversations`);
+
+      // 2. Cargar contactos
+      const contacts = await db.getAllContacts();
+      console.log(`👥 Loaded ${contacts.length} contacts`);
+
+      // 3. Cargar mensajes por conversación
+      const messagesMap = new Map();
+      for (const conversation of conversations) {
+        const messages = await db.getMessagesByConversation(conversation.id, 100);
+        messagesMap.set(conversation.id, messages);
+      }
+      console.log(`💬 Loaded messages for ${messagesMap.size} conversations`);
+
+      // 4. Actualizar Zustand store
+      const { entities } = useStore.getState();
+
+      // Conversations
+      const conversationsMap = new Map(conversations.map((c) => [c.id, c]));
+
+      // Contacts
+      const contactsMap = new Map(contacts.map((c) => [c.id, c]));
+
+      // Messages
+      const finalMessagesMap = new Map(messagesMap);
+
+      // Update store
+      useStore.setState({
+        entities: {
+          conversations: conversationsMap,
+          messages: finalMessagesMap,
+          contacts: contactsMap,
+        },
+      });
+
+      console.log('✅ Store hydrated from IndexedDB');
+
+      // 5. Actualizar última sincronización
+      useStore.getState().actions.updateLastSync(new Date());
+    } catch (error) {
+      console.error('❌ Failed to load from IndexedDB:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Cargar estado de simulación desde el API
+   * Se ejecuta al iniciar la app y después de WebSocket events
+   */
+  async loadSimulationStatus(): Promise<void> {
+    console.log('🔄 Loading simulation status from API...');
+
+    try {
+      const status = await apiClient.getSimulationStatus();
+
+      // Convertir arrays a Maps
+      const clientsMap = new Map(status.clients.map((c) => [c.id, c]));
+      const extensionsMap = new Map(status.extensions.map((e) => [e.id, e]));
+
+      // Actualizar Zustand store
+      useStore.getState().actions.updateSimulationState({
+        clients: clientsMap,
+        extensions: extensionsMap,
+        stats: status.stats,
+      });
+
+      console.log('✅ Simulation status loaded:', status.stats);
+    } catch (error) {
+      console.error('❌ Failed to load simulation status:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sincronización completa al iniciar la app
+   */
+  async initialSync(): Promise<void> {
+    if (this.syncing) {
+      console.warn('⚠️ Sync already in progress');
+      return;
+    }
+
+    this.syncing = true;
+
+    try {
+      console.log('🚀 Starting initial sync...');
+
+      // 1. Cargar datos persistidos desde IndexedDB
+      await this.loadFromIndexedDB();
+
+      // 2. Cargar estado de simulación desde API
+      await this.loadSimulationStatus();
+
+      // 3. Si no hay conversaciones, derivar desde mensajes
+      const { entities } = useStore.getState();
+      if (entities.conversations.size === 0) {
+        console.log('📊 No conversations found, deriving from messages...');
+        const derived = await db.deriveConversationsFromMessages();
+        console.log(`✅ Derived ${derived.length} conversations`);
+
+        // Recargar desde IndexedDB
+        await this.loadFromIndexedDB();
+      }
+
+      // 4. Si no hay contactos, derivar desde conversaciones
+      if (entities.contacts.size === 0) {
+        console.log('👥 No contacts found, deriving from conversations...');
+        await this.deriveContactsFromConversations();
+      }
+
+      console.log('✅ Initial sync complete');
+    } catch (error) {
+      console.error('❌ Initial sync failed:', error);
+      throw error;
+    } finally {
+      this.syncing = false;
+    }
+  }
+
+  /**
+   * Derivar contactos desde conversaciones
+   * Útil para primera carga o migración
+   */
+  private async deriveContactsFromConversations(): Promise<void> {
+    const { entities } = useStore.getState();
+    const conversations = Array.from(entities.conversations.values());
+
+    for (const conversation of conversations) {
+      const contact: Contact = {
+        id: conversation.entityId,
+        name: conversation.entityId, // Default: usar el ID como nombre
+        status: 'offline',
+        channel: conversation.channel,
+        metadata: {
+          phoneNumber: conversation.entityId.startsWith('+') ? conversation.entityId : undefined,
+        },
+      };
+
+      // Guardar en IndexedDB
+      await db.saveContact(contact);
+
+      // Agregar al store
+      useStore.getState().actions.addContact(contact);
+    }
+
+    console.log(`✅ Derived ${conversations.length} contacts`);
+  }
+
+  /**
+   * Obtener estadísticas de la base de datos
+   */
+  async getStats() {
+    return db.getStats();
+  }
+
+  /**
+   * Limpiar toda la base de datos
+   * CUIDADO: Esta operación es irreversible
+   */
+  async clearAll(): Promise<void> {
+    console.warn('⚠️ Clearing all data...');
+
+    // 1. Limpiar IndexedDB
+    await db.clear();
+
+    // 2. Resetear Zustand store
+    useStore.setState({
+      entities: {
+        conversations: new Map(),
+        messages: new Map(),
+        contacts: new Map(),
+      },
+      ui: {
+        activeConversationId: null,
+        sidebarCollapsed: false,
+        theme: 'light',
+        workspace: undefined,
+      },
+      network: {
+        connectionStatus: 'disconnected',
+        pendingMessages: new Set(),
+        lastSync: null,
+        retryQueue: [],
+      },
+    });
+
+    console.log('✅ All data cleared');
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// EXPORT SINGLETON
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export const syncService = new SyncService();

@@ -30,6 +30,7 @@ import type {
   ErrorEvent,
 } from '@/types';
 import { db } from '@/services/database';
+import { syncService } from '@/services/sync';
 import { useStore } from '@/store';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -122,18 +123,26 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     addMessage(event.data.conversationId, event.data);
   }, [addMessage]);
 
-  const handleClientToggle = useCallback((event: ClientToggleEvent) => {
+  const handleClientToggle = useCallback(async (event: ClientToggleEvent) => {
     console.log('🔌 Client toggle:', event);
 
-    // Update simulation state in Zustand
-    // TODO: Fetch latest simulation status from API
+    // Fetch latest simulation status from API
+    try {
+      await syncService.loadSimulationStatus();
+    } catch (error) {
+      console.error('Failed to refresh simulation status:', error);
+    }
   }, []);
 
-  const handleExtensionToggle = useCallback((event: ExtensionToggleEvent) => {
+  const handleExtensionToggle = useCallback(async (event: ExtensionToggleEvent) => {
     console.log('🔧 Extension toggle:', event);
 
-    // Update simulation state in Zustand
-    // TODO: Fetch latest simulation status from API
+    // Fetch latest simulation status from API
+    try {
+      await syncService.loadSimulationStatus();
+    } catch (error) {
+      console.error('Failed to refresh simulation status:', error);
+    }
   }, []);
 
   const handleMessageNew = useCallback(async (event: MessageNewEvent) => {
@@ -311,11 +320,26 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   useEffect(() => {
-    // Initialize database
-    db.init().catch(console.error);
+    // Initialize database and sync
+    const initialize = async () => {
+      try {
+        // 1. Initialize IndexedDB
+        await db.init();
+        console.log('✅ IndexedDB initialized');
 
-    // Connect WebSocket
-    connect();
+        // 2. Load data from IndexedDB and API
+        await syncService.initialSync();
+        console.log('✅ Initial sync complete');
+
+        // 3. Connect WebSocket
+        connect();
+      } catch (error) {
+        console.error('❌ Initialization failed:', error);
+        setError('Failed to initialize application');
+      }
+    };
+
+    initialize();
 
     // Cleanup
     return () => {
