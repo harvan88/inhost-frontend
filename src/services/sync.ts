@@ -103,7 +103,19 @@ class SyncService {
 
       if (!response.success) {
         console.error('❌ Backend returned success: false', response);
-        throw new Error(`Sync failed: response.success is false. Response: ${JSON.stringify(response)}`);
+
+        // Proporcionar error más específico basado en el código de error
+        const errorCode = (response as any).error?.code;
+        const errorMessage = (response as any).error?.message;
+
+        if (errorCode === 'SYNC_FAILED' && errorMessage?.includes('Failed to fetch initial data')) {
+          throw new Error(
+            'Authentication middleware error: Backend is not validating the JWT token correctly. ' +
+            'Please contact support. (Error: user.tenantId is undefined in backend)'
+          );
+        }
+
+        throw new Error(`Sync failed: ${errorMessage || 'Unknown error'}. Response: ${JSON.stringify(response)}`);
       }
 
       const { conversations, contacts, team, integrations } = response.data;

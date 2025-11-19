@@ -52,7 +52,20 @@ export default function LoginPage() {
           console.log('✅ Backend sync after login successful');
         } catch (syncError) {
           console.warn('⚠️ Backend sync failed after login, using local data:', syncError);
-          // Continue anyway - user can still use local data
+
+          // Check if it's the known authentication middleware error
+          const errorMessage = syncError instanceof Error ? syncError.message : '';
+          if (errorMessage.includes('Authentication middleware error') ||
+              errorMessage.includes('user.tenantId is undefined')) {
+            // Show specific error to user
+            setError(
+              'Server authentication error. Login succeeded but data sync failed. ' +
+              'Please contact support or try again later.'
+            );
+            return; // Don't navigate to workspace
+          }
+
+          // For other errors, continue anyway - user can still use local data
         }
 
         // 3. Reload data from IndexedDB (now has fresh backend data)
