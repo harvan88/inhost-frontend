@@ -321,15 +321,21 @@ export interface Contact {
  */
 export interface Conversation {
   id: string;                    // conversationId (UUID)
-  entityId: string;              // Reference to Contact (metadata.from)
+  endUserId: string;             // Reference to EndUser (backend usa endUserId, no entityId/contactId)
   channel: ChannelType;
+  status: 'active' | 'closed' | 'archived';
   lastMessage?: {
+    id: string;
     text: string;
     timestamp: string;
     type: MessageType;
   };
   unreadCount: number;
   isPinned: boolean;
+  assignedTo?: {
+    id: string;
+    name: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

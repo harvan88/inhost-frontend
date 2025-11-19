@@ -20,7 +20,7 @@ interface ConversationListItemProps {
  */
 export default function ConversationListItem({ conversation }: ConversationListItemProps) {
   const { openTab, containers, activeContainerId } = useWorkspaceStore();
-  const contact = useStore((state) => state.entities.contacts.get(conversation.entityId));
+  const contact = useStore((state) => state.entities.contacts.get(conversation.endUserId));
   const { theme } = useTheme();
 
   const handleClick = () => {
@@ -28,7 +28,7 @@ export default function ConversationListItem({ conversation }: ConversationListI
       createTab({
         type: 'conversation',
         entityId: conversation.id,
-        label: contact?.name || conversation.entityId,
+        label: contact?.name || conversation.endUserId,
         closable: true,
       })
     );
@@ -65,9 +65,9 @@ export default function ConversationListItem({ conversation }: ConversationListI
         <div className="flex-shrink-0">
           <Avatar
             src={contact?.avatar}
-            alt={contact?.name || conversation.entityId}
+            alt={contact?.name || conversation.endUserId}
             size="md"
-            fallbackText={contact?.name || conversation.entityId}
+            fallbackText={contact?.name || conversation.endUserId}
             statusIndicator={contact?.status ? mapStatus(contact.status) : null}
           />
         </div>
@@ -87,7 +87,7 @@ export default function ConversationListItem({ conversation }: ConversationListI
                 fontWeight: theme.typography.weights.medium,
               }}
             >
-              {contact?.name || conversation.entityId}
+              {contact?.name || conversation.endUserId}
             </Text>
             {conversation.isPinned && (
               <Pin

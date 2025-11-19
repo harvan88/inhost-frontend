@@ -56,7 +56,7 @@ export default function ToolPanels() {
  */
 function ConversationToolPanels({ conversationId }: { conversationId: string }) {
   const conversation = useConversation(conversationId);
-  const contact = useContact(conversation?.entityId ?? null);
+  const contact = useContact(conversation?.endUserId ?? null);
   const { theme } = useTheme();
 
   return (

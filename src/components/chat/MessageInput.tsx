@@ -159,7 +159,7 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
       },
       metadata: {
         from: 'system', // TODO: Get from auth context
-        to: conversation.entityId,
+        to: conversation.endUserId,
         timestamp: new Date().toISOString(),
       },
       statusChain: [
