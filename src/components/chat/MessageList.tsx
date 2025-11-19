@@ -7,6 +7,7 @@ import { Badge } from '@/components/common';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 import { useCombinedRefs } from '@/hooks/useCombinedRefs';
 import { Clock, Check, CheckCheck, AlertCircle } from 'lucide-react';
+import MessageFeedback from '@/components/feedback/MessageFeedback';
 
 // Constant empty array to avoid creating new arrays on every render
 const EMPTY_ARRAY: string[] = [];
@@ -365,6 +366,14 @@ const MessageBubble = memo(
             <span style={{ fontWeight: theme.typography.weights.semibold }}>To:</span>{' '}
             {message.metadata.to}
           </div>
+        )}
+
+        {/* Message Feedback - Solo para mensajes outgoing de extensiones */}
+        {isOutgoing && message.metadata.extensionId && (
+          <MessageFeedback
+            messageId={message.id}
+            extensionId={message.metadata.extensionId}
+          />
         )}
 
         {/* System messages timestamp */}

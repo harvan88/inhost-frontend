@@ -94,6 +94,74 @@ export interface SyncInitialData {
   integrations: Integration[];
 }
 
+export interface Mention {
+  id: string;
+  entityType: 'message' | 'conversation' | 'feedback' | 'note' | 'assignment';
+  entityId: string;
+  entityDetails: {
+    id: string;
+    type?: 'incoming' | 'outgoing';
+    text: string;
+    conversationId?: string;
+    endUser?: {
+      id: string;
+      name: string;
+      externalId: string;
+    };
+    createdAt: string;
+  };
+  mentionType: 'user' | 'team' | 'admins' | 'everyone';
+  context: string;
+  isRead: boolean;
+  mentionedBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+}
+
+export interface MessageFeedback {
+  id: string;
+  messageId: string;
+  rating?: 'positive' | 'negative';
+  comment?: string;
+  suggestedCorrection?: string;
+  extensionId?: string;
+  givenBy?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FeedbackAnalytics {
+  period: {
+    days: number;
+    from: string;
+    to: string;
+  };
+  overall: {
+    total: number;
+    positive: number;
+    negative: number;
+    positivePercentage: number;
+    negativePercentage: number;
+    withComments: number;
+    withCorrections: number;
+  };
+  byExtension: Array<{
+    extensionId: string;
+    total: number;
+    positive: number;
+    negative: number;
+    positivePercentage: number;
+    negativePercentage: number;
+  }>;
+}
+
 export interface ApiError {
   error: string;
   message?: string;
@@ -364,6 +432,134 @@ class AdminAPIClient {
     return this.request(`/integrations/${integrationId}`, {
       method: 'DELETE'
     });
+  }
+
+  // ==================== Mentions ====================
+
+  async getMentions(params?: {
+    status?: 'all' | 'read' | 'unread';
+    limit?: number;
+    offset?: number;
+  }): Promise<{
+    success: boolean;
+    data: {
+      mentions: Mention[];
+      pagination: {
+        limit: number;
+        offset: number;
+        total: number;
+      };
+    };
+  }> {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/mentions${query ? '?' + query : ''}`);
+  }
+
+  async getMentionsUnreadCount(): Promise<{ success: boolean; data: { unreadCount: number } }> {
+    return this.request('/mentions/unread-count');
+  }
+
+  async getMention(id: string): Promise<{ success: boolean; data: Mention }> {
+    return this.request(`/mentions/${id}`);
+  }
+
+  async markMentionAsRead(id: string): Promise<{
+    success: boolean;
+    data: {
+      id: string;
+      isRead: boolean;
+      message: string;
+    };
+  }> {
+    return this.request(`/mentions/${id}/mark-as-read`, {
+      method: 'POST'
+    });
+  }
+
+  async markAllMentionsAsRead(): Promise<{
+    success: boolean;
+    data: {
+      markedCount: number;
+      message: string;
+    };
+  }> {
+    return this.request('/mentions/mark-all-read', {
+      method: 'POST'
+    });
+  }
+
+  // ==================== Message Feedback ====================
+
+  async createOrUpdateMessageFeedback(
+    messageId: string,
+    data: {
+      rating?: 'positive' | 'negative';
+      comment?: string;
+      suggestedCorrection?: string;
+    }
+  ): Promise<{
+    success: boolean;
+    data: {
+      feedback: MessageFeedback;
+      message: string;
+    };
+  }> {
+    return this.request(`/messages/${messageId}/feedback`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async getMessageFeedback(messageId: string): Promise<{
+    success: boolean;
+    data: {
+      feedback: MessageFeedback[];
+    };
+  }> {
+    return this.request(`/messages/${messageId}/feedback`);
+  }
+
+  async getAllFeedback(params?: {
+    extensionId?: string;
+    rating?: 'positive' | 'negative' | 'none' | 'all';
+    limit?: number;
+    offset?: number;
+  }): Promise<{
+    success: boolean;
+    data: {
+      feedback: Array<MessageFeedback & {
+        message: {
+          id: string;
+          type: string;
+          text: string;
+          conversationId: string;
+          endUser: {
+            id: string;
+            name: string;
+            externalId: string;
+          };
+          createdAt: string;
+        };
+      }>;
+      pagination: {
+        limit: number;
+        offset: number;
+      };
+    };
+  }> {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/feedback${query ? '?' + query : ''}`);
+  }
+
+  async getFeedbackAnalytics(params?: {
+    extensionId?: string;
+    days?: number;
+  }): Promise<{
+    success: boolean;
+    data: FeedbackAnalytics;
+  }> {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/feedback/analytics${query ? '?' + query : ''}`);
   }
 }
 
