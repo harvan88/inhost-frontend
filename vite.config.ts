@@ -29,6 +29,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        // Proxy Admin API requests to backend
+        '/admin': {
+          target: apiBaseUrl,
+          changeOrigin: true,
+        },
         // WebSocket proxy
         '/realtime': {
           target: wsUrl,
