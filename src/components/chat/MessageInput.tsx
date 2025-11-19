@@ -4,9 +4,10 @@ import { useStore, useConversation } from '@/store';
 import { useTheme } from '@/theme';
 import type { MessageEnvelope } from '@/types';
 import { useOverflowDetection } from '@/hooks/useOverflowDetection';
-import { apiClient } from '@/services/api';
+import { adminAPI } from '@/lib/api/admin-client';
 import { useWebSocketContext } from '@/providers/WebSocketProvider';
 import { logger } from '@/services/logger';
+import { db } from '@/services/database';
 
 interface MessageInputProps {
   conversationId: string;
@@ -189,29 +190,46 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
     setText('');
 
     try {
-      // Send message to backend simulation API
-      // This will trigger WebSocket broadcasts automatically
+      // Send message to backend (FASE 1)
       logger.debug('api', 'Sending message to backend', {
         conversationId,
         channel: conversation.channel,
         textLength: trimmed.length,
       });
 
-      const response = await apiClient.sendClientMessage({
-        clientId: conversation.channel as 'whatsapp' | 'telegram' | 'web' | 'sms',
-        text: trimmed,
+      const response = await adminAPI.sendMessage(conversationId, {
+        type: 'outgoing',
+        content: {
+          text: trimmed,
+          contentType: 'text/plain',
+        },
       });
 
-      // The real message will be added to the store via WebSocket broadcast
-      // (message_received event handled by WebSocketProvider)
-      // We should remove the temp message when the real one arrives
-      // For now, we'll let the backend message replace it via duplicate detection
+      if (response.success) {
+        // Replace temp message with real message from backend
+        const realMessage = response.data.message;
 
-      console.log('✅ Message sent to backend:', response);
-      logger.info('api', 'Message sent to backend successfully', {
-        conversationId,
-        processedCount: response.processedCount,
-      });
+        // Remove temp message and add real message
+        const { entities } = useStore.getState();
+        const messages = entities.messages.get(conversationId) || [];
+        const updatedMessages = messages.filter((m) => m.id !== tempId);
+        updatedMessages.push(realMessage);
+
+        // Update store
+        useStore.getState().actions.setMessages(conversationId, updatedMessages);
+
+        // Save real message to IndexedDB
+        await db.addMessage(realMessage);
+
+        console.log('✅ Message sent to backend successfully:', realMessage.id);
+        logger.info('api', 'Message sent to backend successfully', {
+          conversationId,
+          tempMessageId: tempId,
+          realMessageId: realMessage.id,
+        });
+      } else {
+        throw new Error('Backend returned success: false');
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);

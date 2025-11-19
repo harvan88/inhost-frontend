@@ -212,6 +212,8 @@ export type WebSocketEventType =
   | 'message:new'
   | 'message:status'
   | 'typing:indicator'
+  | 'conversation:read'    // FASE 1: Backend event
+  | 'conversation:updated' // FASE 1: Backend event
   | 'error';
 
 export interface WebSocketEvent {
@@ -293,6 +295,47 @@ export interface ErrorEvent extends WebSocketEvent {
   retryAfter?: number;
   limit?: number;
   resetAt?: string;
+  timestamp: string;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FASE 1: Backend WebSocket Events
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export interface ConversationReadEvent extends WebSocketEvent {
+  type: 'conversation:read';
+  data: {
+    conversationId: string;
+    userId: string;
+    unreadCount: number;
+    lastReadAt: string;
+    timestamp: string;
+  };
+  timestamp: string;
+}
+
+export interface ConversationUpdatedEvent extends WebSocketEvent {
+  type: 'conversation:updated';
+  data: {
+    conversationId: string;
+    updates: {
+      lastMessage?: {
+        id: string;
+        text: string;
+        type: 'incoming' | 'outgoing' | 'system';
+        timestamp: string;
+      };
+      unreadCount?: number;
+      status?: 'active' | 'closed' | 'archived';
+      assignedTo?: {
+        id: string;
+        name: string;
+      };
+      isPinned?: boolean;
+      updatedAt?: string;
+    };
+    timestamp: string;
+  };
   timestamp: string;
 }
 

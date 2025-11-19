@@ -27,6 +27,8 @@ import type {
   MessageNewEvent,
   MessageStatusEvent,
   TypingIndicatorEvent,
+  ConversationReadEvent,
+  ConversationUpdatedEvent,
   ErrorEvent,
 } from '@/types';
 import { db } from '@/services/database';
@@ -410,6 +412,78 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     actions.setTyping(conversationId, userId, isTyping);
   }, []);
 
+  const handleConversationRead = useCallback(async (event: ConversationReadEvent) => {
+    console.log('📖 Conversation read:', event.data);
+    logger.info('websocket', 'Conversation marked as read', {
+      event: 'conversation:read',
+      conversationId: event.data.conversationId,
+      userId: event.data.userId,
+      unreadCount: event.data.unreadCount,
+    });
+
+    const { conversationId, unreadCount, lastReadAt } = event.data;
+
+    // 1. Update conversation in IndexedDB
+    const { entities } = useStore.getState();
+    const conversation = entities.conversations.get(conversationId);
+
+    if (conversation) {
+      const updatedConversation = {
+        ...conversation,
+        unreadCount,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await db.saveConversation(updatedConversation);
+
+      // 2. Update in store
+      useStore.getState().actions.updateConversation(conversationId, {
+        unreadCount,
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log(`✅ Updated conversation ${conversationId} unreadCount to ${unreadCount}`);
+    }
+  }, []);
+
+  const handleConversationUpdated = useCallback(async (event: ConversationUpdatedEvent) => {
+    console.log('🔄 Conversation updated:', event.data);
+    logger.info('websocket', 'Conversation updated', {
+      event: 'conversation:updated',
+      conversationId: event.data.conversationId,
+      updates: event.data.updates,
+    });
+
+    const { conversationId, updates } = event.data;
+
+    // 1. Get conversation from store
+    const { entities } = useStore.getState();
+    const conversation = entities.conversations.get(conversationId);
+
+    if (conversation) {
+      // 2. Apply updates
+      const updatedConversation = {
+        ...conversation,
+        ...(updates.lastMessage && { lastMessage: updates.lastMessage }),
+        ...(updates.unreadCount !== undefined && { unreadCount: updates.unreadCount }),
+        ...(updates.status && { status: updates.status }),
+        ...(updates.assignedTo && { assignedTo: updates.assignedTo }),
+        ...(updates.isPinned !== undefined && { isPinned: updates.isPinned }),
+        updatedAt: updates.updatedAt || new Date().toISOString(),
+      };
+
+      // 3. Save to IndexedDB
+      await db.saveConversation(updatedConversation);
+
+      // 4. Update in store
+      useStore.getState().actions.updateConversation(conversationId, updatedConversation);
+
+      console.log(`✅ Updated conversation ${conversationId}`, updates);
+    } else {
+      console.warn(`⚠️ Conversation ${conversationId} not found, ignoring update`);
+    }
+  }, []);
+
   const handleError = useCallback((event: ErrorEvent) => {
     console.error('❌ WebSocket error:', event);
     setError(event.message);
@@ -470,6 +544,12 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
         case 'typing:indicator':
           handleTypingIndicator(data as TypingIndicatorEvent);
           break;
+        case 'conversation:read':
+          handleConversationRead(data as ConversationReadEvent);
+          break;
+        case 'conversation:updated':
+          handleConversationUpdated(data as ConversationUpdatedEvent);
+          break;
         case 'error':
           handleError(data as ErrorEvent);
           break;
@@ -492,6 +572,8 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     handleMessageNew,
     handleMessageStatus,
     handleTypingIndicator,
+    handleConversationRead,
+    handleConversationUpdated,
     handleError,
   ]);
 
