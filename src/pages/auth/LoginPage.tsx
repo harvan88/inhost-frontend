@@ -22,8 +22,18 @@ export default function LoginPage() {
     try {
       const response = await adminAPI.login({ email, password });
 
+      console.log('🔐 Login response:', {
+        success: response.success,
+        hasData: !!response.data,
+        dataKeys: response.data ? Object.keys(response.data) : [],
+        hasToken: !!(response.data?.token),
+        tokenPreview: response.data?.token ? response.data.token.substring(0, 30) + '...' : 'NO TOKEN',
+        fullResponse: response
+      });
+
       if (response.success) {
         // 1. Set auth token (stores in localStorage)
+        console.log('💾 Saving token to localStorage:', response.data.token ? 'Token exists' : 'Token is undefined!');
         setAuth(response.data.token, response.data.user);
 
         // 2. Sync data from backend (now that we have token)
