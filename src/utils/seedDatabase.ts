@@ -62,9 +62,11 @@ const mockContacts: Contact[] = [
 const mockConversations: Conversation[] = [
   {
     id: 'conv-550e8400-e29b-41d4-a716-446655440001',
-    entityId: '+5491112345678',
+    endUserId: '+5491112345678',
     channel: 'whatsapp',
+    status: 'active',
     lastMessage: {
+      id: 'msg-003',
       text: '¿Tienen stock del producto X?',
       timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
       type: 'incoming',
@@ -76,9 +78,11 @@ const mockConversations: Conversation[] = [
   },
   {
     id: 'conv-550e8400-e29b-41d4-a716-446655440002',
-    entityId: '+5491187654321',
+    endUserId: '+5491187654321',
     channel: 'whatsapp',
+    status: 'active',
     lastMessage: {
+      id: 'msg-006',
       text: 'Perfecto, muchas gracias!',
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       type: 'incoming',
@@ -90,9 +94,11 @@ const mockConversations: Conversation[] = [
   },
   {
     id: 'conv-550e8400-e29b-41d4-a716-446655440003',
-    entityId: '@carlos_tech',
+    endUserId: '@carlos_tech',
     channel: 'telegram',
+    status: 'active',
     lastMessage: {
+      id: 'msg-008',
       text: 'Consulta sobre integración API',
       timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
       type: 'incoming',
@@ -104,9 +110,11 @@ const mockConversations: Conversation[] = [
   },
   {
     id: 'conv-550e8400-e29b-41d4-a716-446655440004',
-    entityId: 'web-user-123',
+    endUserId: 'web-user-123',
     channel: 'web',
+    status: 'active',
     lastMessage: {
+      id: 'msg-009',
       text: 'Hola! Necesito ayuda con mi pedido',
       timestamp: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
       type: 'incoming',
