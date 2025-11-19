@@ -83,12 +83,27 @@ class SyncService {
   async syncFromBackend(): Promise<void> {
     console.log('🔄 Syncing from backend...');
 
+    // Debug: Check if token exists
+    const token = localStorage.getItem('inhost_admin_token');
+    console.log('🔑 Token check:', {
+      hasToken: !!token,
+      tokenLength: token?.length,
+      tokenPreview: token ? token.substring(0, 30) + '...' : 'NO TOKEN'
+    });
+
     try {
       // 1. Llamar al endpoint de sincronización inicial
       const response = await adminAPI.syncInitial();
 
+      console.log('📥 Backend response:', {
+        success: response.success,
+        hasData: !!response.data,
+        dataKeys: response.data ? Object.keys(response.data) : []
+      });
+
       if (!response.success) {
-        throw new Error('Sync failed: response.success is false');
+        console.error('❌ Backend returned success: false', response);
+        throw new Error(`Sync failed: response.success is false. Response: ${JSON.stringify(response)}`);
       }
 
       const { conversations, contacts, team, integrations } = response.data;
