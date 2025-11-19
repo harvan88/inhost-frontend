@@ -26,7 +26,7 @@ interface ChatHeaderProps {
  */
 export default function ChatHeader({ conversationId }: ChatHeaderProps) {
   const conversation = useConversation(conversationId);
-  const contact = useContact(conversation?.entityId ?? null);
+  const contact = useContact(conversation?.endUserId ?? null);
   const { theme } = useTheme();
 
   // DIAGNÓSTICO: Detectar overflow en ChatHeader

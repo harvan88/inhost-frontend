@@ -2,18 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary, ToastContainer, useToastStore } from '@/components/feedback';
 import { WebSocketProvider } from '@/providers/WebSocketProvider';
 
-// Admin Dashboard
+// Authentication
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import DashboardLayout from './components/admin/DashboardLayout';
-import DashboardPage from './pages/admin/DashboardPage';
-import InboxPage from './pages/admin/InboxPage';
-import EndUsersPage from './pages/admin/EndUsersPage';
-import TeamPage from './pages/admin/TeamPage';
-import SettingsPage from './pages/admin/SettingsPage';
 
-// Original Workspace (legacy)
+// Main Workspace (Chat) - CORE APPLICATION
 import Workspace from '@components/workspace/Workspace';
 
 import './styles/App.css';
@@ -28,8 +22,8 @@ import './styles/App.css';
  *
  * Routes:
  * - /login, /signup: Authentication pages
- * - /admin/*: Protected admin dashboard routes
- * - /workspace: Original FluxCore workspace (legacy)
+ * - /workspace: Main chat/workspace interface (CORE APPLICATION)
+ *   - Includes Settings domain for team, account, and integrations management
  */
 function App() {
   const toasts = useToastStore((state) => state.toasts);
@@ -42,70 +36,20 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
 
-          {/* Protected admin routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <DashboardPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/inbox"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <InboxPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/end-users"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <EndUsersPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/team"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <TeamPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <SettingsPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Legacy workspace route */}
+          {/* Main workspace (chat) - CORE APPLICATION */}
           <Route
             path="/workspace"
             element={
-              <WebSocketProvider>
-                <Workspace />
-              </WebSocketProvider>
+              <ProtectedRoute>
+                <WebSocketProvider>
+                  <Workspace />
+                </WebSocketProvider>
+              </ProtectedRoute>
             }
           />
 
           {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/admin" replace />} />
+          <Route path="/" element={<Navigate to="/workspace" replace />} />
 
           {/* Catch all - redirect to login */}
           <Route path="*" element={<Navigate to="/login" replace />} />

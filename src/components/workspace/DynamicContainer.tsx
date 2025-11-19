@@ -9,6 +9,9 @@ import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 const ChatArea = lazy(() => import('@components/chat/ChatArea'));
 const ThemeEditorArea = lazy(() => import('@components/tools/ThemeEditorArea'));
 const DatabaseDevToolsArea = lazy(() => import('@components/tools/DatabaseDevToolsArea'));
+const TeamArea = lazy(() => import('@components/settings/TeamArea'));
+const AccountSettingsArea = lazy(() => import('@components/settings/AccountSettingsArea'));
+const IntegrationsArea = lazy(() => import('@components/settings/IntegrationsArea'));
 
 interface DynamicContainerProps {
   containerId: string;
@@ -445,6 +448,21 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
               >
                 <p>Customer Profile - Coming Soon</p>
               </div>
+            )}
+            {activeTab.type === 'team' && (
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <TeamArea settingId={activeTab.entityId} />
+              </Suspense>
+            )}
+            {activeTab.type === 'account_settings' && (
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <AccountSettingsArea settingId={activeTab.entityId} />
+              </Suspense>
+            )}
+            {activeTab.type === 'integrations' && (
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <IntegrationsArea settingId={activeTab.entityId} />
+              </Suspense>
             )}
             {activeTab.type === 'order' && (
               <div

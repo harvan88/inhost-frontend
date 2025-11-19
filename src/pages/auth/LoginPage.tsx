@@ -23,7 +23,7 @@ export default function LoginPage() {
 
       if (response.success) {
         setAuth(response.data.tokens.accessToken, response.data.user);
-        navigate('/admin');
+        navigate('/workspace');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');

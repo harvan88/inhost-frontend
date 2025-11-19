@@ -89,6 +89,7 @@ export default function PrimarySidebar() {
       {activeActivity === 'contacts' && <ContactsView />}
       {activeActivity === 'tools' && <ToolsView />}
       {activeActivity === 'plugins' && <PluginsView />}
+      {activeActivity === 'settings' && <SettingsView />}
     </div>
   );
 }
@@ -339,6 +340,142 @@ function PluginsView() {
       <Text variant="metadata" color="muted">
         Extensiones y plugins instalados - Coming Soon
       </Text>
+    </div>
+  );
+}
+
+function SettingsView() {
+  const { theme } = useTheme();
+  const { openTab, activeContainerId, containers } = useWorkspaceStore();
+
+  const settingsOptions = [
+    {
+      id: 'team',
+      name: 'Team',
+      description: 'Gestionar miembros del equipo e invitaciones',
+      icon: '👥',
+      category: 'Colaboración',
+    },
+    {
+      id: 'account-settings',
+      name: 'Account Settings',
+      description: 'Configuración de cuenta y preferencias',
+      icon: '⚙️',
+      category: 'Cuenta',
+    },
+    {
+      id: 'integrations',
+      name: 'Integrations',
+      description: 'Conectar WhatsApp, Instagram y otros canales',
+      icon: '🔌',
+      category: 'Integraciones',
+    },
+  ];
+
+  const handleOpenSetting = (settingId: string, settingName: string) => {
+    // Map settingId to tab type
+    let settingType: 'team' | 'account_settings' | 'integrations' = 'account_settings';
+    if (settingId === 'team') {
+      settingType = 'team';
+    } else if (settingId === 'integrations') {
+      settingType = 'integrations';
+    }
+
+    openTab(
+      createTab({
+        type: settingType,
+        entityId: settingId,
+        label: settingName,
+        icon: settingsOptions.find((s) => s.id === settingId)?.icon,
+        closable: true,
+      }),
+      activeContainerId || undefined
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div
+        style={{
+          padding: theme.spacing[4],
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+        }}
+      >
+        <Heading level={2} noMargin>
+          Configuración
+        </Heading>
+        <Text variant="metadata" color="muted">
+          Gestión de cuenta y equipo
+        </Text>
+      </div>
+
+      {/* Settings List */}
+      <div className="flex-1 overflow-y-auto">
+        {settingsOptions.map((setting) => {
+          // Verificar si la opción está activa
+          const activeContainer = containers.find((c) => c.id === activeContainerId);
+          let settingType: 'team' | 'account_settings' | 'integrations' = 'account_settings';
+          if (setting.id === 'team') {
+            settingType = 'team';
+          } else if (setting.id === 'integrations') {
+            settingType = 'integrations';
+          }
+          const isActive = isTabActive(activeContainer?.activeTabId ?? null, settingType as any, setting.id);
+
+          return (
+            <ListCard
+              key={setting.id}
+              isActive={isActive}
+              onClick={() => handleOpenSetting(setting.id, setting.name)}
+            >
+              <div
+                className="w-full"
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: theme.spacing[3],
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: theme.typography.sizes['2xl'],
+                    lineHeight: '1',
+                  }}
+                >
+                  {setting.icon}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ marginBottom: theme.spacing[1] }}>
+                    <Text variant="label">
+                      {setting.name}
+                    </Text>
+                  </div>
+                  <div style={{ marginBottom: theme.spacing[2] }}>
+                    <Text variant="metadata" color="muted">
+                      {setting.description}
+                    </Text>
+                  </div>
+                  <Tag size="small">{setting.category}</Tag>
+                </div>
+              </div>
+            </ListCard>
+          );
+        })}
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          padding: theme.spacing[3],
+          borderTop: `1px solid ${theme.colors.neutral[200]}`,
+          backgroundColor: theme.colors.neutral[0],
+        }}
+      >
+        <Text variant="metadata" color="muted">
+          {settingsOptions.length} opciones disponibles
+        </Text>
+      </div>
     </div>
   );
 }

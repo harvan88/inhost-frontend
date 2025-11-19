@@ -19,11 +19,11 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { MessageSquare, Users, Wrench, Puzzle, X } from 'lucide-react';
+import { MessageSquare, Users, Wrench, Puzzle, Settings, X } from 'lucide-react';
 import { useTheme } from '@/theme';
 import { IconButton } from '@/components/ui';
 
-export type ActivityId = 'messages' | 'contacts' | 'tools' | 'plugins';
+export type ActivityId = 'messages' | 'contacts' | 'tools' | 'plugins' | 'settings';
 
 interface Activity {
   id: ActivityId;
@@ -47,6 +47,7 @@ const ACTIVITIES: Activity[] = [
   { id: 'contacts', icon: Users, label: 'Contactos' },
   { id: 'tools', icon: Wrench, label: 'Herramientas' },
   { id: 'plugins', icon: Puzzle, label: 'Plugins' },
+  { id: 'settings', icon: Settings, label: 'Configuración' },
 ];
 
 export function Drawer({

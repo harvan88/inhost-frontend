@@ -159,12 +159,12 @@ class SyncService {
 
     for (const conversation of conversations) {
       const contact: Contact = {
-        id: conversation.entityId,
-        name: conversation.entityId, // Default: usar el ID como nombre
+        id: conversation.endUserId,
+        name: conversation.endUserId, // Default: usar el ID como nombre
         status: 'offline',
         channel: conversation.channel,
         metadata: {
-          phoneNumber: conversation.entityId.startsWith('+') ? conversation.entityId : undefined,
+          phoneNumber: conversation.endUserId.startsWith('+') ? conversation.endUserId : undefined,
         },
       };
 
