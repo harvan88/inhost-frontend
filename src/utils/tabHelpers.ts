@@ -34,6 +34,10 @@ export function generateTabId(
     customer_profile: 'customer',
     analytics: 'tool',
     theme_editor: 'tool',
+    database_dev_tools: 'tool',
+    team: 'settings',
+    account_settings: 'settings',
+    integrations: 'settings',
   };
 
   const prefix = prefixes[type] || 'tab';

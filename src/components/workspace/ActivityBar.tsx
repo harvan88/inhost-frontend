@@ -1,10 +1,10 @@
-import { MessageSquare, Users, Wrench, Puzzle } from 'lucide-react';
+import { MessageSquare, Users, Wrench, Puzzle, Settings } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';
 import { IconButton, Text } from '@/components/ui';
 
 interface Activity {
-  id: 'messages' | 'contacts' | 'tools' | 'plugins';
+  id: 'messages' | 'contacts' | 'tools' | 'plugins' | 'settings';
   icon: React.ReactNode;
   label: string;
 }
@@ -84,6 +84,7 @@ export default function ActivityBar() {
     { id: 'contacts', icon: <Users size={theme.iconSizes.xl} />, label: 'Contactos' },
     { id: 'tools', icon: <Wrench size={theme.iconSizes.xl} />, label: 'Herramientas' },
     { id: 'plugins', icon: <Puzzle size={theme.iconSizes.xl} />, label: 'Plugins' },
+    { id: 'settings', icon: <Settings size={theme.iconSizes.xl} />, label: 'Configuración' },
   ];
 
   return (

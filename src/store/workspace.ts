@@ -6,7 +6,7 @@ import { persist } from 'zustand/middleware';
  */
 export interface WorkspaceTab {
   id: string;
-  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'database_dev_tools';
+  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'database_dev_tools' | 'team' | 'account_settings' | 'integrations';
   label: string;
   entityId: string; // conversationId, orderId, customerId, etc.
   icon?: string;
@@ -44,8 +44,8 @@ export interface DynamicContainer {
  */
 interface WorkspaceState {
   // ━━━ NIVEL 1: BARRA DE ACTIVIDAD (ACTIVITY BAR) ━━━
-  activeActivity: 'messages' | 'contacts' | 'tools' | 'plugins' | null;
-  setActivity: (activity: 'messages' | 'contacts' | 'tools' | 'plugins') => void;
+  activeActivity: 'messages' | 'contacts' | 'tools' | 'plugins' | 'settings' | null;
+  setActivity: (activity: 'messages' | 'contacts' | 'tools' | 'plugins' | 'settings') => void;
 
   // ━━━ NIVEL 2: BARRA LATERAL CONTEXTUAL (SIDEBAR) ━━━
   sidebarVisible: boolean;
