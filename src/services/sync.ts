@@ -10,8 +10,9 @@
 
 import { db } from './database';
 import { apiClient } from './api';
+import { adminAPI } from '@/lib/api/admin-client';
 import { useStore } from '@/store';
-import type { Conversation, Contact } from '@/types';
+import type { Conversation, Contact, MessageEnvelope } from '@/types';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SYNC SERVICE CLASS
@@ -76,6 +77,73 @@ class SyncService {
   }
 
   /**
+   * Sincronizar datos desde el backend (FASE 1)
+   * Llama a /admin/sync/initial y guarda en IndexedDB
+   */
+  async syncFromBackend(): Promise<void> {
+    console.log('🔄 Syncing from backend...');
+
+    try {
+      // 1. Llamar al endpoint de sincronización inicial
+      const response = await adminAPI.syncInitial();
+
+      if (!response.success) {
+        throw new Error('Sync failed: response.success is false');
+      }
+
+      const { conversations, contacts, team, integrations } = response.data;
+
+      console.log(`📦 Received from backend:
+        - ${conversations.length} conversations
+        - ${contacts.length} contacts
+        - ${team.length} team members
+        - ${integrations.length} integrations`);
+
+      // 2. Guardar conversaciones en IndexedDB
+      for (const conversation of conversations) {
+        await db.saveConversation(conversation);
+      }
+
+      // 3. Guardar contactos en IndexedDB
+      for (const contact of contacts) {
+        // Convertir EndUser a Contact format
+        const contactData: Contact = {
+          id: contact.id,
+          name: contact.name,
+          status: 'offline',
+          channel: 'whatsapp', // Default, puede venir de metadata
+          metadata: {
+            email: contact.email,
+            phoneNumber: contact.phone,
+          },
+        };
+        await db.saveContact(contactData);
+      }
+
+      // 4. Cargar mensajes para cada conversación (primeras 50)
+      console.log('📨 Loading messages for active conversations...');
+      for (const conversation of conversations.filter((c) => c.status === 'active')) {
+        try {
+          const messagesResponse = await adminAPI.getMessages(conversation.id, { limit: 50 });
+          if (messagesResponse.success) {
+            // Guardar mensajes en IndexedDB
+            for (const message of messagesResponse.data.messages) {
+              await db.addMessage(message);
+            }
+          }
+        } catch (error) {
+          console.warn(`⚠️ Failed to load messages for conversation ${conversation.id}:`, error);
+        }
+      }
+
+      console.log('✅ Backend sync complete');
+    } catch (error) {
+      console.error('❌ Failed to sync from backend:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Cargar estado de simulación desde el API
    * Se ejecuta al iniciar la app y después de WebSocket events
    */
@@ -105,6 +173,11 @@ class SyncService {
 
   /**
    * Sincronización completa al iniciar la app
+   *
+   * Flujo:
+   * 1. Intentar sincronizar desde backend (FASE 1)
+   * 2. Si falla, cargar desde IndexedDB (fallback offline)
+   * 3. Hidratar Zustand store
    */
   async initialSync(): Promise<void> {
     if (this.syncing) {
@@ -117,13 +190,18 @@ class SyncService {
     try {
       console.log('🚀 Starting initial sync...');
 
-      // 1. Cargar datos persistidos desde IndexedDB
+      // 1. Intentar sincronizar desde backend
+      try {
+        await this.syncFromBackend();
+        console.log('✅ Backend sync successful');
+      } catch (error) {
+        console.warn('⚠️ Backend sync failed, falling back to local data:', error);
+      }
+
+      // 2. Cargar datos desde IndexedDB (ahora tiene datos del backend o datos anteriores)
       await this.loadFromIndexedDB();
 
-      // 2. Cargar estado de simulación desde API
-      await this.loadSimulationStatus();
-
-      // 3. Si no hay conversaciones, derivar desde mensajes
+      // 3. Si no hay conversaciones, derivar desde mensajes (legacy support)
       const { entities } = useStore.getState();
       if (entities.conversations.size === 0) {
         console.log('📊 No conversations found, deriving from messages...');
