@@ -707,10 +707,11 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
         console.log('✅ IndexedDB initialized');
         logger.info('db', 'IndexedDB initialized', {});
 
-        // 2. Load data from IndexedDB and API
-        await syncService.initialSync();
-        console.log('✅ Initial sync complete');
-        logger.info('sync', 'Initial sync completed', {});
+        // 2. Load data from IndexedDB ONLY (no backend sync yet)
+        // Backend sync will happen after login via syncService.syncFromBackend()
+        await syncService.loadFromIndexedDB();
+        console.log('✅ Local data loaded from IndexedDB');
+        logger.info('sync', 'Local data loaded from IndexedDB', {});
 
         // 3. Connect WebSocket
         connect();
