@@ -9,7 +9,7 @@ export default function DashboardPage() {
         Welcome back, {user?.name}! 👋
       </h1>
       <p className="mt-2 text-gray-600">
-        Here's what's happening with your {user?.tenant.name} account today.
+        Here's what's happening with your {user?.tenantName} account today.
       </p>
 
       {/* Stats Grid */}
@@ -88,24 +88,24 @@ export default function DashboardPage() {
         <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <dt className="text-sm font-medium text-gray-500">Company Name</dt>
-            <dd className="mt-1 text-sm text-gray-900">{user?.tenant.name}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{user?.tenantName}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Plan</dt>
+            <dt className="text-sm font-medium text-gray-500">Role</dt>
             <dd className="mt-1 text-sm text-gray-900 capitalize">
-              {user?.tenant.plan}
+              {user?.role}
             </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Tenant ID</dt>
             <dd className="mt-1 text-sm text-gray-900 font-mono">
-              {user?.tenant.id}
+              {user?.tenantId}
             </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Slug</dt>
             <dd className="mt-1 text-sm text-gray-900 font-mono">
-              {user?.tenant.slug}
+              {user?.tenantSlug}
             </dd>
           </div>
         </dl>
