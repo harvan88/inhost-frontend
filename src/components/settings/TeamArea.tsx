@@ -1,6 +1,6 @@
 import { useTheme } from '@/theme';
 import { useAuthStore } from '@/store/auth-store';
-import { Heading, Text, Button } from '@/components/ui';
+import { Heading, Text } from '@/components/ui';
 import { useState } from 'react';
 
 interface TeamAreaProps {

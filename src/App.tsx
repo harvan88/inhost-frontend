@@ -10,14 +10,6 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 // Main Workspace (Chat) - CORE APPLICATION
 import Workspace from '@components/workspace/Workspace';
 
-// Admin Dashboard (Secondary features)
-import DashboardLayout from './components/admin/DashboardLayout';
-import DashboardPage from './pages/admin/DashboardPage';
-import InboxPage from './pages/admin/InboxPage';
-import EndUsersPage from './pages/admin/EndUsersPage';
-import TeamPage from './pages/admin/TeamPage';
-import SettingsPage from './pages/admin/SettingsPage';
-
 import './styles/App.css';
 
 /**
@@ -31,7 +23,7 @@ import './styles/App.css';
  * Routes:
  * - /login, /signup: Authentication pages
  * - /workspace: Main chat/workspace interface (CORE APPLICATION)
- * - /admin/*: Protected admin dashboard routes (secondary features)
+ *   - Includes Settings domain for team, account, and integrations management
  */
 function App() {
   const toasts = useToastStore((state) => state.toasts);
@@ -43,58 +35,6 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-
-          {/* Protected admin routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <DashboardPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/inbox"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <InboxPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/end-users"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <EndUsersPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/team"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <TeamPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <SettingsPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
 
           {/* Main workspace (chat) - CORE APPLICATION */}
           <Route
