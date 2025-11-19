@@ -2,17 +2,24 @@
  * WebSocket Provider
  * CONTRATO ESTRICTO - Broadcasts del Backend
  *
- * Eventos recibidos:
- * - connection: Conexión establecida
+ * Eventos IMPLEMENTADOS en backend (v1.1):
+ * - connection: Conexión establecida ✅
+ * - echo: Echo de mensajes enviados ✅
+ * - typing: Indicador de escritura ✅
+ * - error: Error del servidor ✅
+ *
+ * Eventos de simulación (legacy):
  * - message_received: Nuevo mensaje del cliente
  * - message_processing: Extensiones procesando
  * - extension_response: Respuesta de extensión
  * - client_toggle: Cliente conectado/desconectado
  * - extension_toggle: Extensión activada/desactivada
- * - message:new: Notificación de nuevo mensaje
- * - message:status: Estado de mensaje actualizado
- * - typing:indicator: Indicador de escritura
- * - error: Error del servidor
+ *
+ * Eventos NO implementados (preparados para futuro):
+ * - message:new: Notificación de nuevo mensaje ⏳
+ * - message:status: Estado de mensaje actualizado ⏳
+ * - conversation:read: Conversación marcada como leída ⏳
+ * - conversation:updated: Conversación actualizada ⏳
  */
 
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
@@ -541,7 +548,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
         case 'message:status':
           handleMessageStatus(data as MessageStatusEvent);
           break;
-        case 'typing:indicator':
+        case 'typing':  // Backend usa 'typing', no 'typing:indicator'
           handleTypingIndicator(data as TypingIndicatorEvent);
           break;
         case 'conversation:read':
