@@ -1,0 +1,102 @@
+{
+  "version": "1.0.0",
+  "baseUrl": "http://localhost:3000/admin",
+  "auth": {
+    "type": "JWT",
+    "header": "Authorization",
+    "format": "Bearer {token}"
+  },
+  "endpoints": {
+    "auth": {
+      "login": {
+        "method": "POST",
+        "path": "/auth/login",
+        "request": {
+          "email": "string",
+          "password": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "data": {
+            "token": "string",
+            "user": {
+              "id": "string",
+              "email": "string",
+              "name": "string",
+              "role": "string",
+              "tenant": {
+                "id": "string",
+                "name": "string",
+                "slug": "string",
+                "plan": "string"
+              }
+            }
+          }
+        }
+      },
+      "signup": {
+        "method": "POST",
+        "path": "/auth/signup",
+        "request": {
+          "email": "string",
+          "password": "string",
+          "name": "string",
+          "tenantName": "string",
+          "plan": "starter | professional | enterprise"
+        },
+        "response": {
+          "success": "boolean",
+          "data": {
+            "token": "string",
+            "user": {
+              "id": "string",
+              "email": "string",
+              "name": "string",
+              "role": "string",
+              "tenant": {
+                "id": "string",
+                "name": "string",
+                "slug": "string",
+                "plan": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tenant": {
+      "get": {
+        "method": "GET",
+        "path": "/tenant",
+        "requiresAuth": true
+      },
+      "update": {
+        "method": "PATCH",
+        "path": "/tenant",
+        "requiresAuth": true
+      }
+    },
+    "conversations": {
+      "list": {
+        "method": "GET",
+        "path": "/conversations",
+        "requiresAuth": true,
+        "query": {
+          "limit": "number",
+          "offset": "number"
+        }
+      }
+    },
+    "endUsers": {
+      "list": {
+        "method": "GET",
+        "path": "/end-users",
+        "requiresAuth": true,
+        "query": {
+          "limit": "number",
+          "search": "string"
+        }
+      }
+    }
+  }
+}
