@@ -141,12 +141,12 @@ export default function IntegrationsArea({ settingId }: IntegrationsAreaProps) {
           style={{
             marginTop: theme.spacing[6],
             padding: theme.spacing[4],
-            backgroundColor: theme.colors.primary[50],
-            border: `1px solid ${theme.colors.primary[200]}`,
+            backgroundColor: theme.colors.semantic.infoLight,
+            border: `1px solid ${theme.colors.semantic.info}`,
             borderRadius: theme.radius.lg,
           }}
         >
-          <Text variant="label" color="muted">
+          <Text variant="label" style={{ color: theme.colors.semantic.infoDark }}>
             <strong>Coming soon:</strong> Connect and configure integrations directly
             from the workspace. Backend integration pending.
           </Text>
