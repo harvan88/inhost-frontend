@@ -71,24 +71,46 @@ class AdminAPIClient {
   ): Promise<T> {
     const token = localStorage.getItem('inhost_admin_token');
 
-    const res = await fetch(this.baseURL + endpoint, {
+    const url = this.baseURL + endpoint;
+    const requestOptions = {
       ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options?.headers
       }
+    };
+
+    // Log request for debugging
+    console.log('API Request:', {
+      url,
+      method: requestOptions.method || 'GET',
+      body: options?.body ? JSON.parse(options.body as string) : undefined
     });
+
+    const res = await fetch(url, requestOptions);
 
     if (!res.ok) {
       let errorMessage = `API Error: ${res.statusText}`;
+      let errorDetails = null;
       try {
         const error = await res.json();
+        console.error('API Error Response:', error);
         errorMessage = error.error || error.message || errorMessage;
+        errorDetails = error;
       } catch {
-        // If parsing fails, use default error message
+        // If parsing fails, try to get text
+        try {
+          const text = await res.text();
+          console.error('API Error Text:', text);
+          if (text) errorMessage = text;
+        } catch {
+          console.error('Could not parse error response');
+        }
       }
-      throw new Error(errorMessage);
+      const err = new Error(errorMessage) as Error & { details?: any };
+      err.details = errorDetails;
+      throw err;
     }
 
     return res.json();
