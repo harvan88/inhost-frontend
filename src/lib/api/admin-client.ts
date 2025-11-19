@@ -29,7 +29,7 @@ export interface AuthResponse {
   data: {
     user: User;
     tokens: {
-      accessToken: string;
+      accessToken: string;  // Backend devuelve tokens.accessToken
       refreshToken: string;
       expiresIn: number;
     };
@@ -177,6 +177,13 @@ class AdminAPIClient {
   ): Promise<T> {
     const token = localStorage.getItem('inhost_admin_token');
 
+    // Debug logging
+    console.log('🔐 API Request:', {
+      endpoint: this.baseURL + endpoint,
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 20)}...` : 'NO TOKEN'
+    });
+
     const res = await fetch(this.baseURL + endpoint, {
       ...options,
       headers: {
@@ -184,6 +191,13 @@ class AdminAPIClient {
         ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options?.headers
       }
+    });
+
+    console.log('📡 API Response:', {
+      endpoint,
+      status: res.status,
+      ok: res.ok,
+      statusText: res.statusText
     });
 
     if (!res.ok) {

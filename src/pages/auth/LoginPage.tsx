@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { adminAPI } from '../../lib/api/admin-client';
 import { useAuthStore } from '../../store/auth-store';
+import { syncService } from '../../services/sync';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -21,8 +22,43 @@ export default function LoginPage() {
     try {
       const response = await adminAPI.login({ email, password });
 
+      console.log('🔐 Login response:', {
+        success: response.success,
+        hasData: !!response.data,
+        dataKeys: response.data ? Object.keys(response.data) : [],
+        hasTokens: !!response.data?.tokens,
+        hasAccessToken: !!response.data?.tokens?.accessToken,
+        tokenPreview: response.data?.tokens?.accessToken
+          ? response.data.tokens.accessToken.substring(0, 30) + '...'
+          : 'NO TOKEN',
+        fullResponse: response
+      });
+
       if (response.success) {
-        setAuth(response.data.tokens.accessToken, response.data.user);
+        const accessToken = response.data.tokens.accessToken;
+
+        // 1. Set auth token (stores in localStorage)
+        console.log('💾 Saving token to localStorage:', {
+          hasToken: !!accessToken,
+          tokenLength: accessToken?.length,
+          tokenPreview: accessToken ? accessToken.substring(0, 30) + '...' : 'undefined'
+        });
+
+        setAuth(accessToken, response.data.user);
+
+        // 2. Sync data from backend (now that we have token)
+        try {
+          await syncService.syncFromBackend();
+          console.log('✅ Backend sync after login successful');
+        } catch (syncError) {
+          console.warn('⚠️ Backend sync failed after login, using local data:', syncError);
+          // Continue anyway - user can still use local data
+        }
+
+        // 3. Reload data from IndexedDB (now has fresh backend data)
+        await syncService.loadFromIndexedDB();
+
+        // 4. Navigate to workspace
         navigate('/workspace');
       }
     } catch (err) {
