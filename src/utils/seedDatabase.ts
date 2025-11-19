@@ -66,15 +66,15 @@ const mockConversations: Conversation[] = [
     channel: 'whatsapp',
     status: 'active',
     lastMessage: {
-      id: 'msg-003',
-      text: '¿Tienen stock del producto X?',
-      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-      type: 'incoming',
+      id: 'msg-003-ext-ai', // FASE 2: Ahora el último mensaje es la respuesta de AI
+      text: '¡Sí! Tenemos 15 unidades del Producto X en stock. El precio es $4,500 con envío gratis. ¿Te gustaría proceder con la compra? 😊',
+      timestamp: new Date(Date.now() - 4 * 60 * 1000 + 45000).toISOString(),
+      type: 'outgoing',
     },
-    unreadCount: 1,
+    unreadCount: 0, // Ya fue respondido por la extensión
     isPinned: true,
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 días atrás
-    updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 4 * 60 * 1000 + 45000).toISOString(), // Actualizado con la respuesta de AI
   },
   {
     id: 'conv-550e8400-e29b-41d4-a716-446655440002',
@@ -98,15 +98,15 @@ const mockConversations: Conversation[] = [
     channel: 'telegram',
     status: 'active',
     lastMessage: {
-      id: 'msg-008',
-      text: 'Consulta sobre integración API',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      type: 'incoming',
+      id: 'msg-008-ext-ai', // FASE 2: Respuesta técnica de AI
+      text: 'Para integrar nuestra API REST:\n\n1️⃣ Obtén tu API key desde el dashboard\n2️⃣ Usa el endpoint: POST https://api.inhost.com/v1/messages...',
+      timestamp: new Date(Date.now() - 29 * 60 * 1000 + 30000).toISOString(),
+      type: 'outgoing',
     },
-    unreadCount: 2,
+    unreadCount: 0, // Ya fue respondido por AI
     isPinned: false,
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 día atrás
-    updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 29 * 60 * 1000 + 30000).toISOString(),
   },
   {
     id: 'conv-550e8400-e29b-41d4-a716-446655440004',
@@ -114,15 +114,15 @@ const mockConversations: Conversation[] = [
     channel: 'web',
     status: 'active',
     lastMessage: {
-      id: 'msg-009',
-      text: 'Hola! Necesito ayuda con mi pedido',
-      timestamp: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-      type: 'incoming',
+      id: 'msg-009-ext-echo', // FASE 2: Respuesta de Echo extension
+      text: '🔄 Echo: Hola! Necesito ayuda con mi pedido',
+      timestamp: new Date(Date.now() - 59 * 1000).toISOString(),
+      type: 'outgoing',
     },
-    unreadCount: 1,
+    unreadCount: 0, // Ya fue procesado por Echo
     isPinned: false,
     createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(), // 10 minutos atrás
-    updatedAt: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
+    updatedAt: new Date(Date.now() - 59 * 1000).toISOString(),
   },
 ];
 
@@ -225,6 +225,50 @@ const mockMessages: MessageEnvelope[] = [
       source: 'whatsapp-cloud-api',
     },
   },
+  // ━━━ FASE 2: Respuesta de Extensión AI ━━━
+  {
+    id: 'msg-003-ext-ai',
+    conversationId: 'conv-550e8400-e29b-41d4-a716-446655440001',
+    type: 'outgoing',
+    channel: 'whatsapp',
+    content: {
+      text: '¡Sí! Tenemos 15 unidades del Producto X en stock. El precio es $4,500 con envío gratis. ¿Te gustaría proceder con la compra? 😊',
+      contentType: 'text/plain',
+    },
+    metadata: {
+      from: 'system',
+      to: '+5491112345678',
+      timestamp: new Date(Date.now() - 4 * 60 * 1000 + 45000).toISOString(), // 45 segundos después
+      extensionId: 'ai', // 🔥 Extension ID - activa MessageFeedback
+      originalMessageId: 'msg-003',
+    },
+    statusChain: [
+      {
+        status: 'sending',
+        timestamp: new Date(Date.now() - 4 * 60 * 1000 + 45000).toISOString(),
+        messageId: 'msg-003-ext-ai',
+      },
+      {
+        status: 'sent',
+        timestamp: new Date(Date.now() - 4 * 60 * 1000 + 46000).toISOString(),
+        messageId: 'msg-003-ext-ai',
+      },
+      {
+        status: 'delivered',
+        timestamp: new Date(Date.now() - 4 * 60 * 1000 + 47000).toISOString(),
+        messageId: 'msg-003-ext-ai',
+      },
+    ],
+    context: {
+      plan: 'premium',
+      timestamp: new Date(Date.now() - 4 * 60 * 1000 + 45000).toISOString(),
+      extension: {
+        id: 'ai',
+        name: 'AI Assistant',
+        latency: 1200,
+      },
+    },
+  },
 
   // ━━━ Conversación 2: María González (WhatsApp) ━━━
   {
@@ -284,6 +328,50 @@ const mockMessages: MessageEnvelope[] = [
     context: {
       plan: 'free',
       timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000 + 20000).toISOString(),
+    },
+  },
+  // ━━━ FASE 2: Respuesta de Extensión CRM ━━━
+  {
+    id: 'msg-005-ext-crm',
+    conversationId: 'conv-550e8400-e29b-41d4-a716-446655440002',
+    type: 'outgoing',
+    channel: 'whatsapp',
+    content: {
+      text: 'Hola María! Veo que eres cliente VIP desde hace 2 años. Tengo una promoción especial para ti: 25% de descuento en tu próxima compra. ¿Te interesa?',
+      contentType: 'text/plain',
+    },
+    metadata: {
+      from: 'system',
+      to: '+5491187654321',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 30000).toISOString(),
+      extensionId: 'crm', // 🔥 Extension CRM
+      originalMessageId: 'msg-004',
+    },
+    statusChain: [
+      {
+        status: 'sent',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 30000).toISOString(),
+        messageId: 'msg-005-ext-crm',
+      },
+      {
+        status: 'delivered',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 31000).toISOString(),
+        messageId: 'msg-005-ext-crm',
+      },
+      {
+        status: 'read',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 45000).toISOString(),
+        messageId: 'msg-005-ext-crm',
+      },
+    ],
+    context: {
+      plan: 'premium',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 30000).toISOString(),
+      extension: {
+        id: 'crm',
+        name: 'CRM Intelligence',
+        latency: 850,
+      },
     },
   },
   {
@@ -370,6 +458,45 @@ const mockMessages: MessageEnvelope[] = [
       source: 'telegram-bot-api',
     },
   },
+  // ━━━ FASE 2: Respuesta de Extensión AI con documentación técnica ━━━
+  {
+    id: 'msg-008-ext-ai',
+    conversationId: 'conv-550e8400-e29b-41d4-a716-446655440003',
+    type: 'outgoing',
+    channel: 'telegram',
+    content: {
+      text: 'Para integrar nuestra API REST:\n\n1️⃣ Obtén tu API key desde el dashboard\n2️⃣ Usa el endpoint: POST https://api.inhost.com/v1/messages\n3️⃣ Headers: Authorization: Bearer {tu_api_key}\n4️⃣ Body: { "channel": "whatsapp", "to": "+549...", "text": "..." }\n\nDocumentación completa: https://docs.inhost.com/api',
+      contentType: 'text/plain',
+    },
+    metadata: {
+      from: 'system',
+      to: '@carlos_tech',
+      timestamp: new Date(Date.now() - 29 * 60 * 1000 + 30000).toISOString(),
+      extensionId: 'ai', // 🔥 Extension AI - respuesta técnica
+      originalMessageId: 'msg-008',
+    },
+    statusChain: [
+      {
+        status: 'sent',
+        timestamp: new Date(Date.now() - 29 * 60 * 1000 + 30000).toISOString(),
+        messageId: 'msg-008-ext-ai',
+      },
+      {
+        status: 'delivered',
+        timestamp: new Date(Date.now() - 29 * 60 * 1000 + 31000).toISOString(),
+        messageId: 'msg-008-ext-ai',
+      },
+    ],
+    context: {
+      plan: 'premium',
+      timestamp: new Date(Date.now() - 29 * 60 * 1000 + 30000).toISOString(),
+      extension: {
+        id: 'ai',
+        name: 'AI Technical Assistant',
+        latency: 950,
+      },
+    },
+  },
 
   // ━━━ Conversación 4: Ana López (Web) ━━━
   {
@@ -397,6 +524,40 @@ const mockMessages: MessageEnvelope[] = [
       plan: 'free',
       timestamp: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
       source: 'web-widget',
+    },
+  },
+  // ━━━ FASE 2: Respuesta de Extensión Echo (Testing) ━━━
+  {
+    id: 'msg-009-ext-echo',
+    conversationId: 'conv-550e8400-e29b-41d4-a716-446655440004',
+    type: 'outgoing',
+    channel: 'web',
+    content: {
+      text: '🔄 Echo: Hola! Necesito ayuda con mi pedido',
+      contentType: 'text/plain',
+    },
+    metadata: {
+      from: 'system',
+      to: 'web-user-123',
+      timestamp: new Date(Date.now() - 59 * 1000).toISOString(), // 1 segundo después
+      extensionId: 'echo', // 🔥 Extension Echo - solo repite el mensaje
+      originalMessageId: 'msg-009',
+    },
+    statusChain: [
+      {
+        status: 'sent',
+        timestamp: new Date(Date.now() - 59 * 1000).toISOString(),
+        messageId: 'msg-009-ext-echo',
+      },
+    ],
+    context: {
+      plan: 'free',
+      timestamp: new Date(Date.now() - 59 * 1000).toISOString(),
+      extension: {
+        id: 'echo',
+        name: 'Echo Extension',
+        latency: 50,
+      },
     },
   },
 
