@@ -34,7 +34,7 @@ export default function SignupPage() {
       });
 
       if (response.success) {
-        setAuth(response.data.token, response.data.user);
+        setAuth(response.data.tokens.accessToken, response.data.user);
         navigate('/admin');
       }
     } catch (err) {

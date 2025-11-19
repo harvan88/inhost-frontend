@@ -26,20 +26,20 @@ export default function SettingsPage() {
                 </label>
                 <input
                   type="text"
-                  value={user?.tenant.name || ''}
+                  value={user?.tenantName || ''}
                   disabled
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Plan
+                  Tenant ID
                 </label>
                 <input
                   type="text"
-                  value={user?.tenant.plan || ''}
+                  value={user?.tenantId || ''}
                   disabled
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 capitalize"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 font-mono"
                 />
               </div>
               <div>
@@ -48,7 +48,7 @@ export default function SettingsPage() {
                 </label>
                 <input
                   type="text"
-                  value={user?.tenant.slug || ''}
+                  value={user?.tenantSlug || ''}
                   disabled
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 font-mono"
                 />

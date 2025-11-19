@@ -22,7 +22,7 @@ export default function LoginPage() {
       const response = await adminAPI.login({ email, password });
 
       if (response.success) {
-        setAuth(response.data.token, response.data.user);
+        setAuth(response.data.tokens.accessToken, response.data.user);
         navigate('/admin');
       }
     } catch (err) {

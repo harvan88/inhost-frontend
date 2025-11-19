@@ -19,19 +19,23 @@ export interface User {
   email: string;
   name: string;
   role: string;
-  tenant: {
-    id: string;
-    name: string;
-    slug: string;
-    plan: string;
-  };
+  tenantId: string;
+  tenantName: string;
+  tenantSlug: string;
 }
 
 export interface AuthResponse {
   success: boolean;
   data: {
-    token: string;
     user: User;
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+    };
+  };
+  metadata?: {
+    timestamp: string;
   };
 }
 

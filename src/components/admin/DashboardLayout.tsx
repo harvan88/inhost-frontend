@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {!sidebarCollapsed && (
             <div>
               <h1 className="text-2xl font-bold text-gray-900">INHOST</h1>
-              <p className="text-sm text-gray-600 truncate">{user?.tenant.name}</p>
+              <p className="text-sm text-gray-600 truncate">{user?.tenantName}</p>
             </div>
           )}
           <button
@@ -93,8 +93,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   {user?.name}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {user?.role} • {user?.tenant.plan}
+                <p className="text-xs text-gray-400 mt-1 capitalize">
+                  {user?.role}
                 </p>
               </div>
               <button
