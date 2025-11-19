@@ -2,19 +2,21 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary, ToastContainer, useToastStore } from '@/components/feedback';
 import { WebSocketProvider } from '@/providers/WebSocketProvider';
 
-// Admin Dashboard
+// Authentication
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+
+// Main Workspace (Chat) - CORE APPLICATION
+import Workspace from '@components/workspace/Workspace';
+
+// Admin Dashboard (Secondary features)
 import DashboardLayout from './components/admin/DashboardLayout';
 import DashboardPage from './pages/admin/DashboardPage';
 import InboxPage from './pages/admin/InboxPage';
 import EndUsersPage from './pages/admin/EndUsersPage';
 import TeamPage from './pages/admin/TeamPage';
 import SettingsPage from './pages/admin/SettingsPage';
-
-// Original Workspace (legacy)
-import Workspace from '@components/workspace/Workspace';
 
 import './styles/App.css';
 
@@ -28,8 +30,8 @@ import './styles/App.css';
  *
  * Routes:
  * - /login, /signup: Authentication pages
- * - /admin/*: Protected admin dashboard routes
- * - /workspace: Original FluxCore workspace (legacy)
+ * - /workspace: Main chat/workspace interface (CORE APPLICATION)
+ * - /admin/*: Protected admin dashboard routes (secondary features)
  */
 function App() {
   const toasts = useToastStore((state) => state.toasts);
@@ -94,18 +96,20 @@ function App() {
             }
           />
 
-          {/* Legacy workspace route */}
+          {/* Main workspace (chat) - CORE APPLICATION */}
           <Route
             path="/workspace"
             element={
-              <WebSocketProvider>
-                <Workspace />
-              </WebSocketProvider>
+              <ProtectedRoute>
+                <WebSocketProvider>
+                  <Workspace />
+                </WebSocketProvider>
+              </ProtectedRoute>
             }
           />
 
           {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/admin" replace />} />
+          <Route path="/" element={<Navigate to="/workspace" replace />} />
 
           {/* Catch all - redirect to login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
