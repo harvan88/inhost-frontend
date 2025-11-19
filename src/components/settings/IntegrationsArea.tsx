@@ -141,8 +141,8 @@ export default function IntegrationsArea({ settingId }: IntegrationsAreaProps) {
           style={{
             marginTop: theme.spacing[6],
             padding: theme.spacing[4],
-            backgroundColor: theme.colors.info[50],
-            border: `1px solid ${theme.colors.info[200]}`,
+            backgroundColor: theme.colors.primary[50],
+            border: `1px solid ${theme.colors.primary[200]}`,
             borderRadius: theme.radius.lg,
           }}
         >
