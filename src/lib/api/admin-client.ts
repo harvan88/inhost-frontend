@@ -1,5 +1,6 @@
 // Admin API Client for INHOST Multi-Tenant Admin Dashboard
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Uses relative URLs to leverage Vite proxy in dev mode
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export interface LoginRequest {
   email: string;
@@ -61,7 +62,8 @@ export interface ApiError {
 }
 
 class AdminAPIClient {
-  private baseURL = API_BASE_URL + '/admin';
+  // Use relative path to leverage Vite dev proxy (/admin -> http://localhost:3000/admin)
+  private baseURL = API_BASE_URL ? API_BASE_URL + '/admin' : '/admin';
 
   private async request<T>(
     endpoint: string,
