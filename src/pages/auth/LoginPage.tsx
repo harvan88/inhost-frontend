@@ -24,7 +24,7 @@ export default function LoginPage() {
 
       if (response.success) {
         // 1. Set auth token (stores in localStorage)
-        setAuth(response.data.tokens.accessToken, response.data.user);
+        setAuth(response.data.token, response.data.user);
 
         // 2. Sync data from backend (now that we have token)
         try {
