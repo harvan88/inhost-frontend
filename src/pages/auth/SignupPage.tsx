@@ -35,8 +35,16 @@ export default function SignupPage() {
       });
 
       if (response.success) {
+        const accessToken = response.data.tokens.accessToken;
+
         // 1. Set auth token (stores in localStorage)
-        setAuth(response.data.token, response.data.user);
+        console.log('💾 Saving token after signup:', {
+          hasToken: !!accessToken,
+          tokenLength: accessToken?.length,
+          tokenPreview: accessToken ? accessToken.substring(0, 30) + '...' : 'undefined'
+        });
+
+        setAuth(accessToken, response.data.user);
 
         // 2. Sync data from backend (now that we have token)
         try {

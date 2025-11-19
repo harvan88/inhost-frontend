@@ -26,15 +26,25 @@ export default function LoginPage() {
         success: response.success,
         hasData: !!response.data,
         dataKeys: response.data ? Object.keys(response.data) : [],
-        hasToken: !!(response.data?.token),
-        tokenPreview: response.data?.token ? response.data.token.substring(0, 30) + '...' : 'NO TOKEN',
+        hasTokens: !!response.data?.tokens,
+        hasAccessToken: !!response.data?.tokens?.accessToken,
+        tokenPreview: response.data?.tokens?.accessToken
+          ? response.data.tokens.accessToken.substring(0, 30) + '...'
+          : 'NO TOKEN',
         fullResponse: response
       });
 
       if (response.success) {
+        const accessToken = response.data.tokens.accessToken;
+
         // 1. Set auth token (stores in localStorage)
-        console.log('💾 Saving token to localStorage:', response.data.token ? 'Token exists' : 'Token is undefined!');
-        setAuth(response.data.token, response.data.user);
+        console.log('💾 Saving token to localStorage:', {
+          hasToken: !!accessToken,
+          tokenLength: accessToken?.length,
+          tokenPreview: accessToken ? accessToken.substring(0, 30) + '...' : 'undefined'
+        });
+
+        setAuth(accessToken, response.data.user);
 
         // 2. Sync data from backend (now that we have token)
         try {

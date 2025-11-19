@@ -27,8 +27,12 @@ export interface User {
 export interface AuthResponse {
   success: boolean;
   data: {
-    token: string;  // Backend devuelve "token", no "tokens.accessToken"
     user: User;
+    tokens: {
+      accessToken: string;  // Backend devuelve tokens.accessToken
+      refreshToken: string;
+      expiresIn: number;
+    };
   };
   metadata?: {
     timestamp: string;
