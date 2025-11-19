@@ -87,7 +87,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const addToast = useToastStore((s) => s.addToast);
 
   // Config
-  const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5173/realtime';
+  const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3000/realtime';
   const MAX_RECONNECT_ATTEMPTS = 5;
   const RECONNECT_INTERVAL = 3000; // 3 seconds
 
