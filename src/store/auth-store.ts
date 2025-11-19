@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setAuth: (token: string, user: User) => {
-        localStorage.setItem('inhost_admin_token', token);
+        localStorage.setItem('inhost_access_token', token);
         localStorage.setItem('inhost_admin_user', JSON.stringify(user));
         set({
           token,
@@ -33,7 +33,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        localStorage.removeItem('inhost_admin_token');
+        localStorage.removeItem('inhost_access_token');
         localStorage.removeItem('inhost_admin_user');
         set({
           token: null,
@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>()(
       // Rehydrate token from localStorage on load
       onRehydrateStorage: () => (state) => {
         if (state) {
-          const token = localStorage.getItem('inhost_admin_token');
+          const token = localStorage.getItem('inhost_access_token');
           if (token && state.isAuthenticated) {
             state.token = token;
           } else {
