@@ -84,7 +84,7 @@ class SyncService {
     console.log('🔄 Syncing from backend...');
 
     // Debug: Check if token exists
-    const token = localStorage.getItem('inhost_admin_token');
+    const token = localStorage.getItem('inhost_access_token');
     console.log('🔑 Token check:', {
       hasToken: !!token,
       tokenLength: token?.length,

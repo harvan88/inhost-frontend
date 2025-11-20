@@ -175,7 +175,7 @@ class AdminAPIClient {
     endpoint: string,
     options?: RequestInit
   ): Promise<T> {
-    const token = localStorage.getItem('inhost_admin_token');
+    const token = localStorage.getItem('inhost_access_token');
 
     // Debug logging
     console.log('🔐 API Request:', {
@@ -232,7 +232,7 @@ class AdminAPIClient {
 
   async logout(): Promise<void> {
     // Clear local storage
-    localStorage.removeItem('inhost_admin_token');
+    localStorage.removeItem('inhost_access_token');
     localStorage.removeItem('inhost_admin_user');
   }
 

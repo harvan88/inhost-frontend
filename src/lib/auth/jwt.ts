@@ -46,21 +46,21 @@ export function isTokenExpired(token: string): boolean {
  * Get token from localStorage
  */
 export function getStoredToken(): string | null {
-  return localStorage.getItem('inhost_admin_token');
+  return localStorage.getItem('inhost_access_token');
 }
 
 /**
  * Store token in localStorage
  */
 export function storeToken(token: string): void {
-  localStorage.setItem('inhost_admin_token', token);
+  localStorage.setItem('inhost_access_token', token);
 }
 
 /**
  * Remove token from localStorage
  */
 export function removeToken(): void {
-  localStorage.removeItem('inhost_admin_token');
+  localStorage.removeItem('inhost_access_token');
   localStorage.removeItem('inhost_admin_user');
 }
 
