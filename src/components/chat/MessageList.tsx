@@ -197,8 +197,10 @@ const MessageBubble = memo(
   const isOutgoing = message.type === 'outgoing';
   const isSystem = message.type === 'system';
 
-  // Get latest status from statusChain
-  const latestStatus = message.statusChain[message.statusChain.length - 1]?.status;
+  // Get latest status from statusChain (with null safety)
+  const latestStatus = message.statusChain && message.statusChain.length > 0
+    ? message.statusChain[message.statusChain.length - 1]?.status
+    : 'pending';
 
   // Get status icon for outgoing messages
   const getStatusIcon = () => {
@@ -394,8 +396,12 @@ const MessageBubble = memo(
   },
   // Comparación personalizada: re-renderizar si el message.id o statusChain cambia
   (prevProps, nextProps) => {
-    const prevStatus = prevProps.message.statusChain[prevProps.message.statusChain.length - 1]?.status;
-    const nextStatus = nextProps.message.statusChain[nextProps.message.statusChain.length - 1]?.status;
+    const prevStatus = prevProps.message.statusChain && prevProps.message.statusChain.length > 0
+      ? prevProps.message.statusChain[prevProps.message.statusChain.length - 1]?.status
+      : undefined;
+    const nextStatus = nextProps.message.statusChain && nextProps.message.statusChain.length > 0
+      ? nextProps.message.statusChain[nextProps.message.statusChain.length - 1]?.status
+      : undefined;
 
     return prevProps.message.id === nextProps.message.id &&
            prevProps.theme === nextProps.theme &&
