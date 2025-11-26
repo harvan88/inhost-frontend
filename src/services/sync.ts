@@ -141,7 +141,7 @@ class SyncService {
         try {
           const messagesResponse = await adminAPI.getMessages(conversation.id, { limit: 50 });
           if (messagesResponse.success) {
-            // Guardar mensajes en IndexedDB
+            // Guardar mensajes en IndexedDB (backend ya incluye conversationId)
             for (const message of messagesResponse.data.messages) {
               await db.addMessage(message);
             }
