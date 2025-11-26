@@ -166,9 +166,11 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       // Create new conversation
       conversation = {
         id: normalizedConversationId,
-        entityId: normalizedMessage.metadata.from,
+        endUserId: normalizedMessage.metadata.from,
         channel: normalizedMessage.channel,
+        status: 'active',
         lastMessage: {
+          id: normalizedMessage.id,
           text: normalizedMessage.content.text || '[Media]',
           timestamp: normalizedMessage.metadata.timestamp,
           type: normalizedMessage.type,
@@ -183,7 +185,9 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       await db.saveConversation(conversation);
 
       // Add to store
-      actions.addConversation(conversation);
+      if (conversation) {
+        actions.addConversation(conversation);
+      }
     }
 
     // 3. Ensure contact exists
@@ -220,8 +224,8 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       // Show toast notification for new incoming messages
       addToast({
         type: 'info',
-        message: `Nuevo mensaje de ${contact.name}`,
-        description: normalizedMessage.content.text || '[Media]',
+        title: `Nuevo mensaje de ${contact.name}`,
+        message: normalizedMessage.content.text || '[Media]',
         duration: 4000,
       });
       console.log(`🔔 New message from ${contact.name}`);
@@ -257,12 +261,14 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     if (!conversation) {
       console.log(`📂 Creating new conversation for extension response: ${normalizedConversationId}`);
 
-      // Para respuestas de extensiones, el entityId es el destinatario (to) porque es la conversación con ese contacto
+      // Para respuestas de extensiones, el endUserId es el destinatario (to) porque es la conversación con ese contacto
       conversation = {
         id: normalizedConversationId,
-        entityId: normalizedMessage.metadata.to,
+        endUserId: normalizedMessage.metadata.to,
         channel: normalizedMessage.channel,
+        status: 'active',
         lastMessage: {
+          id: normalizedMessage.id,
           text: normalizedMessage.content.text || '[Media]',
           timestamp: normalizedMessage.metadata.timestamp,
           type: normalizedMessage.type,
@@ -274,7 +280,9 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       };
 
       await db.saveConversation(conversation);
-      actions.addConversation(conversation);
+      if (conversation) {
+        actions.addConversation(conversation);
+      }
     }
 
     // 3. Ensure contact exists for the destination (usually already exists)
@@ -306,8 +314,8 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     if (ui.activeConversationId !== normalizedConversationId) {
       addToast({
         type: 'success',
-        message: `Respuesta de ${extensionName}`,
-        description: normalizedMessage.content.text || '[Media]',
+        title: `Respuesta de ${extensionName}`,
+        message: normalizedMessage.content.text || '[Media]',
         duration: 3000,
       });
     }
@@ -493,16 +501,16 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       console.warn(`Rate limit exceeded. Retry after ${event.retryAfter}s`);
       addToast({
         type: 'warning',
-        message: 'Rate limit excedido',
-        description: `Por favor espera ${event.retryAfter}s antes de reintentar`,
+        title: 'Rate limit excedido',
+        message: `Por favor espera ${event.retryAfter}s antes de reintentar`,
         duration: 5000,
       });
     } else {
       // Show generic error toast
       addToast({
         type: 'error',
-        message: 'Error de conexión',
-        description: event.message,
+        title: 'Error de conexión',
+        message: event.message,
         duration: 5000,
       });
     }
@@ -592,18 +600,15 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
 
     const event = {
-      type: 'typing:indicator',
-      data: {
-        conversationId,
-        userId: 'system', // TODO: Get from auth context
-        isTyping,
-        timestamp: new Date().toISOString(),
-      },
+      type: 'typing',
+      conversationId,
+      isTyping,
+      timestamp: new Date().toISOString(),
     };
 
     console.log('⌨️ Sending typing indicator:', event);
     logger.debug('websocket', 'Sending typing indicator', {
-      event: 'typing:indicator',
+      event: 'typing',
       conversationId,
       isTyping,
     });
