@@ -1,6 +1,8 @@
 import { useTheme } from '@/theme';
 import { useAuthStore } from '@/store/auth-store';
-import { Heading, Text, Input } from '@/components/ui';
+import { Heading, Text, Input, Button } from '@/components/ui';
+import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 
 interface AccountSettingsAreaProps {
   settingId: string;
@@ -14,6 +16,13 @@ interface AccountSettingsAreaProps {
 export default function AccountSettingsArea({ settingId }: AccountSettingsAreaProps) {
   const { theme } = useTheme();
   const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div
@@ -158,6 +167,38 @@ export default function AccountSettingsArea({ settingId }: AccountSettingsAreaPr
                   disabled
                 />
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Session Management */}
+        <div
+          style={{
+            marginBottom: theme.spacing[6],
+            padding: theme.spacing[6],
+            backgroundColor: theme.colors.neutral[0],
+            border: `1px solid ${theme.colors.neutral[200]}`,
+            borderRadius: theme.radius.lg,
+          }}
+        >
+          <Heading level={2}>Session</Heading>
+          <div
+            style={{
+              marginTop: theme.spacing[4],
+            }}
+          >
+            <Text variant="label" color="muted">
+              Cerrar sesión de tu cuenta
+            </Text>
+            <div style={{ marginTop: theme.spacing[3] }}>
+              <Button
+                variant="danger"
+                size="medium"
+                onClick={handleLogout}
+                leftIcon={<LogOut size={16} />}
+              >
+                Logout
+              </Button>
             </div>
           </div>
         </div>
