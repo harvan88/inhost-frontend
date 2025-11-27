@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/providers/WebSocketProvider.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "sync"
+ *   purpose: "Provider React para gestión de conexión WebSocket, maneja eventos en tiempo real y sincronización bidireccional con backend"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/types", "@/services/database", "@/services/sync", "@/store", "@/components/feedback", "@/services/logger"]
+ *   external: ["react"]
+ *   infrastructure: ["websocket"]
+ *
+ * CONTRACTS:
+ *   exports: ["WebSocketProvider", "useWebSocketContext", "WebSocketContextValue"]
+ *   inputs: ["WebSocketProviderProps"]
+ *   outputs: ["WebSocketContextValue", "JSX.Element"]
+ *   errors: ["ConnectionError", "ReconnectionError"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[Backend WS /realtime] → [WebSocket events] → [event handlers] → [Zustand store + IndexedDB] → [UI components]"
+ *   events_emitted: ["typing"]
+ *   events_consumed: ["connection", "message_received", "message_processing", "extension_response", "client_toggle", "extension_toggle", "message:new", "message:status", "typing:indicator", "conversation:read", "conversation:updated", "error"]
+ *
+ * IMPACT:
+ *   used_by: ["App.tsx", "components/workspace"]
+ *   uses: ["services/database", "services/sync", "store", "services/logger"]
+ *   critical: true
+ *
+ * === DOC_END :: WebSocketProvider.tsx ===
+ */
+
+/**
  * WebSocket Provider
  * CONTRATO ESTRICTO - Broadcasts del Backend
  *

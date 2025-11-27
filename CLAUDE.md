@@ -730,3 +730,97 @@ When modifying types in `src/types/index.ts`:
 - [ ] Implement code splitting
 
 **For cross-stack issues:** Coordinate with backend team. Changes to MessageEnvelope, API contracts, or WebSocket events require synchronized updates.
+
+---
+
+## Documentation System (SDT-SPEC-1.0)
+
+**Sprint 1 Status:** ✅ Infrastructure established
+
+### Documented Critical Files
+
+**Location:** `docs/documented-files.json`
+
+1. **[src/App.tsx](src/App.tsx)** - Application entry point with routing
+2. **[src/services/api.ts](src/services/api.ts)** - Backend API client
+3. **[src/store/auth-store.ts](src/store/auth-store.ts)** - Authentication state management
+
+### Architecture Overview
+
+**Location:** [docs/architecture-overview.md](docs/architecture-overview.md)
+
+Provides:
+- Complete architecture map of documented files
+- Dependency graph
+- Layer-domain matrix
+- Integration points
+
+### Using Documentation System
+
+**Scripts:** See `../documentation-scripts/README.md`
+
+```bash
+# Validate documentation format
+cd ../documentation-scripts
+npm run validate:frontend
+
+# Generate AI context
+npm run context:frontend
+
+# Analyze dependencies
+npm run analyze:frontend
+```
+
+### Documentation Format
+
+All critical files include structured metadata at the top:
+
+```typescript
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/example.ts"
+ *   type: "component|service|store|utility"
+ *   layer: "frontend"
+ *   domain: "ui|api|auth|sync|database|config"
+ *   purpose: "Brief description"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/types", "./utils"]
+ *   external: ["react", "zustand"]
+ *   infrastructure: ["localStorage", "websocket"]
+ *
+ * CONTRACTS:
+ *   exports: ["Component", "hook"]
+ *   inputs: ["PropsType", "ConfigType"]
+ *   outputs: ["JSX.Element", "ReturnType"]
+ *   errors: ["ValidationError"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[source] → [transform] → [destination]"
+ *   events_emitted: ["event_name"]
+ *   events_consumed: ["event_name"]
+ *
+ * IMPACT:
+ *   used_by: ["components/Parent"]
+ *   uses: ["services/api"]
+ *   critical: true|false
+ *
+ * === DOC_END :: example.ts ===
+ */
+```
+
+### Benefits for AI Context
+
+- **70% token reduction** - Only load relevant context
+- **Impact analysis** - Understand change consequences
+- **Dependency tracking** - Clear relationships
+- **Cross-reference** - Find related files quickly
+
+### Next Steps
+
+- [ ] Document remaining high-priority files
+- [ ] Integrate validation in CI/CD
+- [ ] Generate context for specific tasks
+- [ ] Maintain documentation as code evolves

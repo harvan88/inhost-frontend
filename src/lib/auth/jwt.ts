@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "lib/auth/jwt.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "auth"
+ *   purpose: "Utilidades para decodificación, validación y almacenamiento de tokens JWT en localStorage. ⚠️ ISSUE: Almacenamiento en localStorage tiene riesgo XSS (ver TECHNICAL_AUDIT.md 8.2)"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: ["localStorage", "atob"]
+ *
+ * CONTRACTS:
+ *   exports: ["JWTPayload","decodeJWT","getStoredToken","isAuthenticated","isTokenExpired","removeToken","storeToken"]
+ *   inputs: ["token: string"]
+ *   outputs: ["JWTPayload | null", "boolean", "string | null", "void"]
+ *   errors: ["JSON parse errors (caught and logged)"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[localStorage 'inhost_admin_token'] → [decodeJWT] → [JWTPayload] → [consumer (auth-store, ProtectedRoute)]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components/auth/ProtectedRoute.tsx", "store/auth-store.ts", "lib/api/admin-client.ts"]
+ *   uses: []
+ *   critical: true
+ *
+ * === DOC_END :: jwt.ts ===
+ */
+
 // JWT Helper Utilities
 
 export interface JWTPayload {

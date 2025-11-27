@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "store/workspace.ts"
+ *   type: "store"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Store de Zustand que gestiona el estado completo del workspace VS Code-inspired: 3 niveles (Activity Bar, Sidebar, Canvas con contenedores dinámicos y tabs). Persiste en localStorage el layout definido por usuario"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: ["zustand","zustand/middleware"]
+ *   infrastructure: ["localStorage"]
+ *
+ * CONTRACTS:
+ *   exports: ["DynamicContainer","WorkspaceTab","useActiveContainer","useActiveTab","useContainer","useTabCount","useWorkspaceStore"]
+ *   inputs: []
+ *   outputs: ["WorkspaceState", "DynamicContainer[]", "WorkspaceTab[]", "selectors"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[user interactions] → [workspace actions] → [localStorage persist] → [UI components re-render]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components/workspace/ActivityBar.tsx", "components/workspace/PrimarySidebar.tsx", "components/workspace/Canvas.tsx", "components/workspace/DynamicContainer.tsx"]
+ *   uses: ["zustand","zustand/middleware"]
+ *   critical: true
+ *
+ * === DOC_END :: workspace.ts ===
+ */
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

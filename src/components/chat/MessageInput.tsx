@@ -1,4 +1,38 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "components/chat/MessageInput.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "messaging"
+ *   purpose: "Input de texto para enviar mensajes en conversación. Valida longitud, maneja typing indicator via WebSocket, persiste en IndexedDB y envía a backend. ⚠️ ISSUE: Sin validación de inputs mencionada en TECHNICAL_AUDIT.md 8.3"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/hooks/useOverflowDetection","@/lib/api/admin-client","@/providers/WebSocketProvider","@/services/database","@/services/logger","@/store","@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["MessageInput"]
+ *   inputs: ["MessageInputProps { conversationId: string }"]
+ *   outputs: ["JSX.Element (input field + send button)"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[user input] → [validateMessage] → [adminAPI.createMessage] → [db.addMessage (IndexedDB)] → [addMessage (Zustand)] → [sendTyping via WebSocket]"
+ *   events_emitted: ["typing WebSocket event (start/stop)"]
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components/chat/ChatArea.tsx"]
+ *   uses: ["@/hooks/useOverflowDetection","@/lib/api/admin-client","@/providers/WebSocketProvider","@/services/database","@/services/logger","@/store","@/theme","lucide-react","react"]
+ *   critical: true
+ *
+ * === DOC_END :: MessageInput.tsx ===
+ */
+
+import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { useStore, useConversation } from '@/store';
 import { useTheme } from '@/theme';
@@ -320,8 +354,8 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
             onBlur={(e) => {
               e.currentTarget.style.boxShadow = 'none';
               e.currentTarget.style.borderColor = error
-                ? theme.colors.semantic.danger
-                : theme.colors.neutral[300];
+                ? (theme.colors.semantic.danger || '#ef4444')
+                : (theme.colors.neutral[300] || '#d1d5db');
             }}
             autoFocus
           />
@@ -346,12 +380,12 @@ export default function MessageInput({ conversationId }: MessageInputProps) {
           }}
           onMouseEnter={(e) => {
             if (!(!text.trim() || isSending || isOverLimit)) {
-              e.currentTarget.style.backgroundColor = theme.colors.primary[600];
+              e.currentTarget.style.backgroundColor = theme.colors.primary[600] || '#2563eb';
             }
           }}
           onMouseLeave={(e) => {
             if (!(!text.trim() || isSending || isOverLimit)) {
-              e.currentTarget.style.backgroundColor = theme.colors.primary[500];
+              e.currentTarget.style.backgroundColor = theme.colors.primary[500] || '#3b82f6';
             }
           }}
         >

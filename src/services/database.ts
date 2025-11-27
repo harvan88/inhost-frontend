@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/services/database.ts"
+ *   type: "service"
+ *   layer: "frontend"
+ *   domain: "database"
+ *   purpose: "Wrapper de IndexedDB que implementa persistencia local para mensajes, contactos y conversaciones. Source of truth del frontend en arquitectura de 3 capas: IndexedDB → Zustand → UI"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/types"]
+ *   external: ["idb"]
+ *   infrastructure: ["IndexedDB"]
+ *
+ * CONTRACTS:
+ *   exports: ["DatabaseService", "db"]
+ *   inputs: ["MessageEnvelope", "Contact", "Conversation", "string:id", "string:entity", "Date", "number"]
+ *   outputs: ["Promise<void>", "Promise<MessageEnvelope | undefined>", "Promise<MessageEnvelope[]>", "Promise<Contact[]>", "Promise<Conversation[]>", "Promise<number>"]
+ *   errors: ["ConstraintError"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[WebSocketProvider/sync/store] → [DatabaseService methods] → [IndexedDB transactions] → [Browser storage]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["providers/WebSocketProvider", "store/index.ts", "services/sync.ts"]
+ *   uses: ["idb", "@/types"]
+ *   critical: true
+ *
+ * === DOC_END :: database.ts ===
+ */
+
+/**
  * IndexedDB Database Service
  * Persistencia local para mensajes del sistema de simulación INHOST
  *
@@ -362,9 +396,11 @@ class DatabaseService {
 
       const conversation: Conversation = {
         id: conversationId,
-        entityId: lastMsg.metadata.from, // Asumimos que 'from' es el contacto
+        endUserId: lastMsg.metadata.from, // Asumimos que 'from' es el contacto
         channel: lastMsg.channel,
+        status: 'active',
         lastMessage: {
+          id: lastMsg.id,
           text: lastMsg.content.text || '[Media]',
           timestamp: lastMsg.metadata.timestamp,
           type: lastMsg.type,
@@ -446,6 +482,30 @@ class DatabaseService {
     if (!this.db) {
       await this.init();
     }
+  }
+
+  /**
+   * Reparar mensajes con conversationId undefined (datos corruptos)
+   * Se ejecuta automáticamente al sincronizar
+   */
+  async repairCorruptedMessages(): Promise<number> {
+    const database = await this.initDB();
+    const tx = database.transaction('messages', 'readwrite');
+    const store = tx.objectStore('messages');
+
+    const allMessages = await store.getAll();
+    let deletedCount = 0;
+
+    for (const message of allMessages) {
+      if (!message.conversationId || message.conversationId === 'undefined') {
+        await store.delete(message.id);
+        deletedCount++;
+      }
+    }
+
+    await tx.done;
+    console.log(`🔧 Repaired ${deletedCount} corrupted messages`);
+    return deletedCount;
   }
 }
 

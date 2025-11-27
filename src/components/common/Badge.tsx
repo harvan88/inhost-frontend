@@ -43,31 +43,31 @@ export function Badge({
 
   switch (color) {
     case 'primary':
-      backgroundColor = theme.colors.primary[100];
-      textColor = theme.colors.primary[700];
+      backgroundColor = theme.colors.primary[100] || '#dbeafe';
+      textColor = theme.colors.primary[700] || '#1d4ed8';
       break;
     case 'success':
-      backgroundColor = theme.colors.semantic.successLight;
-      textColor = theme.colors.semantic.success;
+      backgroundColor = theme.colors.semantic.successLight || '#d1fae5';
+      textColor = theme.colors.semantic.success || '#10b981';
       break;
     case 'warning':
-      backgroundColor = theme.colors.semantic.warningLight;
-      textColor = theme.colors.semantic.warning;
+      backgroundColor = theme.colors.semantic.warningLight || '#fef3c7';
+      textColor = theme.colors.semantic.warning || '#f59e0b';
       break;
     case 'danger':
-      backgroundColor = theme.colors.semantic.dangerLight;
-      textColor = theme.colors.semantic.danger;
+      backgroundColor = theme.colors.semantic.dangerLight || '#fee2e2';
+      textColor = theme.colors.semantic.danger || '#ef4444';
       break;
     case 'channel':
       if (!theme.colors.channels[channel]) {
         throw new Error(`Invalid channel: ${channel}`);
       }
-      backgroundColor = theme.colors.channels[channel][100];
-      textColor = theme.colors.channels[channel][700];
+      backgroundColor = theme.colors.channels[channel][100] || '#dbeafe';
+      textColor = theme.colors.channels[channel][700] || '#1d4ed8';
       break;
     case 'neutral':
-      backgroundColor = theme.colors.neutral[100];
-      textColor = theme.colors.neutral[700];
+      backgroundColor = theme.colors.neutral[100] || '#f3f4f6';
+      textColor = theme.colors.neutral[700] || '#374151';
       break;
     default:
       const exhaustive: never = color;

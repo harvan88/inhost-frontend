@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/store/auth-store.ts"
+ *   type: "store"
+ *   layer: "frontend"
+ *   domain: "auth"
+ *   purpose: "Store de Zustand para gestión de estado de autenticación con persistencia en localStorage y sincronización de token"
+ *
+ * DEPENDENCIES:
+ *   internal: ["../lib/api/admin-client"]
+ *   external: ["zustand", "zustand/middleware"]
+ *   infrastructure: ["localStorage"]
+ *
+ * CONTRACTS:
+ *   exports: ["useAuthStore", "AuthState"]
+ *   inputs: ["User", "string:token"]
+ *   outputs: ["AuthState"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[Login] → [setAuth] → [localStorage + Zustand] → [ProtectedRoute] → [API requests]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components/auth/ProtectedRoute", "pages/auth/LoginPage", "lib/api/admin-client", "components/workspace"]
+ *   uses: ["lib/api/admin-client"]
+ *   critical: true
+ *
+ * === DOC_END :: auth-store.ts ===
+ */
+
 // Auth Store - Zustand state management for authentication
 
 import { create } from 'zustand';

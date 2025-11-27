@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "components/workspace/PrimarySidebar.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Barra lateral contextual (Nivel 2) del workspace VS Code-inspired. Muestra listas navegables según dominio activo (messages, contacts, tools, etc). ⚠️ ISSUE: Lista sin virtualización mencionada en TECHNICAL_AUDIT.md 6.1"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./ConversationListItem","@/components/ui","@/store","@/store/workspace","@/theme","@/utils/tabHelpers"]
+ *   external: ["lucide-react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["PrimarySidebar"]
+ *   inputs: []
+ *   outputs: ["JSX.Element (null si sidebar oculta)"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[workspace-store.activeActivity] → [render ConversationListView | ContactsView | etc] → [user selects item] → [createTab()] → [canvas renders content]"
+ *   events_emitted: []
+ *   events_consumed: ["workspace-store changes (activeActivity, sidebarVisible)"]
+ *
+ * IMPACT:
+ *   used_by: ["components/workspace/Workspace.tsx"]
+ *   uses: ["./ConversationListItem","@/components/ui","@/store","@/store/workspace","@/theme","@/utils/tabHelpers","lucide-react"]
+ *   critical: true
+ *
+ * === DOC_END :: PrimarySidebar.tsx ===
+ */
+
 import { Search } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useStore } from '@/store';

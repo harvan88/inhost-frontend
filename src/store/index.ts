@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/store/index.ts"
+ *   type: "store"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Zustand store principal con gestión de estado global: entities (conversations, messages, contacts), simulation, UI y network state"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/types"]
+ *   external: ["zustand", "zustand/middleware"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["useStore", "AppState"]
+ *   inputs: ["Conversation", "MessageEnvelope", "Contact", "SimulationClient", "SimulationExtension"]
+ *   outputs: ["AppState"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[IndexedDB] → [store hydration] → [Zustand state] → [React components] | [WebSocket events] → [store actions] → [IndexedDB + UI update]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["App.tsx", "providers/WebSocketProvider", "components/workspace", "hooks/*"]
+ *   uses: ["types"]
+ *   critical: true
+ *
+ * === DOC_END :: index.ts ===
+ */
+
+/**
  * Zustand Store para INHOST
  * CONTRATO ESTRICTO - Basado en MessageEnvelope del backend
  *
@@ -136,6 +170,7 @@ export const useStore = create<AppState>()(
               ? new Map(state.entities.conversations).set(conversationId, {
                   ...conversation,
                   lastMessage: {
+                    id: message.id,
                     text: message.content.text || '[Media]',
                     timestamp: message.metadata.timestamp,
                     type: message.type,

@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "components/workspace/Canvas.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Lienzo dinámico (Nivel 3 del workspace) que maneja múltiples DynamicContainers con sistema de particiones ajustables. Máximo 3 contenedores simultáneos con redistribución proporcional de anchos. Incluye controles para crear/cerrar contenedores y toggle de tema"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./DynamicContainer","@/components/ui","@/hooks/useCombinedRefs","@/hooks/useOverflowDetection","@/hooks/useResizeObserver","@/store/workspace","@/theme"]
+ *   external: ["lucide-react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Canvas"]
+ *   inputs: []
+ *   outputs: ["JSX.Element (flex container con DynamicContainers)"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[workspace-store.containers] → [render DynamicContainer foreach] → [user interactions (create/close)] → [workspace actions] → [re-render with new layout]"
+ *   events_emitted: []
+ *   events_consumed: ["workspace-store changes (containers, activeContainerId)", "window resize events"]
+ *
+ * IMPACT:
+ *   used_by: ["components/workspace/Workspace.tsx"]
+ *   uses: ["./DynamicContainer","@/components/ui","@/hooks/useCombinedRefs","@/hooks/useOverflowDetection","@/hooks/useResizeObserver","@/store/workspace","@/theme","lucide-react"]
+ *   critical: true
+ *
+ * === DOC_END :: Canvas.tsx ===
+ */
+
 import { Plus, Moon, Sun } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';

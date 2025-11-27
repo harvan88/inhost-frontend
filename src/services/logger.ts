@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/services/logger.ts"
+ *   type: "service"
+ *   layer: "frontend"
+ *   domain: "config"
+ *   purpose: "Servicio de logging persistente usando IndexedDB para debugging de fallos. Almacena logs con 5 niveles (debug, info, warn, error, critical) con límite de 10,000 entradas y cleanup automático"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: ["idb"]
+ *   infrastructure: ["IndexedDB"]
+ *
+ * CONTRACTS:
+ *   exports: ["Logger", "logger", "LogLevel", "LogEntry"]
+ *   inputs: ["string:category", "string:message", "LogEntry['context']"]
+ *   outputs: ["Promise<void>", "Promise<LogEntry[]>", "Promise<string>"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[Application code] → [logger.debug/info/warn/error/critical] → [IndexedDB logs store] → [getLogs/exportLogs]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["providers/WebSocketProvider", "services/database", "services/sync", "all modules"]
+ *   uses: ["idb"]
+ *   critical: true
+ *
+ * === DOC_END :: logger.ts ===
+ */
+
+/**
  * Persistent Logger Service
  * Almacena logs en IndexedDB para debugging de fallos
  *

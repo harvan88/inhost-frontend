@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "theme/ThemeProvider.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Provider React de tema global que implementa Single Source of Truth (SSOT) para design tokens. Valida estructura, accesibilidad WCAG y aplica CSS variables al DOM. Soporta light/dark mode toggle"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./dark-theme.json","./theme.json","./utils","./types"]
+ *   external: ["react"]
+ *   infrastructure: ["document.documentElement"]
+ *
+ * CONTRACTS:
+ *   exports: ["ThemeProvider","useTheme"]
+ *   inputs: ["ThemeProviderProps { children: ReactNode, initialTheme?: Theme }"]
+ *   outputs: ["ThemeContextValue { theme: Theme, setTheme, toggleTheme, isDark: boolean }"]
+ *   errors: ["Error si useTheme se usa fuera de ThemeProvider"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[theme.json/dark-theme.json] → [validateStructure + validateAccessibility] → [ThemeContext] → [CSS variables en :root] → [useTheme hook] → [componentes UI]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["App.tsx", "todos los componentes UI (Button, Card, Input, etc)"]
+ *   uses: ["./dark-theme.json","./theme.json","./utils","./types","react"]
+ *   critical: true
+ *
+ * === DOC_END :: ThemeProvider.tsx ===
+ */
+
+/**
  * ThemeProvider - Proveedor de Tema Global (Sección 8.4)
  *
  * ## Single Source of Truth (SSOT) - Sección 8.2.1

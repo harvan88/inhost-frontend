@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "hooks/useToast.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Hook de notificaciones toast con store de Zustand. Proporciona API para mostrar toasts (success, error, warning, info) con auto-close configurable, acciones opcionales y gestión de cola de notificaciones"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/feedback/Toast"]
+ *   external: ["zustand"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["useToast","useToastStore"]
+ *   inputs: ["title: string", "message: string", "action?: ToastAction", "duration?: number | null"]
+ *   outputs: ["{ toast: { success, error, warning, info }, remove, clearAll }"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[component calls toast.success()] → [addToast] → [toasts array updated] → [ToastContainer renders] → [auto-close after duration] → [removeToast]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components throughout app (WebSocketProvider, MessageInput, auth flows, etc)"]
+ *   uses: ["zustand"]
+ *   critical: true
+ *
+ * === DOC_END :: useToast.ts ===
+ */
+
+/**
  * useToast Hook - Toast Management
  *
  * Hook para mostrar notificaciones toast en cualquier parte de la app.

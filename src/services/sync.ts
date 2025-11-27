@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/services/sync.ts"
+ *   type: "service"
+ *   layer: "frontend"
+ *   domain: "sync"
+ *   purpose: "Coordina sincronización bidireccional entre Backend API, IndexedDB y Zustand Store. Implementa carga inicial, fallback offline, y derivación de entidades desde mensajes"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./database", "./api", "@/lib/api/admin-client", "@/store", "@/types"]
+ *   external: []
+ *   infrastructure: ["IndexedDB"]
+ *
+ * CONTRACTS:
+ *   exports: ["SyncService", "syncService"]
+ *   inputs: []
+ *   outputs: ["Promise<void>"]
+ *   errors: ["Error"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[Backend /admin/sync/initial] → [syncService] → [IndexedDB via db.save*] → [Zustand via useStore.setState] → [UI]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["App.tsx", "providers/WebSocketProvider"]
+ *   uses: ["services/database", "services/api", "lib/api/admin-client", "store/index.ts"]
+ *   critical: true
+ *
+ * === DOC_END :: sync.ts ===
+ */
+
+/**
  * Sync Service
  * Sincronización entre IndexedDB, Zustand Store y Backend
  *

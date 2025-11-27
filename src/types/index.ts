@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/types/index.ts"
+ *   type: "type"
+ *   layer: "frontend"
+ *   domain: "messaging"
+ *   purpose: "Mirror manual del contrato MessageEnvelope del backend más tipos específicos de frontend para simulación, API responses, y UI. Mantiene sincronización manual con backend:packages/shared/src/types/message-envelope.ts"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["MessageEnvelope", "MessageType", "ChannelType", "MessageStatus", "PlanType", "ApiResponse", "HealthStatus", "SimulationClient", "SimulationExtension", "SimulationStatus", "ClientId", "ExtensionId"]
+ *   inputs: []
+ *   outputs: []
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[Type definitions] ← [store/index.ts, WebSocketProvider, components, services/api.ts, lib/api/admin-client.ts]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["store/index.ts", "providers/WebSocketProvider", "components", "services/api.ts", "lib/api/admin-client.ts"]
+ *   uses: []
+ *   critical: true
+ *
+ * === DOC_END :: index.ts ===
+ */
+
+/**
  * Frontend Types for INHOST
  * CONTRATO ESTRICTO - Basado en MessageEnvelope del backend
  * https://github.com/harvan88/inhost.git

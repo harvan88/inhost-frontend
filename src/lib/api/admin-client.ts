@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/lib/api/admin-client.ts"
+ *   type: "service"
+ *   layer: "frontend"
+ *   domain: "api"
+ *   purpose: "Cliente HTTP para endpoints de administración multi-tenant: autenticación, conversaciones, end-users, team, integraciones y sync"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: ["fetch-api"]
+ *
+ * CONTRACTS:
+ *   exports: ["adminClient", "User", "LoginRequest", "SignupRequest", "AuthResponse", "Conversation", "EndUser", "TeamMember", "Integration", "SyncInitialData", "Mention"]
+ *   inputs: ["LoginRequest", "SignupRequest", "string:token"]
+ *   outputs: ["AuthResponse", "Conversation[]", "EndUser[]", "TeamMember[]", "Integration[]", "SyncInitialData", "Mention[]"]
+ *   errors: ["ApiError", "AuthError", "ValidationError"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[Auth Store] → [adminClient methods] → [fetch /admin/*] → [Backend] → [Response] → [Auth Store]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["store/auth-store", "pages/auth/LoginPage", "pages/auth/SignupPage", "services/sync"]
+ *   uses: []
+ *   critical: true
+ *
+ * === DOC_END :: admin-client.ts ===
+ */
+
 // Admin API Client for INHOST Multi-Tenant Admin Dashboard
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 

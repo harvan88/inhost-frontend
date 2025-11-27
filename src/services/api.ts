@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/services/api.ts"
+ *   type: "service"
+ *   layer: "frontend"
+ *   domain: "api"
+ *   purpose: "Cliente HTTP singleton para comunicación con backend API Gateway, maneja endpoints de simulación y health check"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/types"]
+ *   external: []
+ *   infrastructure: ["fetch-api", "vite-proxy"]
+ *
+ * CONTRACTS:
+ *   exports: ["apiClient", "ApiClient"]
+ *   inputs: ["ClientMessageRequest", "ClientToggleRequest", "ExtensionToggleRequest", "ExtensionLatencyRequest"]
+ *   outputs: ["HealthStatus", "SimulationStatus", "ClientMessageResponse", "ClientToggleResponse", "ExtensionToggleResponse", "ExtensionLatencyResponse"]
+ *   errors: ["Error"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[UI Component] → [ApiClient method] → [fetch] → [Backend /api/*] → [ApiResponse] → [UI Component]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components/workspace", "stores/*", "hooks/*"]
+ *   uses: ["types"]
+ *   critical: true
+ *
+ * === DOC_END :: api.ts ===
+ */
+
+/**
  * API Client for INHOST API Gateway
  * CONTRATO ESTRICTO - Endpoints de Simulación
  *

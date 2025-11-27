@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "hooks/useWebSocket.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "sync"
+ *   purpose: "Hook React para gestión de conexión WebSocket con auto-reconexión exponencial, manejo de eventos y estado de conexión"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: ["react"]
+ *   infrastructure: ["WebSocket"]
+ *
+ * CONTRACTS:
+ *   exports: ["useWebSocket"]
+ *   inputs: ["UseWebSocketOptions"]
+ *   outputs: ["{ connected: boolean, sendMessage: (data: any) => void }"]
+ *   errors: ["WebSocket connection errors", "JSON parse errors"]
+ *
+ * INTEGRATION:
+ *   data_flow: "[WebSocket ws://host:port/realtime] → [hook state] → [callback onMessage] → [consumer component]"
+ *   events_emitted: []
+ *   events_consumed: ["WebSocket native events (open, message, error, close)"]
+ *
+ * IMPACT:
+ *   used_by: ["providers/WebSocketProvider.tsx"]
+ *   uses: ["react"]
+ *   critical: true
+ *
+ * === DOC_END :: useWebSocket.ts ===
+ */
+
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 interface UseWebSocketOptions {

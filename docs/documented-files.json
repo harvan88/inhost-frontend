@@ -1,0 +1,272 @@
+[
+  {
+    "file": "src/App.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "App"
+    ],
+    "purpose": "Punto de entrada de la aplicación frontend con routing y providers"
+  },
+  {
+    "file": "src/services/api.ts",
+    "type": "service",
+    "layer": "frontend",
+    "domain": "api",
+    "critical": true,
+    "exports": [
+      "apiClient",
+      "ApiClient"
+    ],
+    "purpose": "Cliente HTTP singleton para comunicación con backend API Gateway"
+  },
+  {
+    "file": "src/store/auth-store.ts",
+    "type": "store",
+    "layer": "frontend",
+    "domain": "auth",
+    "critical": true,
+    "exports": [
+      "useAuthStore",
+      "AuthState"
+    ],
+    "purpose": "Store de Zustand para gestión de estado de autenticación"
+  },
+  {
+    "file": "src/providers/WebSocketProvider.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "sync",
+    "critical": true,
+    "exports": [
+      "WebSocketProvider",
+      "useWebSocketContext"
+    ],
+    "purpose": "Provider React para gestión de conexión WebSocket en tiempo real"
+  },
+  {
+    "file": "src/lib/api/admin-client.ts",
+    "type": "service",
+    "layer": "frontend",
+    "domain": "api",
+    "critical": true,
+    "exports": [
+      "adminClient",
+      "User",
+      "Conversation",
+      "EndUser",
+      "TeamMember",
+      "Integration"
+    ],
+    "purpose": "Cliente HTTP para endpoints de administración multi-tenant"
+  },
+  {
+    "file": "src/store/index.ts",
+    "type": "store",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "useStore",
+      "AppState"
+    ],
+    "purpose": "Zustand store principal con gestión de estado global"
+  },
+  {
+    "file": "src/types/index.ts",
+    "type": "type",
+    "layer": "frontend",
+    "domain": "messaging",
+    "critical": true,
+    "exports": [
+      "MessageEnvelope",
+      "MessageType",
+      "ChannelType",
+      "MessageStatus",
+      "PlanType",
+      "ApiResponse",
+      "HealthStatus",
+      "SimulationClient",
+      "SimulationExtension",
+      "SimulationStatus",
+      "ClientId",
+      "ExtensionId"
+    ],
+    "purpose": "Mirror manual del contrato MessageEnvelope del backend más tipos específicos de frontend para simulación, API responses, y UI. Mantiene sincronización manual con backend:packages/shared/src/types/message-envelope.ts"
+  },
+  {
+    "file": "src/services/database.ts",
+    "type": "service",
+    "layer": "frontend",
+    "domain": "database",
+    "critical": true,
+    "exports": [
+      "DatabaseService",
+      "db"
+    ],
+    "purpose": "Wrapper de IndexedDB que implementa persistencia local para mensajes, contactos y conversaciones. Source of truth del frontend en arquitectura de 3 capas: IndexedDB → Zustand → UI"
+  },
+  {
+    "file": "src/services/sync.ts",
+    "type": "service",
+    "layer": "frontend",
+    "domain": "sync",
+    "critical": true,
+    "exports": [
+      "SyncService",
+      "syncService"
+    ],
+    "purpose": "Coordina sincronización bidireccional entre Backend API, IndexedDB y Zustand Store. Implementa carga inicial, fallback offline, y derivación de entidades desde mensajes"
+  },
+  {
+    "file": "src/services/logger.ts",
+    "type": "service",
+    "layer": "frontend",
+    "domain": "config",
+    "critical": true,
+    "exports": [
+      "Logger",
+      "logger",
+      "LogLevel",
+      "LogEntry"
+    ],
+    "purpose": "Servicio de logging persistente usando IndexedDB para debugging de fallos. Almacena logs con 5 niveles (debug, info, warn, error, critical) con límite de 10,000 entradas y cleanup automático"
+  },
+  {
+    "file": "src/components/chat/MessageList.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "MessageList"
+    ],
+    "purpose": "Componente virtualizado que muestra mensajes de una conversación con auto-scroll inteligente, detección de overflow y ordenamiento por timestamp. Optimizado para 1000+ mensajes."
+  },
+  {
+    "file": "src/hooks/useWebSocket.ts",
+    "type": "utility",
+    "layer": "frontend",
+    "domain": "sync",
+    "critical": true,
+    "exports": [
+      "useWebSocket"
+    ],
+    "purpose": "Hook React para gestión de conexión WebSocket con auto-reconexión exponencial, manejo de eventos y estado de conexión"
+  },
+  {
+    "file": "src/lib/auth/jwt.ts",
+    "type": "utility",
+    "layer": "frontend",
+    "domain": "auth",
+    "critical": true,
+    "exports": [
+      "JWTPayload",
+      "decodeJWT",
+      "getStoredToken",
+      "isAuthenticated",
+      "isTokenExpired",
+      "removeToken",
+      "storeToken"
+    ],
+    "purpose": "Utilidades para decodificación, validación y almacenamiento de tokens JWT en localStorage. ⚠️ ISSUE: Almacenamiento en localStorage tiene riesgo XSS (ver TECHNICAL_AUDIT.md 8.2)"
+  },
+  {
+    "file": "src/components/auth/ProtectedRoute.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "auth",
+    "critical": true,
+    "exports": [
+      "ProtectedRoute"
+    ],
+    "purpose": "Higher-Order Component que protege rutas privadas validando autenticación JWT. Redirige a login si token inválido o expirado y ejecuta logout automático"
+  },
+  {
+    "file": "src/theme/ThemeProvider.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "ThemeProvider",
+      "useTheme"
+    ],
+    "purpose": "Provider React de tema global que implementa Single Source of Truth (SSOT) para design tokens. Valida estructura, accesibilidad WCAG y aplica CSS variables al DOM. Soporta light/dark mode toggle"
+  },
+  {
+    "file": "src/components/workspace/PrimarySidebar.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "PrimarySidebar"
+    ],
+    "purpose": "Barra lateral contextual (Nivel 2) del workspace VS Code-inspired. Muestra listas navegables según dominio activo (messages, contacts, tools, etc). ⚠️ ISSUE: Lista sin virtualización mencionada en TECHNICAL_AUDIT.md 6.1"
+  },
+  {
+    "file": "src/components/chat/MessageInput.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "messaging",
+    "critical": true,
+    "exports": [
+      "MessageInput"
+    ],
+    "purpose": "Input de texto para enviar mensajes en conversación. Valida longitud, maneja typing indicator via WebSocket, persiste en IndexedDB y envía a backend. ⚠️ ISSUE: Sin validación de inputs mencionada in TECHNICAL_AUDIT.md 8.3"
+  },
+  {
+    "file": "src/store/workspace.ts",
+    "type": "store",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "DynamicContainer",
+      "WorkspaceTab",
+      "useActiveContainer",
+      "useActiveTab",
+      "useContainer",
+      "useTabCount",
+      "useWorkspaceStore"
+    ],
+    "purpose": "Store de Zustand que gestiona el estado completo del workspace VS Code-inspired: 3 niveles (Activity Bar, Sidebar, Canvas con contenedores dinámicos y tabs). Persiste en localStorage el layout definido por usuario"
+  },
+  {
+    "file": "src/components/workspace/ActivityBar.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "ActivityBar"
+    ],
+    "purpose": "Barra de actividad vertical fija (Nivel 1 del workspace, 64px ancho). Íconos para seleccionar dominio (messages, contacts, tools, plugins, settings). Click en dominio activo hace toggle de sidebar"
+  },
+  {
+    "file": "src/components/workspace/Canvas.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "Canvas"
+    ],
+    "purpose": "Lienzo dinámico (Nivel 3 del workspace) que maneja múltiples DynamicContainers con sistema de particiones ajustables. Máximo 3 contenedores simultáneos con redistribución proporcional de anchos"
+  },
+  {
+    "file": "src/hooks/useToast.ts",
+    "type": "utility",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": true,
+    "exports": [
+      "useToast",
+      "useToastStore"
+    ],
+    "purpose": "Hook de notificaciones toast con store de Zustand. Proporciona API para mostrar toasts (success, error, warning, info) con auto-close configurable, acciones opcionales y gestión de cola de notificaciones"
+  }
+]

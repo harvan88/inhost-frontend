@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "components/workspace/ActivityBar.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Barra de actividad vertical fija (Nivel 1 del workspace, 64px ancho). Íconos para seleccionar dominio (messages, contacts, tools, plugins, settings). Click en dominio activo hace toggle de sidebar"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui","@/store/workspace","@/theme"]
+ *   external: ["lucide-react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["ActivityBar"]
+ *   inputs: []
+ *   outputs: ["JSX.Element (vertical bar con íconos)"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[user clicks icon] → [setActivity()] → [workspace-store updates activeActivity] → [PrimarySidebar shows/hides]"
+ *   events_emitted: []
+ *   events_consumed: ["workspace-store.activeActivity changes"]
+ *
+ * IMPACT:
+ *   used_by: ["components/workspace/Workspace.tsx"]
+ *   uses: ["@/components/ui","@/store/workspace","@/theme","lucide-react"]
+ *   critical: true
+ *
+ * === DOC_END :: ActivityBar.tsx ===
+ */
+
 import { MessageSquare, Users, Wrench, Puzzle, Settings } from 'lucide-react';
 import { useWorkspaceStore } from '@/store/workspace';
 import { useTheme } from '@/theme';

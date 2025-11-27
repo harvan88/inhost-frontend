@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "src/components/chat/MessageList.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Componente virtualizado que muestra mensajes de una conversación con auto-scroll inteligente, detección de overflow y ordenamiento por timestamp. Optimizado para 1000+ mensajes."
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/store", "@/theme", "@/types", "@/components/common", "@/hooks/useOverflowDetection", "@/hooks/useCombinedRefs", "@/components/feedback/MessageFeedback"]
+ *   external: ["react", "@tanstack/react-virtual", "lucide-react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["MessageList"]
+ *   inputs: ["MessageListProps"]
+ *   outputs: ["JSX.Element"]
+ *   errors: []
+ *
+ * INTEGRATION:
+ *   data_flow: "[Zustand store] → [useMessages selector] → [useMemo sorting] → [Virtualizer] → [MessageBubble render]"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: ["components/workspace/Canvas", "pages/Chat"]
+ *   uses: ["store/index.ts", "hooks/useOverflowDetection", "components/feedback/MessageFeedback"]
+ *   critical: true
+ *
+ * === DOC_END :: MessageList.tsx ===
+ */
+
 import { useRef, useEffect, memo, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessages, useStore } from '@/store';
@@ -38,10 +72,20 @@ interface MessageListProps {
  * - Fetch messages (that's the store)
  */
 export default function MessageList({ conversationId }: MessageListProps) {
-  const messages = useMessages(conversationId);
+  const messagesRaw = useMessages(conversationId);
   const typingUsers = useStore((s) => s.ui.typingUsers.get(conversationId) ?? EMPTY_ARRAY);
   const { theme } = useTheme();
   const parentRef = useRef<HTMLDivElement>(null);
+
+  // Ordenar mensajes por timestamp (más viejo arriba, más nuevo abajo)
+  // useMemo para evitar re-ordenar en cada render y mantener referencia estable
+  const messages = useMemo(() => {
+    return [...messagesRaw].sort((a, b) => {
+      const timeA = new Date(a.metadata?.timestamp || 0).getTime();
+      const timeB = new Date(b.metadata?.timestamp || 0).getTime();
+      return timeA - timeB; // Ascendente (como WhatsApp)
+    });
+  }, [messagesRaw]);
 
   // CONTRATO: "Ningún contenido del lienzo lo desborda"
   // Detectar overflow HORIZONTAL (vertical es esperado y permitido)
@@ -91,7 +135,8 @@ export default function MessageList({ conversationId }: MessageListProps) {
         behavior: 'smooth',
       });
     }
-  }, [messages.length, rowVirtualizer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
 
   if (messages.length === 0) {
     return (
