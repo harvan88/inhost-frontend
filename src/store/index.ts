@@ -52,6 +52,7 @@ import type {
   MessageEnvelope,
   SimulationClient,
   SimulationExtension,
+  Enrichment,
 } from '@/types';
 
 /**
@@ -68,6 +69,7 @@ export const useStore = create<AppState>()(
         conversations: new Map<string, Conversation>(),
         messages: new Map<string, MessageEnvelope[]>(),
         contacts: new Map<string, Contact>(),
+        enrichments: new Map<string, Enrichment[]>(),
       },
 
       // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -220,6 +222,34 @@ export const useStore = create<AppState>()(
               },
             };
           }),
+
+        // ━━━ ENRICHMENTS ━━━
+        addEnrichments: (messageId, enrichments) =>
+          set((state) => {
+            const existing = state.entities.enrichments.get(messageId) || [];
+            
+            // Evitar duplicados por id
+            const existingIds = new Set(existing.map(e => e.id));
+            const newEnrichments = enrichments.filter(e => !existingIds.has(e.id));
+            
+            if (newEnrichments.length === 0) {
+              return state;
+            }
+
+            return {
+              entities: {
+                ...state.entities,
+                enrichments: new Map(state.entities.enrichments).set(
+                  messageId,
+                  [...existing, ...newEnrichments]
+                ),
+              },
+            };
+          }),
+
+        getEnrichments: (messageId) => {
+          return get().entities.enrichments.get(messageId) || [];
+        },
 
         // ━━━ SIMULATION ━━━
         updateSimulationState: (updates) =>

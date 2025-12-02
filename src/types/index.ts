@@ -232,6 +232,102 @@ export interface ExtensionLatencyResponse {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ENRICHMENTS (Sistema de Extensiones)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Tipos de enriquecimiento que una extensión puede producir
+ */
+export type EnrichmentType =
+  | 'sentiment'
+  | 'keywords'
+  | 'intent'
+  | 'ai_suggestion'
+  | 'entity_extraction'
+  | 'language_detection'
+  | 'priority_score'
+  | 'custom';
+
+/**
+ * Un enriquecimiento producido por una extensión del backend
+ * Almacenado separado del mensaje core (inmutable)
+ */
+export interface Enrichment {
+  /** ID único del enriquecimiento */
+  id: string;
+  /** ID del mensaje enriquecido */
+  messageId: string;
+  /** ID de la extensión que lo produjo */
+  extensionId: string;
+  /** ID del tenant */
+  tenantId: string;
+  /** Tipo de enriquecimiento */
+  type: EnrichmentType;
+  /** Datos específicos según el tipo */
+  payload: EnrichmentPayload;
+  /** Nivel de confianza (0-1) */
+  confidence?: number;
+  /** Tiempo de procesamiento en ms */
+  processingTimeMs: number;
+  /** Timestamp de creación */
+  createdAt: string;
+  /** TTL opcional para expiración */
+  expiresAt?: string;
+}
+
+/**
+ * Union de payloads de enriquecimiento
+ */
+export type EnrichmentPayload =
+  | SentimentPayload
+  | KeywordsPayload
+  | IntentPayload
+  | AISuggestionPayload
+  | CustomPayload;
+
+/**
+ * Payload de análisis de sentimiento
+ */
+export interface SentimentPayload {
+  score: number;
+  label: 'positive' | 'neutral' | 'negative';
+  emotions?: string[];
+}
+
+/**
+ * Payload de extracción de keywords
+ */
+export interface KeywordsPayload {
+  keywords: string[];
+  relevance?: Record<string, number>;
+}
+
+/**
+ * Payload de clasificación de intención
+ */
+export interface IntentPayload {
+  intent: string;
+  confidence: number;
+  alternatives?: Array<{ intent: string; confidence: number }>;
+}
+
+/**
+ * Payload de sugerencias de AI
+ */
+export interface AISuggestionPayload {
+  suggestion: string;
+  alternatives?: string[];
+  context?: string;
+}
+
+/**
+ * Payload genérico para extensiones custom
+ */
+export interface CustomPayload {
+  [key: string]: unknown;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // WEBSOCKET EVENTS (Broadcasts Automáticos)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -248,6 +344,8 @@ export type WebSocketEventType =
   | 'typing:indicator'
   | 'conversation:read'    // FASE 1: Backend event
   | 'conversation:updated' // FASE 1: Backend event
+  | 'enrichment:created'   // Extension Host: single enrichment
+  | 'enrichment:batch'     // Extension Host: batch enrichments
   | 'error';
 
 export interface WebSocketEvent {
@@ -374,6 +472,35 @@ export interface ConversationUpdatedEvent extends WebSocketEvent {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// EXTENSION HOST: Enrichment Events
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Evento: un solo enrichment creado
+ */
+export interface EnrichmentCreatedEvent extends WebSocketEvent {
+  type: 'enrichment:created';
+  data: {
+    messageId: string;
+    enrichment: Enrichment;
+  };
+  timestamp: string;
+}
+
+/**
+ * Evento: batch de enrichments (procesamiento completo de un mensaje)
+ */
+export interface EnrichmentBatchEvent extends WebSocketEvent {
+  type: 'enrichment:batch';
+  data: {
+    messageId: string;
+    enrichments: Enrichment[];
+    processingTimeMs: number;
+  };
+  timestamp: string;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // FRONTEND-SPECIFIC TYPES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -456,6 +583,7 @@ export interface AppState {
     conversations: Map<string, Conversation>;
     messages: Map<string, MessageEnvelope[]>; // indexed by conversationId
     contacts: Map<string, Contact>;
+    enrichments: Map<string, Enrichment[]>;   // indexed by messageId
   };
 
   // ━━━ DOMAIN 2: Simulation State (ephemeral, from API) ━━━
@@ -501,6 +629,10 @@ export interface AppState {
     // Contacts
     addContact: (contact: Contact) => void;
     updateContact: (id: string, updates: Partial<Contact>) => void;
+
+    // Enrichments
+    addEnrichments: (messageId: string, enrichments: Enrichment[]) => void;
+    getEnrichments: (messageId: string) => Enrichment[];
 
     // Simulation
     updateSimulationState: (state: Partial<AppState['simulation']>) => void;

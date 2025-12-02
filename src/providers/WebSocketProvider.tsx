@@ -63,6 +63,7 @@ import type {
   TypingIndicatorEvent,
   ConversationReadEvent,
   ConversationUpdatedEvent,
+  EnrichmentBatchEvent,
   ErrorEvent,
 } from '@/types';
 import { db } from '@/services/database';
@@ -118,6 +119,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const setConnectionStatus = useStore((s) => s.actions.setConnectionStatus);
   const addMessage = useStore((s) => s.actions.addMessage);
   const updateSimulationState = useStore((s) => s.actions.updateSimulationState);
+  const addEnrichments = useStore((s) => s.actions.addEnrichments);
   const addToast = useToastStore((s) => s.addToast);
 
   // Config
@@ -550,6 +552,34 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
   }, [addToast]);
 
+  /**
+   * Handler: Batch de enrichments recibidos del Extension Host
+   */
+  const handleEnrichmentBatch = useCallback((event: EnrichmentBatchEvent) => {
+    const { messageId, enrichments, processingTimeMs } = event.data;
+
+    console.log(`🧩 Enrichments received for message ${messageId}:`, {
+      count: enrichments.length,
+      types: enrichments.map(e => e.type),
+      processingTimeMs,
+    });
+
+    if (enrichments.length === 0) {
+      return;
+    }
+
+    // 1. Guardar en store (y eventualmente en IndexedDB)
+    addEnrichments(messageId, enrichments);
+
+    // 2. Log para debugging
+    logger.debug('websocket', 'Enrichments batch received', {
+      messageId,
+      count: enrichments.length,
+      extensionIds: enrichments.map(e => e.extensionId),
+      processingTimeMs,
+    });
+  }, [addEnrichments]);
+
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // MESSAGE ROUTING
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -592,6 +622,21 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
         case 'conversation:updated':
           handleConversationUpdated(data as ConversationUpdatedEvent);
           break;
+        case 'enrichment:batch':
+          handleEnrichmentBatch(data as EnrichmentBatchEvent);
+          break;
+        case 'enrichment:created':
+          // Individual enrichment - treat as batch of 1
+          handleEnrichmentBatch({
+            ...data,
+            type: 'enrichment:batch',
+            data: {
+              messageId: (data as any).data.messageId,
+              enrichments: [(data as any).data.enrichment],
+              processingTimeMs: 0,
+            },
+          } as EnrichmentBatchEvent);
+          break;
         case 'error':
           handleError(data as ErrorEvent);
           break;
@@ -616,6 +661,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     handleTypingIndicator,
     handleConversationRead,
     handleConversationUpdated,
+    handleEnrichmentBatch,
     handleError,
   ]);
 
