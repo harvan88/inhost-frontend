@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "theme/index.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Barrel export for theme module"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["","ThemeProvider","getContrastRatio","meetsMinimumContrast","useTheme","validateContrast","validateThemeAccessibility","validateThemeStructure"]
+ *   inputs: "None"
+ *   outputs: "void"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Request → Middleware → Handler → Response"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme"]
+ *   critical: false
+ *
+ * === DOC_END :: index.ts ===
+ */
+
+/**
  * Sistema de Tema y Design Tokens - FluxCore
  *
  * ## Sección 8: Sistema de Tema y Design Tokens en FluxCore

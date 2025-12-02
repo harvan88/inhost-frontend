@@ -118,7 +118,16 @@ export default function MessageList({ conversationId }: MessageListProps) {
     estimateSize: () => 120, // Estimación de altura por mensaje (en px)
     overscan: 5, // Renderizar 5 items extra arriba/abajo para smoothness
   });
-
+// Efecto para scroll inicial al fondo
+useEffect(() => {
+  if (messages.length > 0 && rowVirtualizer) {
+    // Scroll inmediato al fondo cuando se carga la conversación
+    rowVirtualizer.scrollToIndex(messages.length - 1, {
+      align: 'end',
+      behavior: 'auto', // 'auto' en lugar de 'smooth' para ser inmediato
+    });
+  }
+}, [conversationId, rowVirtualizer, messages.length]); // ← Se ejecuta cuando cualquiera de estos cambia
   // Auto-scroll inteligente: solo si usuario está cerca del fondo
   useEffect(() => {
     if (messages.length === 0 || !parentRef.current) return;

@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\ui\Heading.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for heading"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Heading","HeadingColor","HeadingLevel","HeadingProps"]
+ *   inputs: "HeadingProps, HeadingProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: Heading.tsx ===
+ */
+
+/**
  * Heading Component - Atomic Design System
  *
  * Componente de títulos semánticos (h1-h6) con estilos del theme.

@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\ui\index.ts"
+ *   type: "type"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Barrel export for ui module"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Button","Card","Heading","IconButton","Input","ListCard","Tag","Text"]
+ *   inputs: "None"
+ *   outputs: "void"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: []
+ *   critical: false
+ *
+ * === DOC_END :: index.ts ===
+ */
+
+/**
  * UI Components - Atomic Design System
  *
  * Componentes atómicos reutilizables del design system FluxCore.

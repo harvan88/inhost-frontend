@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\settings\AccountSettingsArea.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Renders account settings section"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui","@/store/auth-store","@/theme"]
+ *   external: ["lucide-react","react-router-dom"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "AccountSettingsAreaProps, AccountSettingsAreaProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/ui","@/store/auth-store","@/theme","lucide-react","react-router-dom"]
+ *   critical: false
+ *
+ * === DOC_END :: AccountSettingsArea.tsx ===
+ */
+
 import { useTheme } from '@/theme';
 import { useAuthStore } from '@/store/auth-store';
 import { Heading, Text, Input, Button } from '@/components/ui';

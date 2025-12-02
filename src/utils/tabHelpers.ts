@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\utils\tabHelpers.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Handles tab helpers functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["createTab","generateTabId","isTabActive"]
+ *   inputs: "WorkspaceTab['type'], string"
+ *   outputs: "string"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Request → Middleware → Handler → Response"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: []
+ *   critical: false
+ *
+ * === DOC_END :: tabHelpers.ts ===
+ */
+
 import type { WorkspaceTab } from '@/store/workspace';
 
 /**

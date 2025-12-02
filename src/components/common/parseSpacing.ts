@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\common\parseSpacing.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Handles parse spacing functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["ParsedSpacing","parseSpacing"]
+ *   inputs: "string"
+ *   outputs: "ParsedSpacing"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Request → Middleware → Handler → Response"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: []
+ *   critical: false
+ *
+ * === DOC_END :: parseSpacing.ts ===
+ */
+
+/**
  * Utilidad para parsear spacing strings del theme
  * Convierte "4px 8px" → { paddingTop: "4px", paddingBottom: "4px", paddingLeft: "8px", paddingRight: "8px" }
  */

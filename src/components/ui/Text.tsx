@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\ui\Text.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for text"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Text","TextColor","TextElement","TextProps","TextVariant"]
+ *   inputs: "TextProps, TextProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme"]
+ *   critical: false
+ *
+ * === DOC_END :: Text.tsx ===
+ */
+
+/**
  * Text Component - Atomic Design System
  *
  * Componente de texto con variantes predefinidas del theme.

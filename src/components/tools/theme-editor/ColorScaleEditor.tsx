@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\tools\theme-editor\ColorScaleEditor.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Editor component for color scale"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme","@/theme/utils"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "ColorScaleEditorProps, editedTheme, ColorScaleEditorProps"
+ *   outputs: "1, JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme","@/theme/utils","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: ColorScaleEditor.tsx ===
+ */
+
+/**
  * ColorScaleEditor - Editor de Escalas de Color (Compacto)
  *
  * Solo muestra colores realmente usados en la interfaz:

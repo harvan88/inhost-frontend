@@ -1,97 +1,140 @@
-# Project Architecture Context
+# AI Context: Frontend
 
-Generated: 2025-11-27T18:29:00.350Z
+**Auto-generated Documentation Coverage Report**
+**Last Updated:** 2025-12-01T23:57:21.166Z
 
-## Statistics
+---
 
-- **Total Files Documented:** 21
-- **Critical Files:** 21
-- **Total Dependencies:** 109
+## Coverage Statistics
 
-## Architecture Overview
+| Metric | Value |
+|--------|-------|
+| **Total Files** | 80 |
+| **Documented** | 80 |
+| **Undocumented** | 0 |
+| **Coverage** | 100.0% |
+| **Critical Files** | 21 |
 
-### Layers
+---
 
-- **frontend:** 21 files (21 critical)
+## Documented Files (80)
 
-### Domains
+- ✅ `App.tsx`
+- ✅ `components\auth\ProtectedRoute.tsx`
+- ✅ `components\chat\ChatArea.tsx`
+- ✅ `components\chat\ChatHeader.tsx`
+- ✅ `components\chat\MessageInput.tsx`
+- ✅ `components\chat\MessageList.tsx`
+- ✅ `components\common\Avatar.tsx`
+- ✅ `components\common\Badge.tsx`
+- ✅ `components\common\StatusIndicator.tsx`
+- ✅ `components\common\index.ts`
+- ✅ `components\common\parseSpacing.ts`
+- ✅ `components\feedback\ChatAreaSkeleton.tsx`
+- ✅ `components\feedback\ConversationListSkeleton.tsx`
+- ✅ `components\feedback\ErrorBoundary.tsx`
+- ✅ `components\feedback\MessageFeedback.tsx`
+- ✅ `components\feedback\Skeleton.tsx`
+- ✅ `components\feedback\Toast.tsx`
+- ✅ `components\feedback\ToastContainer.tsx`
+- ✅ `components\feedback\index.ts`
+- ✅ `components\layout\Header.tsx`
+- ✅ `components\layout\StatusCard.tsx`
+- ✅ `components\mentions\MentionsBadge.tsx`
+- ✅ `components\mobile\Drawer.tsx`
+- ✅ `components\mobile\MobileHeader.tsx`
+- ✅ `components\mobile\MobileWorkspace.tsx`
+- ✅ `components\mobile\index.ts`
+- ✅ `components\settings\AccountSettingsArea.tsx`
+- ✅ `components\settings\IntegrationsArea.tsx`
+- ✅ `components\settings\TeamArea.tsx`
+- ✅ `components\tools\DatabaseDevToolsArea.tsx`
+- ✅ `components\tools\ThemeEditorArea.tsx`
+- ✅ `components\tools\theme-editor\ColorScaleEditor.tsx`
+- ✅ `components\tools\theme-editor\IconSizesEditor.tsx`
+- ✅ `components\tools\theme-editor\RadiusEditor.tsx`
+- ✅ `components\tools\theme-editor\SpacingEditor.tsx`
+- ✅ `components\tools\theme-editor\TypographyEditor.tsx`
+- ✅ `components\ui\Button.tsx`
+- ✅ `components\ui\Card.tsx`
+- ✅ `components\ui\Heading.tsx`
+- ✅ `components\ui\IconButton.tsx`
+- ✅ `components\ui\Input.tsx`
+- ✅ `components\ui\ListCard.tsx`
+- ✅ `components\ui\Tag.tsx`
+- ✅ `components\ui\Text.tsx`
+- ✅ `components\ui\index.ts`
+- ✅ `components\workspace\ActivityBar.tsx`
+- ✅ `components\workspace\Canvas.tsx`
+- ✅ `components\workspace\ConversationListItem.tsx`
+- ✅ `components\workspace\DynamicContainer.tsx`
+- ✅ `components\workspace\PrimarySidebar.tsx`
+- ✅ `components\workspace\ToolPanels.tsx`
+- ✅ `components\workspace\Workspace.tsx`
+- ✅ `components\workspace\index.ts`
+- ✅ `hooks\useBreakpoint.ts`
+- ✅ `hooks\useCombinedRefs.ts`
+- ✅ `hooks\useOverflowDetection.ts`
+- ✅ `hooks\useResizeObserver.ts`
+- ✅ `hooks\useToast.ts`
+- ✅ `hooks\useWebSocket.ts`
+- ✅ `lib\api\admin-client.ts`
+- ✅ `lib\auth\jwt.ts`
+- ✅ `main.tsx`
+- ✅ `pages\Dashboard.tsx`
+- ✅ `pages\auth\LoginPage.tsx`
+- ✅ `pages\auth\SignupPage.tsx`
+- ✅ `providers\WebSocketProvider.tsx`
+- ✅ `services\api.ts`
+- ✅ `services\database.ts`
+- ✅ `services\logger.ts`
+- ✅ `services\sync.ts`
+- ✅ `store\auth-store.ts`
+- ✅ `store\index.ts`
+- ✅ `store\workspace.ts`
+- ✅ `theme\ThemeProvider.tsx`
+- ✅ `theme\index.ts`
+- ✅ `theme\types.ts`
+- ✅ `theme\utils.ts`
+- ✅ `types\index.ts`
+- ✅ `utils\seedDatabase.ts`
+- ✅ `utils\tabHelpers.ts`
 
-- **ui:** 9 files (9 critical)
-- **auth:** 3 files (3 critical)
-- **messaging:** 2 files (2 critical)
-- **sync:** 3 files (3 critical)
-- **api:** 2 files (2 critical)
-- **database:** 1 files (1 critical)
-- **config:** 1 files (1 critical)
+---
 
-## Critical Files
+## Files Pending Documentation (0)
 
-- **..\inhost-frontend\src\App.tsx** [frontend/ui]
-  - Type: component
-  - Exports: App
-- **..\inhost-frontend\src\components\auth\ProtectedRoute.tsx** [frontend/auth]
-  - Type: component
-  - Exports: ProtectedRoute
-- **..\inhost-frontend\src\components\chat\MessageInput.tsx** [frontend/messaging]
-  - Type: component
-  - Exports: MessageInput
-- **..\inhost-frontend\src\components\chat\MessageList.tsx** [frontend/ui]
-  - Type: component
-  - Exports: MessageList
-- **..\inhost-frontend\src\components\workspace\ActivityBar.tsx** [frontend/ui]
-  - Type: component
-  - Exports: ActivityBar
-- **..\inhost-frontend\src\components\workspace\Canvas.tsx** [frontend/ui]
-  - Type: component
-  - Exports: Canvas
-- **..\inhost-frontend\src\components\workspace\PrimarySidebar.tsx** [frontend/ui]
-  - Type: component
-  - Exports: PrimarySidebar
-- **..\inhost-frontend\src\hooks\useToast.ts** [frontend/ui]
-  - Type: utility
-  - Exports: useToast, useToastStore
-- **..\inhost-frontend\src\hooks\useWebSocket.ts** [frontend/sync]
-  - Type: utility
-  - Exports: useWebSocket
-- **..\inhost-frontend\src\lib\api\admin-client.ts** [frontend/api]
-  - Type: service
-  - Exports: adminClient, User, LoginRequest, SignupRequest, AuthResponse, Conversation, EndUser, TeamMember, Integration, SyncInitialData, Mention
-- **..\inhost-frontend\src\lib\auth\jwt.ts** [frontend/auth]
-  - Type: utility
-  - Exports: JWTPayload, decodeJWT, getStoredToken, isAuthenticated, isTokenExpired, removeToken, storeToken
-- **..\inhost-frontend\src\providers\WebSocketProvider.tsx** [frontend/sync]
-  - Type: component
-  - Exports: WebSocketProvider, useWebSocketContext, WebSocketContextValue
-- **..\inhost-frontend\src\services\api.ts** [frontend/api]
-  - Type: service
-  - Exports: apiClient, ApiClient
-- **..\inhost-frontend\src\services\database.ts** [frontend/database]
-  - Type: service
-  - Exports: DatabaseService, db
-- **..\inhost-frontend\src\services\logger.ts** [frontend/config]
-  - Type: service
-  - Exports: Logger, logger, LogLevel, LogEntry
-- **..\inhost-frontend\src\services\sync.ts** [frontend/sync]
-  - Type: service
-  - Exports: SyncService, syncService
-- **..\inhost-frontend\src\store\auth-store.ts** [frontend/auth]
-  - Type: store
-  - Exports: useAuthStore, AuthState
-- **..\inhost-frontend\src\store\index.ts** [frontend/ui]
-  - Type: store
-  - Exports: useStore, AppState
-- **..\inhost-frontend\src\store\workspace.ts** [frontend/ui]
-  - Type: store
-  - Exports: DynamicContainer, WorkspaceTab, useActiveContainer, useActiveTab, useContainer, useTabCount, useWorkspaceStore
-- **..\inhost-frontend\src\theme\ThemeProvider.tsx** [frontend/ui]
-  - Type: component
-  - Exports: ThemeProvider, useTheme
-- **..\inhost-frontend\src\types\index.ts** [frontend/messaging]
-  - Type: type
-  - Exports: MessageEnvelope, MessageType, ChannelType, MessageStatus, PlanType, ApiResponse, HealthStatus, SimulationClient, SimulationExtension, SimulationStatus, ClientId, ExtensionId
+_No files pending documentation_
 
-## Layer-Domain Matrix
+---
 
-| Layer \ Domain | ui | auth | messaging | sync | api | database | config |
-|------|---|---|---|---|---|---|---|
-| frontend | 9 | 3 | 2 | 3 | 2 | 1 | 1 |
+## Priority Suggestions
+
+### High Priority (Likely Critical)
+_No high priority files detected_
+
+### Medium Priority (Components/Utilities)
+_No medium priority files detected_
+
+### Low Priority (Types/Config)
+_No low priority files detected_
+
+---
+
+## Documentation Commands
+
+```bash
+# Validate current documentation
+npm run validate:frontend
+
+# Generate architecture overview
+npm run overview:frontend
+
+# Update this coverage report
+npm run coverage:frontend
+```
+
+---
+
+**Generated by:** `documentation-scripts/core/generate-coverage-report.js`
+**Specification:** SDT-SPEC-1.0

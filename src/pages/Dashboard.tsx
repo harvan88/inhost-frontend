@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "pages/Dashboard.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Component for dashboard"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/store","@/utils/seedDatabase"]
+ *   external: ["@components/chat/ChatArea","@components/layout/Header","@components/layout/StatusCard","@hooks/useWebSocket","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "None"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "WebSocket → Handler → Store → UI"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/store","@/utils/seedDatabase","@components/chat/ChatArea","@components/layout/Header","@components/layout/StatusCard","@hooks/useWebSocket","react"]
+ *   critical: true
+ *
+ * === DOC_END :: Dashboard.tsx ===
+ */
+
 import { useCallback, useState } from 'react';
 import Header from '@components/layout/Header';
 import ChatArea from '@components/chat/ChatArea';

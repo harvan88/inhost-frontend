@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\mobile\MobileWorkspace.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for mobile workspace"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./Drawer","./MobileHeader","@/components/workspace/Canvas","@/components/workspace/PrimarySidebar","@/store/workspace","@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["MobileWorkspace"]
+ *   inputs: "None"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./Drawer","./MobileHeader","@/components/workspace/Canvas","@/components/workspace/PrimarySidebar","@/store/workspace","@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: MobileWorkspace.tsx ===
+ */
+
+/**
  * MobileWorkspace Component - Mobile Layout
  *
  * Workspace optimizado para mobile con:

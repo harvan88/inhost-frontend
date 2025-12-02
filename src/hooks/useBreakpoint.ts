@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\hooks\useBreakpoint.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Handles use breakpoint functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Breakpoint","useBreakpoint","useIsDesktop","useIsMobile","useIsTablet"]
+ *   inputs: "None"
+ *   outputs: "Breakpoint"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Request → Middleware → Handler → Response"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: useBreakpoint.ts ===
+ */
+
+/**
  * useBreakpoint Hook
  *
  * Detecta el breakpoint actual del viewport basado en los breakpoints del theme.

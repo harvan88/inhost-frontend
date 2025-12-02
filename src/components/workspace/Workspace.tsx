@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "components/workspace/Workspace.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for workspace"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./ActivityBar","./Canvas","./PrimarySidebar","@/components/mobile","@/hooks/useBreakpoint","@/store","@/theme"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "None"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "WebSocket → Handler → Store → UI"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./ActivityBar","./Canvas","./PrimarySidebar","@/components/mobile","@/hooks/useBreakpoint","@/store","@/theme"]
+ *   critical: true
+ *
+ * === DOC_END :: Workspace.tsx ===
+ */
+
 import ActivityBar from './ActivityBar';
 import PrimarySidebar from './PrimarySidebar';
 import Canvas from './Canvas';

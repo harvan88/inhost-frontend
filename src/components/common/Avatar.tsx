@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\common\Avatar.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for avatar"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./StatusIndicator","@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Avatar","AvatarProps"]
+ *   inputs: "AvatarProps, AvatarProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./StatusIndicator","@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: Avatar.tsx ===
+ */
+
+/**
  * Avatar.tsx - Componente de Avatar
  *
  * Componente reutilizable para mostrar avatares con soporte para:

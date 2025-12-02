@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\tools\theme-editor\TypographyEditor.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Editor component for typography"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "TypographyEditorProps, TypographyEditorProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: TypographyEditor.tsx ===
+ */
+
+/**
  * TypographyEditor - Editor de Tipografía (Compacto)
  *
  * Solo muestra tamaños críticos realmente usados: xs, sm, base, lg, xl

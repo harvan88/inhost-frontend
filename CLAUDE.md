@@ -735,15 +735,31 @@ When modifying types in `src/types/index.ts`:
 
 ## Documentation System (SDT-SPEC-1.0)
 
-**Sprint 1 Status:** ✅ Infrastructure established
+**Status:** ✅ Production-ready (Sprint 3 + skeleton masivo completado)
+**Coverage:** 80/80 files documented (100.0%) ✅
 
-### Documented Critical Files
+### Documented Files
 
 **Location:** `docs/documented-files.json`
 
+**Fully documented (Sprint 1-3):**
 1. **[src/App.tsx](src/App.tsx)** - Application entry point with routing
 2. **[src/services/api.ts](src/services/api.ts)** - Backend API client
 3. **[src/store/auth-store.ts](src/store/auth-store.ts)** - Authentication state management
+4. **[src/providers/WebSocketProvider.tsx](src/providers/WebSocketProvider.tsx)** - Real-time WebSocket provider
+5. **[src/lib/api/admin-client.ts](src/lib/api/admin-client.ts)** - Admin API client
+6. **[src/store/index.ts](src/store/index.ts)** - Main Zustand store
+7. **[src/hooks/useWebSocket.ts](src/hooks/useWebSocket.ts)** - WebSocket hook
+8. Plus 14 more files (see [docs/ai-context-frontend.md](docs/ai-context-frontend.md))
+
+**Skeleton generated (placeholders pending):**
+- [src/main.tsx](src/main.tsx) - Application entry point
+- [src/pages/Dashboard.tsx](src/pages/Dashboard.tsx) - Main dashboard
+- [src/pages/auth/LoginPage.tsx](src/pages/auth/LoginPage.tsx) - Login page
+- [src/pages/auth/SignupPage.tsx](src/pages/auth/SignupPage.tsx) - Signup page
+- [src/components/workspace/Workspace.tsx](src/components/workspace/Workspace.tsx) - Core workspace
+- [src/theme/index.ts](src/theme/index.ts) - Theme system
+- [src/theme/types.ts](src/theme/types.ts) - Theme types
 
 ### Architecture Overview
 
@@ -767,9 +783,28 @@ npm run validate:frontend
 # Generate AI context
 npm run context:frontend
 
+# Coverage reports (Sprint 3)
+npm run coverage:frontend    # List documented/undocumented files
+
 # Analyze dependencies
 npm run analyze:frontend
 ```
+
+**Dead Code Detection (Professional Tools - Sprint 3):**
+```bash
+cd inhost-frontend/
+
+# Run professional tools
+npm run deadcode:all        # ts-prune + unimported
+npm run deadcode:exports    # Unused TypeScript exports
+npm run deadcode:files      # Files without imports
+npm run deadcode:deps       # Unused npm dependencies
+```
+
+**Tools installed:**
+- **ts-prune** - Detects unused exports (75% more accurate than custom scripts)
+- **unimported** - Detects files without imports
+- **depcheck** - Detects unused npm dependencies
 
 ### Documentation Format
 

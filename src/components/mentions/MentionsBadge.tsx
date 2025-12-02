@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\mentions\MentionsBadge.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for mentions badge"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/common","@/lib/api/admin-client","@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "MentionsBadgeProps, MentionsBadgeProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Component → API → Backend"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/common","@/lib/api/admin-client","@/theme","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: MentionsBadge.tsx ===
+ */
+
 import { useEffect, useState } from 'react';
 import { Bell } from 'lucide-react';
 import { useTheme } from '@/theme';

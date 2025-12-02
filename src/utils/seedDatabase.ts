@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\utils\seedDatabase.ts"
+ *   type: "type"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Handles seed database functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/services/database","@/store"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: []
+ *   inputs: "None"
+ *   outputs: "["
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "IndexedDB → Zustand → Component"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/services/database","@/store"]
+ *   critical: false
+ *
+ * === DOC_END :: seedDatabase.ts ===
+ */
+
+/**
  * Seed Database - Datos Mock para Testing
  * Popula IndexedDB con conversaciones, contactos y mensajes de ejemplo
  */

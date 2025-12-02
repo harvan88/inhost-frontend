@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\theme\utils.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Handles utils functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["getContrastRatio","meetsMinimumContrast","validateContrast","validateThemeAccessibility","validateThemeStructure"]
+ *   inputs: "string"
+ *   outputs: "number"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: []
+ *   critical: false
+ *
+ * === DOC_END :: utils.ts ===
+ */
+
+/**
  * Theme Utilities (Sección 8.6)
  *
  * Utilidades para validación de contraste y accesibilidad

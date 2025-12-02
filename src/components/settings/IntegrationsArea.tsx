@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\settings\IntegrationsArea.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Renders integrations section"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui","@/theme"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "IntegrationsAreaProps, IntegrationsAreaProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/ui","@/theme"]
+ *   critical: false
+ *
+ * === DOC_END :: IntegrationsArea.tsx ===
+ */
+
 import { useTheme } from '@/theme';
 import { Heading, Text, Tag } from '@/components/ui';
 

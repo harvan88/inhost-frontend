@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\hooks\useResizeObserver.ts"
+ *   type: "utility"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Handles use resize observer functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["useResizeObserver"]
+ *   inputs: "None"
+ *   outputs: "void"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Request → Middleware → Handler → Response"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["react"]
+ *   critical: false
+ *
+ * === DOC_END :: useResizeObserver.ts ===
+ */
+
 import { useEffect, useRef } from 'react';
 
 /**

@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "pages/auth/SignupPage.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "auth"
+ *   purpose: "Component for signup page"
+ *
+ * DEPENDENCIES:
+ *   internal: ["../../lib/api/admin-client","../../services/sync","../../store/auth-store"]
+ *   external: ["react","react-router-dom"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "FormEvent<HTMLFormElement>"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["../../lib/api/admin-client","../../services/sync","../../store/auth-store","react","react-router-dom"]
+ *   critical: false
+ *
+ * === DOC_END :: SignupPage.tsx ===
+ */
+
 import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { adminAPI } from '../../lib/api/admin-client';

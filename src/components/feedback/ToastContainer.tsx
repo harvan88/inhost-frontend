@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\feedback\ToastContainer.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for toast container"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./Toast","@/hooks/useBreakpoint","@/theme"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["ToastContainer"]
+ *   inputs: "ToastContainerProps, ToastContainerProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./Toast","@/hooks/useBreakpoint","@/theme"]
+ *   critical: false
+ *
+ * === DOC_END :: ToastContainer.tsx ===
+ */
+
+/**
  * ToastContainer Component
  *
  * Contenedor que maneja la posición y renderizado de múltiples toasts.

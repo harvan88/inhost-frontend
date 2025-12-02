@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\chat\ChatHeader.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for chat header"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/common","@/components/ui","@/hooks/useOverflowDetection","@/store","@/theme"]
+ *   external: ["lucide-react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "ChatHeaderProps, ChatHeaderProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/common","@/components/ui","@/hooks/useOverflowDetection","@/store","@/theme","lucide-react"]
+ *   critical: false
+ *
+ * === DOC_END :: ChatHeader.tsx ===
+ */
+
 import { useConversation, useContact } from '@/store';
 import { Phone, Video, MoreVertical } from 'lucide-react';
 import { useTheme } from '@/theme';

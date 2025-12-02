@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\common\Badge.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for badge"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./parseSpacing","@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Badge","BadgeProps"]
+ *   inputs: "BadgeProps, BadgeProps"
+ *   outputs: "JSX.Element"
+ *   errors: "Error"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./parseSpacing","@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: Badge.tsx ===
+ */
+
+/**
  * Badge.tsx - Componente de Badge Genérico
  *
  * Componente reutilizable que usa theme tokens exclusivamente.

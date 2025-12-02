@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\workspace\DynamicContainer.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for dynamic container"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/feedback","@/hooks/useOverflowDetection","@/store/workspace","@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "DynamicContainerProps, DynamicContainerProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/feedback","@/hooks/useOverflowDetection","@/store/workspace","@/theme","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: DynamicContainer.tsx ===
+ */
+
 import { X, MessageSquare, MoreVertical, Copy } from 'lucide-react';
 import { useWorkspaceStore, useContainer } from '@/store/workspace';
 import { useTheme } from '@/theme';

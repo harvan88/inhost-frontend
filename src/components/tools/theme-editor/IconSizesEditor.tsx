@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\tools\theme-editor\IconSizesEditor.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Editor component for icon sizes"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "IconSizesEditorProps, IconSizesEditorProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/theme","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: IconSizesEditor.tsx ===
+ */
+
+/**
  * IconSizesEditor - Editor de Tamaños de Iconos (Compacto)
  *
  * Solo muestra tamaños críticos realmente usados: sm, base, lg

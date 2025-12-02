@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "theme/types.ts"
+ *   type: "type"
+ *   layer: "frontend"
+ *   domain: "core"
+ *   purpose: "Handles types functionality"
+ *
+ * DEPENDENCIES:
+ *   internal: []
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Accessibility","ChannelColors","ColorScale","ComponentLayouts","ComponentSizes","ComponentSpacing","ComponentStyles","ContrastValidation","Elevation","IconSizes","Radius","SemanticColors","Spacing","Theme","ThemeColors","Transitions","Typography","ZIndex"]
+ *   inputs: "None"
+ *   outputs: "void"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: []
+ *   critical: false
+ *
+ * === DOC_END :: types.ts ===
+ */
+
+/**
  * Design Tokens Type System (Sección 8)
  *
  * Sistema de tipos para tokens de diseño centralizados.

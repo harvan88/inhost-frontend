@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\feedback\MessageFeedback.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "database"
+ *   purpose: "Component for message feedback"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/lib/api/admin-client","@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "MessageFeedbackProps, MessageFeedbackProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/lib/api/admin-client","@/theme","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: MessageFeedback.tsx ===
+ */
+
 import { useState } from 'react';
 import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { useTheme } from '@/theme';

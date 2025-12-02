@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\feedback\ErrorBoundary.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for error boundary"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["ErrorBoundary"]
+ *   inputs: "ErrorFallbackUIProps, ErrorFallbackUIProps"
+ *   outputs: "Partial<State>, JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/ui","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: ErrorBoundary.tsx ===
+ */
+
+/**
  * ErrorBoundary Component
  *
  * Captura errores de React y muestra una UI de recuperación en lugar de crashear.

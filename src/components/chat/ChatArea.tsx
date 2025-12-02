@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\chat\ChatArea.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Renders chat section"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./ChatHeader","./MessageInput","./MessageList","@/hooks/useOverflowDetection","@/theme"]
+ *   external: []
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "ChatAreaProps, ChatAreaProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./ChatHeader","./MessageInput","./MessageList","@/hooks/useOverflowDetection","@/theme"]
+ *   critical: false
+ *
+ * === DOC_END :: ChatArea.tsx ===
+ */
+
 import { useTheme } from '@/theme';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';

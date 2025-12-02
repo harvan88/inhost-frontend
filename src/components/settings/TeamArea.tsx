@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\settings\TeamArea.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Renders team section"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui","@/store/auth-store","@/theme"]
+ *   external: ["react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "TeamAreaProps, TeamAreaProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/ui","@/store/auth-store","@/theme","react"]
+ *   critical: false
+ *
+ * === DOC_END :: TeamArea.tsx ===
+ */
+
 import { useTheme } from '@/theme';
 import { useAuthStore } from '@/store/auth-store';
 import { Heading, Text } from '@/components/ui';

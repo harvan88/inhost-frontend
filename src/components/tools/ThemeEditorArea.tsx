@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\tools\ThemeEditorArea.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Renders theme editor section"
+ *
+ * DEPENDENCIES:
+ *   internal: ["./theme-editor/ColorScaleEditor","./theme-editor/IconSizesEditor","./theme-editor/RadiusEditor","./theme-editor/SpacingEditor","./theme-editor/TypographyEditor","@/theme","@/theme/dark-theme.json","@/theme/theme.json"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "ThemeEditorAreaProps, ThemeEditorAreaProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["./theme-editor/ColorScaleEditor","./theme-editor/IconSizesEditor","./theme-editor/RadiusEditor","./theme-editor/SpacingEditor","./theme-editor/TypographyEditor","@/theme","@/theme/dark-theme.json","@/theme/theme.json","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: ThemeEditorArea.tsx ===
+ */
+
+/**
  * ThemeEditorArea - Editor Visual de Temas (Primer Plugin de FluxCore)
  *
  * Editor profesional estilo Photoshop para modificar theme.json en tiempo real.

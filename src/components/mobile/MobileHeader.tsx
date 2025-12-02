@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\mobile\MobileHeader.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for mobile header"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui","@/theme"]
+ *   external: ["lucide-react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["MobileHeader","MobileHeaderVariant"]
+ *   inputs: "MobileHeaderProps, MobileHeaderProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/ui","@/theme","lucide-react"]
+ *   critical: false
+ *
+ * === DOC_END :: MobileHeader.tsx ===
+ */
+
+/**
  * MobileHeader Component - Mobile Navigation Header
  *
  * Header móvil con dos variantes:

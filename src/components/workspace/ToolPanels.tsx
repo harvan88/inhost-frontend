@@ -1,3 +1,37 @@
+/**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\workspace\ToolPanels.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for tool panels"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/common","@/components/ui","@/store","@/store/workspace","@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["function"]
+ *   inputs: "ToolPanelProps, {"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/common","@/components/ui","@/store","@/store/workspace","@/theme","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: ToolPanels.tsx ===
+ */
+
 import React from 'react';
 import { ChevronDown, User, Package, Zap, Phone, Mail, Tag } from 'lucide-react';
 import { useWorkspaceStore, useActiveTab } from '@/store/workspace';

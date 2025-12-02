@@ -1,4 +1,38 @@
 /**
+ * === DOC_START :: VERSION=1.0 :: TYPE=FILE_DOCUMENTATION ===
+ *
+ * IDENTITY:
+ *   file: "C:\Users\harva\Documents\Trabajos\meetgar\FluxCoreChat\inhost-frontend\src\components\feedback\Toast.tsx"
+ *   type: "component"
+ *   layer: "frontend"
+ *   domain: "ui"
+ *   purpose: "Component for toast"
+ *
+ * DEPENDENCIES:
+ *   internal: ["@/components/ui","@/theme"]
+ *   external: ["lucide-react","react"]
+ *   infrastructure: []
+ *
+ * CONTRACTS:
+ *   exports: ["Toast","ToastAction","ToastProps","ToastType"]
+ *   inputs: "ToastProps, ToastProps"
+ *   outputs: "JSX.Element"
+ *   errors: "None"
+ *
+ * INTEGRATION:
+ *   data_flow: "Input → Processing → Output"
+ *   events_emitted: []
+ *   events_consumed: []
+ *
+ * IMPACT:
+ *   used_by: "To be determined via dependency analysis"
+ *   uses: ["@/components/ui","@/theme","lucide-react","react"]
+ *   critical: false
+ *
+ * === DOC_END :: Toast.tsx ===
+ */
+
+/**
  * Toast Component - Notification System
  *
  * Sistema de notificaciones tipo toast con 4 variantes.
