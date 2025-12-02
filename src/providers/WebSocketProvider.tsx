@@ -555,7 +555,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   /**
    * Handler: Batch de enrichments recibidos del Extension Host
    */
-  const handleEnrichmentBatch = useCallback((event: EnrichmentBatchEvent) => {
+  const handleEnrichmentBatch = useCallback(async (event: EnrichmentBatchEvent) => {
     const { messageId, enrichments, processingTimeMs } = event.data;
 
     console.log(`🧩 Enrichments received for message ${messageId}:`, {
@@ -568,10 +568,17 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       return;
     }
 
-    // 1. Guardar en store (y eventualmente en IndexedDB)
+    // 1. Guardar en Zustand store
     addEnrichments(messageId, enrichments);
 
-    // 2. Log para debugging
+    // 2. Persistir en IndexedDB
+    try {
+      await db.saveEnrichments(enrichments);
+    } catch (error) {
+      console.error('❌ Error saving enrichments to IndexedDB:', error);
+    }
+
+    // 3. Log para debugging
     logger.debug('websocket', 'Enrichments batch received', {
       messageId,
       count: enrichments.length,

@@ -45,6 +45,7 @@ import type {
   MessageEnvelope,
   Contact,
   Conversation,
+  Enrichment,
 } from '@/types';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -90,6 +91,17 @@ interface InhostDB extends DBSchema {
       lastMessageId?: string;
     };
   };
+
+  // Enrichments de extensiones (Extension Host)
+  enrichments: {
+    key: string;                 // id (UUID)
+    value: Enrichment;
+    indexes: {
+      'messageId': string;
+      'extensionId': string;
+      'type': string;
+    };
+  };
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -99,7 +111,7 @@ interface InhostDB extends DBSchema {
 class DatabaseService {
   private db: IDBPDatabase<InhostDB> | null = null;
   private readonly DB_NAME = 'inhost-chat-db';
-  private readonly DB_VERSION = 1;
+  private readonly DB_VERSION = 2; // v2: Added enrichments store
 
   /**
    * Inicializar base de datos
@@ -140,6 +152,15 @@ class DatabaseService {
         if (!db.objectStoreNames.contains('sync_state')) {
           db.createObjectStore('sync_state', { keyPath: 'entity' });
           console.log('✅ Created ObjectStore: sync_state');
+        }
+
+        // ObjectStore: enrichments (v2)
+        if (!db.objectStoreNames.contains('enrichments')) {
+          const enrichmentStore = db.createObjectStore('enrichments', { keyPath: 'id' });
+          enrichmentStore.createIndex('messageId', 'messageId');
+          enrichmentStore.createIndex('extensionId', 'extensionId');
+          enrichmentStore.createIndex('type', 'type');
+          console.log('✅ Created ObjectStore: enrichments');
         }
       },
     });
@@ -363,6 +384,84 @@ class DatabaseService {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ENRICHMENTS CRUD (Extension Host)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  /**
+   * Guardar enrichments (batch)
+   */
+  async saveEnrichments(enrichments: Enrichment[]): Promise<void> {
+    if (enrichments.length === 0) return;
+    await this.ensureInitialized();
+
+    const tx = this.db!.transaction('enrichments', 'readwrite');
+    await Promise.all([
+      ...enrichments.map(e => tx.store.put(e)),
+      tx.done
+    ]);
+
+    console.log(`🧩 Saved ${enrichments.length} enrichments`);
+  }
+
+  /**
+   * Guardar un enrichment
+   */
+  async saveEnrichment(enrichment: Enrichment): Promise<void> {
+    await this.ensureInitialized();
+    await this.db!.put('enrichments', enrichment);
+  }
+
+  /**
+   * Obtener enrichments por messageId
+   */
+  async getEnrichmentsByMessage(messageId: string): Promise<Enrichment[]> {
+    await this.ensureInitialized();
+    return this.db!.getAllFromIndex('enrichments', 'messageId', messageId);
+  }
+
+  /**
+   * Obtener enrichments por tipo
+   */
+  async getEnrichmentsByType(type: string): Promise<Enrichment[]> {
+    await this.ensureInitialized();
+    return this.db!.getAllFromIndex('enrichments', 'type', type);
+  }
+
+  /**
+   * Obtener un enrichment por ID
+   */
+  async getEnrichment(id: string): Promise<Enrichment | undefined> {
+    await this.ensureInitialized();
+    return this.db!.get('enrichments', id);
+  }
+
+  /**
+   * Eliminar enrichments de un mensaje
+   */
+  async deleteEnrichmentsByMessage(messageId: string): Promise<void> {
+    await this.ensureInitialized();
+    const enrichments = await this.getEnrichmentsByMessage(messageId);
+
+    if (enrichments.length === 0) return;
+
+    const tx = this.db!.transaction('enrichments', 'readwrite');
+    await Promise.all([
+      ...enrichments.map(e => tx.store.delete(e.id)),
+      tx.done
+    ]);
+
+    console.log(`🗑️ Deleted ${enrichments.length} enrichments for message ${messageId}`);
+  }
+
+  /**
+   * Contar enrichments
+   */
+  async countEnrichments(): Promise<number> {
+    await this.ensureInitialized();
+    return this.db!.count('enrichments');
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // UTILITIES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -428,7 +527,7 @@ class DatabaseService {
     await this.ensureInitialized();
 
     const tx = this.db!.transaction(
-      ['messages', 'contacts', 'conversations', 'sync_state'],
+      ['messages', 'contacts', 'conversations', 'sync_state', 'enrichments'],
       'readwrite'
     );
 
@@ -437,6 +536,7 @@ class DatabaseService {
       tx.objectStore('contacts').clear(),
       tx.objectStore('conversations').clear(),
       tx.objectStore('sync_state').clear(),
+      tx.objectStore('enrichments').clear(),
       tx.done
     ]);
 
@@ -450,15 +550,17 @@ class DatabaseService {
     messages: number;
     contacts: number;
     conversations: number;
+    enrichments: number;
     oldestMessage?: string;
     newestMessage?: string;
   }> {
     await this.ensureInitialized();
 
-    const [messages, contacts, conversations] = await Promise.all([
+    const [messages, contacts, conversations, enrichments] = await Promise.all([
       this.db!.count('messages'),
       this.db!.count('contacts'),
       this.db!.count('conversations'),
+      this.db!.count('enrichments'),
     ]);
 
     const allMessages = await this.getAllMessages();
@@ -470,6 +572,7 @@ class DatabaseService {
       messages,
       contacts,
       conversations,
+      enrichments,
       oldestMessage: sorted[0]?.metadata.timestamp,
       newestMessage: sorted[sorted.length - 1]?.metadata.timestamp,
     };
