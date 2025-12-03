@@ -193,7 +193,7 @@ export interface SimulationStatus {
 }
 
 export interface ClientMessageRequest {
-  clientId: ClientId;
+  clientId: string;  // ID libre para simulación
   text: string;
 }
 

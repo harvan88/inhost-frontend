@@ -46,6 +46,8 @@ const DatabaseDevToolsArea = lazy(() => import('@components/tools/DatabaseDevToo
 const TeamArea = lazy(() => import('@components/settings/TeamArea'));
 const AccountSettingsArea = lazy(() => import('@components/settings/AccountSettingsArea'));
 const IntegrationsArea = lazy(() => import('@components/settings/IntegrationsArea'));
+const SimulatorArea = lazy(() => import('@components/simulator/SimulatorArea'));
+const ExtensionArea = lazy(() => import('@components/extensions/ExtensionArea'));
 
 interface DynamicContainerProps {
   containerId: string;
@@ -507,6 +509,16 @@ export default function DynamicContainer({ containerId }: DynamicContainerProps)
               >
                 <p>Order Details - Coming Soon</p>
               </div>
+            )}
+            {activeTab.type === 'simulator' && (
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <SimulatorArea />
+              </Suspense>
+            )}
+            {activeTab.type === 'extension' && (
+              <Suspense fallback={<ChatAreaSkeleton />}>
+                <ExtensionArea extensionId={activeTab.entityId} />
+              </Suspense>
             )}
           </>
         ) : (

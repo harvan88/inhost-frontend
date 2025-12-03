@@ -362,18 +362,168 @@ function ToolsView() {
 
 function PluginsView() {
   const { theme } = useTheme();
+  const { openTab, activeContainerId } = useWorkspaceStore();
+
+  // Extensiones instaladas (aparecen primero)
+  const extensions = [
+    {
+      id: 'fluxcore-chat',
+      name: 'FluxCore Chat',
+      description: 'Asistente de IA para respuestas automáticas',
+      icon: '🤖',
+      category: 'IA',
+    },
+  ];
+
+  // Plugins del sistema
+  const plugins = [
+    {
+      id: 'simulator',
+      name: 'Chat Simulator',
+      description: 'Simula mensajes como usuario de WhatsApp/Telegram',
+      icon: '📱',
+      category: 'Desarrollo',
+    },
+    {
+      id: 'extensions',
+      name: 'Extension Manager',
+      description: 'Gestionar extensiones del sistema',
+      icon: '🧩',
+      category: 'Sistema',
+    },
+  ];
+
+  const handleOpenItem = (itemId: string, itemName: string, icon: string) => {
+    if (itemId === 'simulator') {
+      openTab(
+        createTab({
+          type: 'simulator',
+          entityId: 'chat-simulator',
+          label: itemName,
+          icon,
+          closable: true,
+        }),
+        activeContainerId || undefined
+      );
+    } else if (itemId === 'fluxcore-chat') {
+      openTab(
+        createTab({
+          type: 'extension',
+          entityId: 'fluxcore-chat',
+          label: itemName,
+          icon,
+          closable: true,
+        }),
+        activeContainerId || undefined
+      );
+    } else if (itemId === 'extensions') {
+      openTab(
+        createTab({
+          type: 'extension',
+          entityId: 'extension-manager',
+          label: itemName,
+          icon,
+          closable: true,
+        }),
+        activeContainerId || undefined
+      );
+    }
+  };
+
   return (
-    <div
-      style={{
-        padding: theme.spacing[4],
-      }}
-    >
-      <Heading level={2}>
-        Plugins
-      </Heading>
-      <Text variant="metadata" color="muted">
-        Extensiones y plugins instalados - Coming Soon
-      </Text>
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div
+        style={{
+          padding: theme.spacing[4],
+          borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+        }}
+      >
+        <Heading level={2} noMargin>
+          Plugins
+        </Heading>
+        <Text variant="metadata" color="muted">
+          Extensiones y herramientas
+        </Text>
+      </div>
+
+      {/* Content List */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Extensions Section */}
+        {extensions.length > 0 && (
+          <>
+            <div
+              className="px-4 py-2"
+              style={{ backgroundColor: theme.colors.neutral[100] }}
+            >
+              <Text variant="metadata" color="muted">
+                Extensiones
+              </Text>
+            </div>
+            {extensions.map((ext) => (
+              <div
+                key={ext.id}
+                onClick={() => handleOpenItem(ext.id, ext.name, ext.icon)}
+                className="px-4 py-3 cursor-pointer hover:opacity-80 transition-opacity"
+                style={{
+                  borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{ext.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Text>{ext.name}</Text>
+                      <span
+                        className="text-xs px-1.5 py-0.5 rounded"
+                        style={{
+                          backgroundColor: theme.colors.primary[100],
+                          color: theme.colors.primary[700],
+                        }}
+                      >
+                        {ext.category}
+                      </span>
+                    </div>
+                    <Text variant="metadata" color="muted">
+                      {ext.description}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {/* Plugins Section */}
+        <div
+          className="px-4 py-2"
+          style={{ backgroundColor: theme.colors.neutral[100] }}
+        >
+          <Text variant="metadata" color="muted">
+            Herramientas
+          </Text>
+        </div>
+        {plugins.map((plugin) => (
+          <div
+            key={plugin.id}
+            onClick={() => handleOpenItem(plugin.id, plugin.name, plugin.icon)}
+            className="px-4 py-3 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{
+              borderBottom: `1px solid ${theme.colors.neutral[200]}`,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{plugin.icon}</span>
+              <div className="flex-1 min-w-0">
+                <Text>{plugin.name}</Text>
+                <Text variant="metadata" color="muted">
+                  {plugin.description}
+                </Text>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

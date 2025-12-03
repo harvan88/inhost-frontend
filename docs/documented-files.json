@@ -268,5 +268,16 @@
       "useToastStore"
     ],
     "purpose": "Hook de notificaciones toast con store de Zustand. Proporciona API para mostrar toasts (success, error, warning, info) con auto-close configurable, acciones opcionales y gestión de cola de notificaciones"
+  },
+  {
+    "file": "src/components/simulator/SimulatorArea.tsx",
+    "type": "component",
+    "layer": "frontend",
+    "domain": "ui",
+    "critical": false,
+    "exports": [
+      "SimulatorArea"
+    ],
+    "purpose": "Simulador de chat para testing de extensiones: permite enviar mensajes como cliente simulado (WhatsApp/Telegram/SMS) y visualizar enrichments procesados por Extension Host en tiempo real"
   }
 ]

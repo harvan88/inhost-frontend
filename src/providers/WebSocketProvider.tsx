@@ -128,26 +128,10 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const RECONNECT_INTERVAL = 3000; // 3 seconds
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // HELPER FUNCTIONS
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  /**
-   * Genera un conversationId consistente basado en channel + from
-   * Esto asegura que todos los mensajes del mismo contacto se agrupen en la misma conversación
-   *
-   * @param channel - Canal de comunicación (whatsapp, telegram, etc)
-   * @param from - ID del contacto/número de teléfono
-   * @returns conversationId normalizado
-   */
-  const getConversationId = useCallback((channel: string, from: string): string => {
-    // Normalizar: channel-from
-    // Ejemplo: "whatsapp-+52 1234 5678" o "telegram-@username"
-    return `${channel}-${from}`;
-  }, []);
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // EVENT HANDLERS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // NOTA: El conversationId viene del backend (UUID generado por adapter)
+  // No se regenera en el frontend para mantener sincronización
 
   const handleConnection = useCallback((event: ConnectionEvent) => {
     console.log('✅ WebSocket connected:', event);
@@ -168,20 +152,25 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     console.log('📨 Message received:', event.data);
     const message = event.data;
 
-    // Normalizar conversationId basado en channel + from
-    const normalizedConversationId = getConversationId(message.channel, message.metadata.from);
+    // USAR el conversationId del backend (no re-generar)
+    // El backend genera UUIDs consistentes por usuario/canal
+    const conversationId = message.conversationId || message.metadata?.conversationId;
+    
+    if (!conversationId) {
+      console.error('❌ Message missing conversationId:', message.id);
+      return;
+    }
 
-    // Actualizar mensaje con conversationId normalizado
+    // Mensaje ya tiene conversationId correcto del backend
     const normalizedMessage = {
       ...message,
-      conversationId: normalizedConversationId,
+      conversationId,
     };
 
     logger.info('websocket', 'Message received', {
       event: 'message_received',
       messageId: normalizedMessage.id,
-      conversationId: normalizedConversationId,
-      originalConversationId: message.conversationId,
+      conversationId,
       type: normalizedMessage.type,
       channel: normalizedMessage.channel,
       from: normalizedMessage.metadata.from,
@@ -194,14 +183,14 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     // 2. Ensure conversation exists
     const { entities, actions } = useStore.getState();
-    let conversation = entities.conversations.get(normalizedConversationId);
+    let conversation = entities.conversations.get(conversationId);
 
     if (!conversation) {
-      console.log(`📂 Creating new conversation: ${normalizedConversationId}`);
+      console.log(`📂 Creating new conversation: ${conversationId}`);
 
       // Create new conversation
       conversation = {
-        id: normalizedConversationId,
+        id: conversationId,
         endUserId: normalizedMessage.metadata.from,
         channel: normalizedMessage.channel,
         status: 'active',
@@ -252,11 +241,11 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
 
     // 4. Update Zustand store with message
-    addMessage(normalizedConversationId, normalizedMessage);
+    addMessage(conversationId, normalizedMessage);
 
     // 5. Show notification if conversation is not active
     const { ui } = useStore.getState();
-    if (ui.activeConversationId !== normalizedConversationId && normalizedMessage.type === 'incoming') {
+    if (ui.activeConversationId !== conversationId && normalizedMessage.type === 'incoming') {
       // Show toast notification for new incoming messages
       addToast({
         type: 'info',
@@ -266,7 +255,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       });
       console.log(`🔔 New message from ${contact.name}`);
     }
-  }, [addMessage, addToast, getConversationId]);
+  }, [addMessage, addToast]);
 
   const handleMessageProcessing = useCallback((event: MessageProcessingEvent) => {
     console.log('⚙️ Message processing:', event);
@@ -277,14 +266,18 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     console.log('🔧 Extension response:', event.data);
     const message = event.data;
 
-    // Normalizar conversationId basado en channel + to (para respuestas, "to" es el destinatario original)
-    // Las extensiones responden al número que envió el mensaje original
-    const normalizedConversationId = getConversationId(message.channel, message.metadata.to);
+    // USAR el conversationId del backend (no re-generar)
+    const conversationId = message.conversationId || message.metadata?.conversationId;
+    
+    if (!conversationId) {
+      console.error('❌ Extension response missing conversationId:', message.id);
+      return;
+    }
 
-    // Actualizar mensaje con conversationId normalizado
+    // Mensaje ya tiene conversationId correcto del backend
     const normalizedMessage = {
       ...message,
-      conversationId: normalizedConversationId,
+      conversationId,
     };
 
     // 1. Persist message in IndexedDB
@@ -292,14 +285,14 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     // 2. Ensure conversation exists (same logic as handleMessageReceived)
     const { entities, actions } = useStore.getState();
-    let conversation = entities.conversations.get(normalizedConversationId);
+    let conversation = entities.conversations.get(conversationId);
 
     if (!conversation) {
-      console.log(`📂 Creating new conversation for extension response: ${normalizedConversationId}`);
+      console.log(`📂 Creating new conversation for extension response: ${conversationId}`);
 
-      // Para respuestas de extensiones, el endUserId es el destinatario (to) porque es la conversación con ese contacto
+      // Para respuestas de extensiones, el endUserId es el destinatario (to)
       conversation = {
-        id: normalizedConversationId,
+        id: conversationId,
         endUserId: normalizedMessage.metadata.to,
         channel: normalizedMessage.channel,
         status: 'active',
@@ -342,12 +335,12 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     }
 
     // 4. Update Zustand store with message
-    addMessage(normalizedConversationId, normalizedMessage);
+    addMessage(conversationId, normalizedMessage);
 
     // 5. Show toast notification for extension responses
     const extensionName = normalizedMessage.metadata.extensionId || 'Extension';
     const { ui } = useStore.getState();
-    if (ui.activeConversationId !== normalizedConversationId) {
+    if (ui.activeConversationId !== conversationId) {
       addToast({
         type: 'success',
         title: `Respuesta de ${extensionName}`,
@@ -355,7 +348,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
         duration: 3000,
       });
     }
-  }, [addMessage, addToast, getConversationId]);
+  }, [addMessage, addToast]);
 
   const handleClientToggle = useCallback(async (event: ClientToggleEvent) => {
     console.log('🔌 Client toggle:', event);

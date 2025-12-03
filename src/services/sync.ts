@@ -91,12 +91,14 @@ class SyncService {
       // Messages
       const finalMessagesMap = new Map(messagesMap);
 
-      // Update store
+      // Update store (preservar enrichments existentes)
+      const currentEnrichments = useStore.getState().entities.enrichments ?? new Map();
       useStore.setState({
         entities: {
           conversations: conversationsMap,
           messages: finalMessagesMap,
           contacts: contactsMap,
+          enrichments: currentEnrichments,
         },
       });
 
@@ -171,6 +173,8 @@ class SyncService {
 
       // 4. Cargar mensajes para cada conversación (primeras 50)
       console.log('📨 Loading messages for active conversations...');
+      const allMessageIds: string[] = [];
+
       for (const conversation of conversations.filter((c) => c.status === 'active')) {
         try {
           const messagesResponse = await adminAPI.getMessages(conversation.id, { limit: 50 });
@@ -178,10 +182,49 @@ class SyncService {
             // Guardar mensajes en IndexedDB (backend ya incluye conversationId)
             for (const message of messagesResponse.data.messages) {
               await db.addMessage(message);
+              allMessageIds.push(message.id);
             }
           }
         } catch (error) {
           console.warn(`⚠️ Failed to load messages for conversation ${conversation.id}:`, error);
+        }
+      }
+
+      // 5. Cargar enrichments para todos los mensajes
+      if (allMessageIds.length > 0) {
+        console.log(`🧩 Loading enrichments for ${allMessageIds.length} messages...`);
+        try {
+          const enrichmentsResponse = await adminAPI.getEnrichments(allMessageIds);
+          if (enrichmentsResponse.success && enrichmentsResponse.data.enrichments.length > 0) {
+            // Guardar en IndexedDB
+            const enrichments = enrichmentsResponse.data.enrichments.map((e: any) => ({
+              id: e.id,
+              messageId: e.messageId,
+              tenantId: e.tenantId || 'default',
+              extensionId: e.extensionId,
+              type: e.type,
+              payload: e.payload,
+              confidence: e.confidence ?? undefined,
+              processingTimeMs: e.processingTimeMs,
+              createdAt: e.createdAt,
+            }));
+            await db.saveEnrichments(enrichments as any);
+
+            // También agregar a Zustand store
+            const { addEnrichments } = useStore.getState().actions;
+            const byMessage = new Map<string, typeof enrichments>();
+            for (const e of enrichments) {
+              if (!byMessage.has(e.messageId)) byMessage.set(e.messageId, []);
+              byMessage.get(e.messageId)!.push(e);
+            }
+            for (const [messageId, msgEnrichments] of byMessage) {
+              addEnrichments(messageId, msgEnrichments);
+            }
+
+            console.log(`✅ Loaded ${enrichments.length} enrichments`);
+          }
+        } catch (error) {
+          console.warn('⚠️ Failed to load enrichments:', error);
         }
       }
 
@@ -328,12 +371,14 @@ class SyncService {
         conversations: new Map(),
         messages: new Map(),
         contacts: new Map(),
+        enrichments: new Map(),
       },
       ui: {
         activeConversationId: null,
         sidebarCollapsed: false,
         theme: 'light',
         workspace: undefined,
+        typingUsers: new Map(),
       },
       network: {
         connectionStatus: 'disconnected',

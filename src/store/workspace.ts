@@ -40,9 +40,9 @@ import { persist } from 'zustand/middleware';
  */
 export interface WorkspaceTab {
   id: string;
-  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'database_dev_tools' | 'team' | 'account_settings' | 'integrations';
+  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'database_dev_tools' | 'team' | 'account_settings' | 'integrations' | 'simulator' | 'extension';
   label: string;
-  entityId: string; // conversationId, orderId, customerId, etc.
+  entityId: string; // conversationId, orderId, customerId, extensionId, etc.
   icon?: string;
   closable: boolean;
 }

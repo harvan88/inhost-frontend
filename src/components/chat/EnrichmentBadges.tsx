@@ -38,6 +38,9 @@ import { useTheme } from '@/theme';
 import { Smile, Frown, Meh, Tag } from 'lucide-react';
 import type { Enrichment, SentimentPayload, KeywordsPayload } from '@/types';
 
+// Referencia estable para evitar infinite loop en Zustand selector
+const EMPTY_ENRICHMENTS: Enrichment[] = [];
+
 interface EnrichmentBadgesProps {
   messageId: string;
 }
@@ -49,7 +52,7 @@ interface EnrichmentBadgesProps {
  * Optimizado con memo para evitar re-renders innecesarios.
  */
 const EnrichmentBadges = memo(function EnrichmentBadges({ messageId }: EnrichmentBadgesProps) {
-  const enrichments = useStore((s) => s.entities.enrichments.get(messageId) || []);
+  const enrichments = useStore((s) => s.entities.enrichments?.get(messageId) ?? EMPTY_ENRICHMENTS);
   const { theme } = useTheme();
 
   if (enrichments.length === 0) {

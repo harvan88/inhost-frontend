@@ -373,6 +373,30 @@ class AdminAPIClient {
     });
   }
 
+  /**
+   * Get enrichments for multiple messages
+   */
+  async getEnrichments(messageIds: string[]): Promise<{ 
+    success: boolean; 
+    data: { 
+      enrichments: Array<{
+        id: string;
+        messageId: string;
+        extensionId: string;
+        type: string;
+        payload: any;
+        confidence: number | null;
+        processingTimeMs: number;
+        createdAt: string;
+      }>;
+    };
+  }> {
+    if (messageIds.length === 0) {
+      return { success: true, data: { enrichments: [] } };
+    }
+    return this.request(`/messages/enrichments?messageIds=${messageIds.join(',')}`);
+  }
+
   // ==================== End Users ====================
 
   async getEndUsers(params?: {

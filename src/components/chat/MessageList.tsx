@@ -42,6 +42,7 @@ import { useOverflowDetection } from '@/hooks/useOverflowDetection';
 import { useCombinedRefs } from '@/hooks/useCombinedRefs';
 import { Clock, Check, CheckCheck, AlertCircle } from 'lucide-react';
 import MessageFeedback from '@/components/feedback/MessageFeedback';
+import EnrichmentBadges from './EnrichmentBadges';
 
 // Constant empty array to avoid creating new arrays on every render
 const EMPTY_ARRAY: string[] = [];
@@ -406,6 +407,9 @@ const MessageBubble = memo(
             {message.content.media.caption && `: ${message.content.media.caption}`}
           </div>
         )}
+
+        {/* Enrichment badges (sentimiento, keywords) - Solo para mensajes entrantes */}
+        {isIncoming && <EnrichmentBadges messageId={message.id} />}
 
         {/* Footer: From/To info */}
         {!isSystem && (

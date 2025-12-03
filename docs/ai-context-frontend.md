@@ -1,7 +1,7 @@
 # AI Context: Frontend
 
 **Auto-generated Documentation Coverage Report**
-**Last Updated:** 2025-12-01T23:57:21.166Z
+**Last Updated:** 2025-12-02T23:02:09.628Z
 
 ---
 
@@ -9,20 +9,21 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 80 |
-| **Documented** | 80 |
+| **Total Files** | 82 |
+| **Documented** | 82 |
 | **Undocumented** | 0 |
 | **Coverage** | 100.0% |
 | **Critical Files** | 21 |
 
 ---
 
-## Documented Files (80)
+## Documented Files (82)
 
 - ✅ `App.tsx`
 - ✅ `components\auth\ProtectedRoute.tsx`
 - ✅ `components\chat\ChatArea.tsx`
 - ✅ `components\chat\ChatHeader.tsx`
+- ✅ `components\chat\EnrichmentBadges.tsx`
 - ✅ `components\chat\MessageInput.tsx`
 - ✅ `components\chat\MessageList.tsx`
 - ✅ `components\common\Avatar.tsx`
@@ -48,6 +49,7 @@
 - ✅ `components\settings\AccountSettingsArea.tsx`
 - ✅ `components\settings\IntegrationsArea.tsx`
 - ✅ `components\settings\TeamArea.tsx`
+- ✅ `components\simulator\SimulatorArea.tsx`
 - ✅ `components\tools\DatabaseDevToolsArea.tsx`
 - ✅ `components\tools\ThemeEditorArea.tsx`
 - ✅ `components\tools\theme-editor\ColorScaleEditor.tsx`

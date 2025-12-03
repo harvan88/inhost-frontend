@@ -226,7 +226,9 @@ export const useStore = create<AppState>()(
         // ━━━ ENRICHMENTS ━━━
         addEnrichments: (messageId, enrichments) =>
           set((state) => {
-            const existing = state.entities.enrichments.get(messageId) || [];
+            // Protección contra entities.enrichments undefined
+            const enrichmentsMap = state.entities.enrichments ?? new Map<string, Enrichment[]>();
+            const existing = enrichmentsMap.get(messageId) || [];
             
             // Evitar duplicados por id
             const existingIds = new Set(existing.map(e => e.id));
@@ -236,19 +238,20 @@ export const useStore = create<AppState>()(
               return state;
             }
 
+            const updatedMap = new Map(enrichmentsMap);
+            updatedMap.set(messageId, [...existing, ...newEnrichments]);
+
             return {
               entities: {
                 ...state.entities,
-                enrichments: new Map(state.entities.enrichments).set(
-                  messageId,
-                  [...existing, ...newEnrichments]
-                ),
+                enrichments: updatedMap,
               },
             };
           }),
 
         getEnrichments: (messageId) => {
-          return get().entities.enrichments.get(messageId) || [];
+          const enrichmentsMap = get().entities.enrichments;
+          return enrichmentsMap?.get(messageId) || [];
         },
 
         // ━━━ SIMULATION ━━━
