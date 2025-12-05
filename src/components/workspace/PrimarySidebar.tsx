@@ -243,22 +243,13 @@ function ToolsView() {
       icon: '🎙️',
       category: 'IA',
     },
-    {
-      id: 'database-dev-tools',
-      name: 'Database Dev Tools',
-      description: 'Gestión de datos de desarrollo (IndexedDB)',
-      icon: '🗄️',
-      category: 'Desarrollo',
-    },
   ];
 
   const handleOpenTool = (toolId: string, toolName: string) => {
     // Map toolId to tab type
-    let toolType: 'theme_editor' | 'analytics' | 'database_dev_tools' = 'analytics';
+    let toolType: 'theme_editor' | 'analytics' = 'analytics';
     if (toolId === 'theme-editor') {
       toolType = 'theme_editor';
-    } else if (toolId === 'database-dev-tools') {
-      toolType = 'database_dev_tools';
     }
 
     openTab(
@@ -295,11 +286,9 @@ function ToolsView() {
         {tools.map((tool) => {
           // Verificar si la herramienta está activa (usando fuente de verdad)
           const activeContainer = containers.find((c) => c.id === activeContainerId);
-          let toolType: 'theme_editor' | 'analytics' | 'database_dev_tools' = 'analytics';
+          let toolType: 'theme_editor' | 'analytics' = 'analytics';
           if (tool.id === 'theme-editor') {
             toolType = 'theme_editor';
-          } else if (tool.id === 'database-dev-tools') {
-            toolType = 'database_dev_tools';
           }
           const isActive = isTabActive(activeContainer?.activeTabId ?? null, toolType as any, tool.id);
 
@@ -378,11 +367,11 @@ function PluginsView() {
   // Plugins del sistema
   const plugins = [
     {
-      id: 'simulator',
-      name: 'Chat Simulator',
-      description: 'Simula mensajes como usuario de WhatsApp/Telegram',
-      icon: '📱',
-      category: 'Desarrollo',
+      id: 'test-chat',
+      name: 'Chat de prueba',
+      description: 'Probar mensajería con adapter de WhatsApp',
+      icon: '🧪',
+      category: 'Testing',
     },
     {
       id: 'extensions',
@@ -394,22 +383,22 @@ function PluginsView() {
   ];
 
   const handleOpenItem = (itemId: string, itemName: string, icon: string) => {
-    if (itemId === 'simulator') {
+    if (itemId === 'fluxcore-chat') {
       openTab(
         createTab({
-          type: 'simulator',
-          entityId: 'chat-simulator',
+          type: 'extension',
+          entityId: 'fluxcore-chat',
           label: itemName,
           icon,
           closable: true,
         }),
         activeContainerId || undefined
       );
-    } else if (itemId === 'fluxcore-chat') {
+    } else if (itemId === 'test-chat') {
       openTab(
         createTab({
           type: 'extension',
-          entityId: 'fluxcore-chat',
+          entityId: 'test-chat',
           label: itemName,
           icon,
           closable: true,

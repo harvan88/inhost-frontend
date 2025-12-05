@@ -39,7 +39,6 @@ import StatusCard from '@components/layout/StatusCard';
 import { useStore, useActiveConversationId, useConnectionStatus } from '@/store';
 import { useWebSocket } from '@hooks/useWebSocket';
 import type { Message, WebSocketMessage } from '@/types';
-import { seedDatabase, clearDatabase, resetDatabase } from '@/utils/seedDatabase';
 
 /**
  * Dashboard - Main application view
@@ -63,8 +62,6 @@ export default function Dashboard() {
   const setConnectionStatus = useStore((state) => state.actions.setConnectionStatus);
   const conversations = useStore((state) => state.entities.conversations);
   const messages = useStore((state) => state.entities.messages);
-  const [isSeeding, setIsSeeding] = useState(false);
-  const [seedMessage, setSeedMessage] = useState<string | null>(null);
 
   // WebSocket message handler
   const handleWebSocketMessage = useCallback(
@@ -101,56 +98,6 @@ export default function Dashboard() {
     0
   );
 
-  // Database seed handlers
-  const handleSeed = async () => {
-    setIsSeeding(true);
-    setSeedMessage(null);
-    try {
-      const result = await seedDatabase();
-      setSeedMessage(`✅ Database seeded: ${result.contacts} contacts, ${result.conversations} conversations, ${result.messages} messages`);
-      console.log('✅ Database seeded successfully', result);
-    } catch (error) {
-      setSeedMessage(`❌ Failed to seed database: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('❌ Failed to seed database:', error);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
-  const handleClear = async () => {
-    if (!confirm('Are you sure you want to clear all data?')) return;
-
-    setIsSeeding(true);
-    setSeedMessage(null);
-    try {
-      await clearDatabase();
-      setSeedMessage('✅ Database cleared successfully');
-      console.log('✅ Database cleared');
-    } catch (error) {
-      setSeedMessage(`❌ Failed to clear database: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('❌ Failed to clear database:', error);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
-  const handleReset = async () => {
-    if (!confirm('Are you sure you want to reset the database? This will clear all data and reseed with mock data.')) return;
-
-    setIsSeeding(true);
-    setSeedMessage(null);
-    try {
-      await resetDatabase();
-      setSeedMessage('✅ Database reset successfully');
-      console.log('✅ Database reset');
-    } catch (error) {
-      setSeedMessage(`❌ Failed to reset database: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      console.error('❌ Failed to reset database:', error);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
@@ -175,44 +122,6 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Database Seed Controls */}
-        <div className="mb-6 flex gap-4 items-center flex-wrap">
-          <button
-            onClick={handleSeed}
-            disabled={isSeeding}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition flex items-center gap-2"
-          >
-            {isSeeding ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Loading...
-              </>
-            ) : (
-              <>
-                🌱 Seed Database
-              </>
-            )}
-          </button>
-          <button
-            onClick={handleClear}
-            disabled={isSeeding}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            🗑️ Clear Database
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={isSeeding}
-            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            🔄 Reset Database
-          </button>
-          {seedMessage && (
-            <p className="text-sm text-gray-700 bg-gray-100 px-4 py-2 rounded-lg">
-              {seedMessage}
-            </p>
-          )}
-        </div>
 
         {/* Chat Area */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden" style={{ height: '600px' }}>

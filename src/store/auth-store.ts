@@ -66,7 +66,12 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      logout: () => {
+      logout: async () => {
+        // IMPORTANTE: Guardar layout antes de logout
+        const { useWorkspaceStore } = await import('./workspace');
+        await useWorkspaceStore.getState().saveCurrentLayout();
+
+        // Limpiar autenticación
         localStorage.removeItem('inhost_admin_token');
         localStorage.removeItem('inhost_admin_user');
         set({
@@ -74,6 +79,8 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           isAuthenticated: false
         });
+
+        console.info('[Auth] Logged out, workspace layout saved');
       },
 
       updateUser: (userData: Partial<User>) => {

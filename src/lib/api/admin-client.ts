@@ -633,6 +633,55 @@ class AdminAPIClient {
     const query = new URLSearchParams(params as any).toString();
     return this.request(`/feedback/analytics${query ? '?' + query : ''}`);
   }
+
+  // ==================== Workspace Layout ====================
+
+  /**
+   * Get user's workspace layout (cross-device sync)
+   */
+  async getWorkspaceLayout(): Promise<{
+    success: boolean;
+    data: {
+      layoutData: any;
+      version: number;
+      lastUsedAt: string;
+      deviceId: string | null;
+      deviceType: string | null;
+    } | null;
+  }> {
+    return this.request('/workspace/layout');
+  }
+
+  /**
+   * Save user's workspace layout (cross-device sync)
+   */
+  async saveWorkspaceLayout(data: {
+    layoutData: any;
+    version: number;
+  }): Promise<{
+    success: boolean;
+    data: {
+      version: number;
+      updatedAt: string;
+    };
+  }> {
+    return this.request('/workspace/layout', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  /**
+   * Reset workspace layout to default
+   */
+  async resetWorkspaceLayout(): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    return this.request('/workspace/layout', {
+      method: 'DELETE'
+    });
+  }
 }
 
 export const adminAPI = new AdminAPIClient();

@@ -34,13 +34,14 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { workspaceSyncService, type LayoutData } from '../services/workspace-sync';
 
 /**
  * Workspace Tab - represents an open tool/view within a Dynamic Container
  */
 export interface WorkspaceTab {
   id: string;
-  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'database_dev_tools' | 'team' | 'account_settings' | 'integrations' | 'simulator' | 'extension';
+  type: 'conversation' | 'order' | 'customer_profile' | 'analytics' | 'theme_editor' | 'team' | 'account_settings' | 'integrations' | 'extension';
   label: string;
   entityId: string; // conversationId, orderId, customerId, extensionId, etc.
   icon?: string;
@@ -102,6 +103,11 @@ interface WorkspaceState {
   openTab: (tab: WorkspaceTab, containerId?: string) => void;
   closeTab: (tabId: string, containerId?: string) => void;
   setActiveTab: (tabId: string, containerId?: string) => void;
+
+  // ━━━ SYNC CROSS-DEVICE ━━━
+  version: number;
+  loadRemoteLayout: () => Promise<void>;
+  saveCurrentLayout: () => Promise<void>;
 }
 
 /**
@@ -122,6 +128,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
       ],
       activeContainerId: 'container-1',
+      version: 0,
 
       // ━━━ ACTIONS ━━━
 
@@ -266,6 +273,13 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       // Container Actions - operate on specific or active container
       openTab: (tab, containerId) =>
         set((state) => {
+          console.log('[Workspace] openTab called', {
+            tab,
+            containerId,
+            currentContainers: state.containers.length,
+            activeContainerId: state.activeContainerId,
+          });
+
           // LÓGICA MEJORADA según requerimientos:
           // 1. Si la tab está activa y se hace clic, cerrarla (retract)
           // 2. Si no especifica containerId:
@@ -371,15 +385,133 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
           return { containers: updatedContainers };
         }),
+
+      // ━━━ SYNC CROSS-DEVICE ACTIONS ━━━
+
+      /**
+       * Cargar layout desde backend (solo al login)
+       */
+      loadRemoteLayout: async () => {
+        const remoteLayout = await workspaceSyncService.loadRemoteLayout();
+
+        if (remoteLayout) {
+          const currentState = get();
+          const localVersion = currentState.version || 0;
+
+          // Si remote es más nuevo que local, aplicar
+          if (remoteLayout.version > localVersion) {
+            // Validar que containers sea un array válido
+            const validContainers = Array.isArray(remoteLayout.containers) && remoteLayout.containers.length > 0
+              ? remoteLayout.containers
+              : currentState.containers;
+
+            // Validar que activeContainerId sea válido
+            const validActiveContainerId = remoteLayout.activeContainerId &&
+              validContainers.some((c: any) => c.id === remoteLayout.activeContainerId)
+              ? remoteLayout.activeContainerId
+              : validContainers[0]?.id || 'container-1';
+
+            set({
+              activeActivity: remoteLayout.activeActivity as any,
+              sidebarVisible: remoteLayout.sidebarVisible,
+              sidebarWidth: remoteLayout.sidebarWidth,
+              containers: validContainers,
+              activeContainerId: validActiveContainerId,
+              version: remoteLayout.version,
+            });
+
+            console.info('[Workspace] Remote layout applied', {
+              version: remoteLayout.version,
+              containers: validContainers.length,
+              activeContainerId: validActiveContainerId,
+            });
+          } else {
+            console.info('[Workspace] Local layout is up-to-date', {
+              localVersion,
+              remoteVersion: remoteLayout.version,
+            });
+          }
+        }
+      },
+
+      /**
+       * Guardar layout actual en backend (llamado al cerrar)
+       */
+      saveCurrentLayout: async () => {
+        const state = get();
+        const layoutData: LayoutData = {
+          version: Date.now(),
+          activeActivity: state.activeActivity || 'messages',
+          sidebarVisible: state.sidebarVisible,
+          sidebarWidth: state.sidebarWidth,
+          containers: state.containers,
+          activeContainerId: state.activeContainerId,
+        };
+
+        await workspaceSyncService.saveRemoteLayoutOnClose(layoutData);
+      },
     }),
     {
       name: 'inhost-workspace',
-      // Solo persistir preferences básicas, NO las tabs (se recargan del server)
+      version: 2, // ← Incrementado para forzar migración de estados corruptos
+      // Persistir layout completo + version
       partialize: (state) => ({
         activeActivity: state.activeActivity,
         sidebarVisible: state.sidebarVisible,
         sidebarWidth: state.sidebarWidth,
+        containers: state.containers,
+        activeContainerId: state.activeContainerId,
+        version: state.version,
       }),
+      // Callback post-hidratación: GARANTIZA contenedores válidos siempre
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        
+        const defaultContainer = { id: 'container-1', tabs: [], activeTabId: null, width: '100%' };
+        
+        // Si no hay contenedores, crear uno por defecto
+        if (!state.containers || state.containers.length === 0) {
+          console.warn('[Workspace] No containers found after rehydration, creating default');
+          state.containers = [defaultContainer];
+          state.activeContainerId = 'container-1';
+        }
+        
+        // Si activeContainerId no es válido, usar el primero
+        if (!state.activeContainerId || !state.containers.some(c => c.id === state.activeContainerId)) {
+          console.warn('[Workspace] Invalid activeContainerId, using first container');
+          state.activeContainerId = state.containers[0]?.id || 'container-1';
+        }
+        
+        console.info('[Workspace] Rehydrated', {
+          containers: state.containers.length,
+          activeContainerId: state.activeContainerId,
+        });
+      },
+      // Migración para versiones antiguas
+      // IMPORTANTE: Garantizar SIEMPRE al menos 1 contenedor válido
+      migrate: (persistedState: any, version: number) => {
+        console.log('[Workspace] Migration running', { fromVersion: version, toVersion: 2 });
+        
+        const defaultContainer = { id: 'container-1', tabs: [], activeTabId: null, width: '100%' };
+        
+        // Validar containers - debe ser array con al menos 1 elemento
+        const validContainers = Array.isArray(persistedState.containers) && persistedState.containers.length > 0
+          ? persistedState.containers
+          : [defaultContainer];
+
+        // Validar activeContainerId - debe existir en containers
+        const validActiveContainerId = persistedState.activeContainerId && 
+          validContainers.some((c: any) => c.id === persistedState.activeContainerId)
+          ? persistedState.activeContainerId
+          : validContainers[0].id;
+
+        // Para CUALQUIER versión anterior, asegurar containers válidos
+        return {
+          ...persistedState,
+          containers: validContainers,
+          activeContainerId: validActiveContainerId,
+        };
+      },
     }
   )
 );

@@ -33,6 +33,7 @@
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ErrorBoundary, ToastContainer, useToastStore } from '@/components/feedback';
 import { WebSocketProvider } from '@/providers/WebSocketProvider';
 
@@ -43,6 +44,11 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Main Workspace (Chat) - CORE APPLICATION
 import Workspace from '@components/workspace/Workspace';
+
+// Hooks
+import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import { useWorkspaceStore } from './store/workspace';
+import { useAuthStore } from './store/auth-store';
 
 import './styles/App.css';
 
@@ -61,6 +67,20 @@ import './styles/App.css';
  */
 function App() {
   const toasts = useToastStore((state) => state.toasts);
+
+  // Hook de sincronización de workspace (guarda al cerrar pestaña)
+  useWorkspaceSync();
+
+  // Cargar layout remoto al iniciar sesión
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Llamar directamente al store en lugar de extraer la función
+      // Esto evita problemas de dependencias y re-renders innecesarios
+      useWorkspaceStore.getState().loadRemoteLayout();
+    }
+  }, [isAuthenticated]);
 
   return (
     <ErrorBoundary>

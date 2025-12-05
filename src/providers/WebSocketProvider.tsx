@@ -76,11 +76,14 @@ import { logger } from '@/services/logger';
 // TYPES
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+type WebSocketEventCallback = (event: any) => void;
+
 interface WebSocketContextValue {
   connected: boolean;
   reconnecting: boolean;
   error: string | null;
   sendTyping: (conversationId: string, isTyping: boolean) => void;
+  subscribe: (callback: WebSocketEventCallback) => () => void; // Returns unsubscribe function
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -93,6 +96,10 @@ const WebSocketContext = createContext<WebSocketContextValue>({
   error: null,
   sendTyping: () => {
     console.warn('sendTyping called before WebSocket is initialized');
+  },
+  subscribe: () => {
+    console.warn('subscribe called before WebSocket is initialized');
+    return () => {};
   },
 });
 
@@ -110,6 +117,9 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
+  
+  // External subscribers for raw WebSocket events (used by TestChatArea, etc.)
+  const subscribersRef = useRef<Set<WebSocketEventCallback>>(new Set());
 
   const [connected, setConnected] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
@@ -588,6 +598,15 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     try {
       const data: WebSocketEvent = JSON.parse(event.data);
 
+      // Notify external subscribers (TestChatArea, etc.)
+      subscribersRef.current.forEach((callback) => {
+        try {
+          callback(data);
+        } catch (err) {
+          console.error('Subscriber callback error:', err);
+        }
+      });
+
       switch (data.type) {
         case 'connection':
           handleConnection(data as ConnectionEvent);
@@ -820,6 +839,21 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   }, [connect, disconnect]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // SUBSCRIBE FUNCTION (for external components like TestChatArea)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  const subscribe = useCallback((callback: WebSocketEventCallback) => {
+    subscribersRef.current.add(callback);
+    console.log('📡 WebSocket subscriber added, total:', subscribersRef.current.size);
+    
+    // Return unsubscribe function
+    return () => {
+      subscribersRef.current.delete(callback);
+      console.log('📡 WebSocket subscriber removed, total:', subscribersRef.current.size);
+    };
+  }, []);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // RENDER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -828,6 +862,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     reconnecting,
     error,
     sendTyping,
+    subscribe,
   };
 
   return (
